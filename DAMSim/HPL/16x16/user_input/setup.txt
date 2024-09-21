@@ -1,0 +1,96 @@
+dataflow_graph {
+kernels {
+  name: "Iteration_1"
+  id: 1
+  type: SYSTOLIC
+  gemm_input1_input2 {
+    outer: 1
+    M: 131072
+    K: 131072
+    N: 32
+    input_tensor_1_size: 8388608.0
+    output_tensor_size: 8388608.0
+    communication_type: BROADCAST
+    communication_size: 8388608.0
+    tiling: NO_TILING
+    communication_type_2: POINT_TO_POINT
+    communication_size_2: 8388608.0
+  }
+}
+kernels {
+  name: "Iteration_2"
+  id: 2
+  type: SYSTOLIC
+  gemm_input1_input2 {
+    outer: 1
+    M: 131040
+    K: 131040
+    N: 32
+    input_tensor_1_size: 8386560.0
+    output_tensor_size: 8386560.0
+    communication_type: BROADCAST
+    communication_size: 8386560.0
+    tiling: NO_TILING
+    communication_type_2: POINT_TO_POINT
+    communication_size_2: 8386560.0
+  }
+}
+connections {
+  startIdx: 1
+  endIdx: 2
+  id: 1
+}
+}
+system {
+  num_chip: 256
+  accelerator {
+    core: 1040
+    systolic_width: 32
+    systolic_height: 6
+    sram_cap: 545259520
+    freq: 1.6
+
+    pmu: 1040
+    pmu_cap: 524288
+    x: 40
+    y: 52
+    placement: "rowwise"
+  }
+  r_r {
+    x: 16
+    y: 16
+    link_bw_x: 10
+    link_bw_y: 10
+  }
+  memory {
+    dram_bw: 1638.4
+    dram_cap: 824633720832.0
+  }
+}
+cost {
+  link_unit_price: 2.0
+  switch_unit_price: 24.0
+  dram_unit_price: 1.0
+  accelerator_price: 16522.25023
+  link_unit_power_x: 0.052
+  switch_unit_power: 0.052
+  dram_unit_power: 0.16248
+  accelerator_power: 444.7061955
+}
+execution {
+  hpl {
+    n: 131072
+    b: 32
+    num_copy: 1
+  }
+  execution_style: DATAFLOW
+  num_config: 1
+  perfect_overlap: false
+  #compute_util: 0.9
+  word: 2
+}
+gurobi {
+  thread: 144
+  gap: 0.001
+  time: 3600
+}

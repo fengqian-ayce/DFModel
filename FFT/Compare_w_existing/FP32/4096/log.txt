@@ -1,0 +1,212 @@
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-11-05
+Set parameter NonConvex to value 2
+Set parameter Threads to value 144
+Set parameter MIPGap to value 1.0000000474974513e-03
+Set parameter TimeLimit to value 120
+Gurobi Optimizer version 10.0.3 build v10.0.3rc0 (linux64)
+
+CPU model: Intel(R) Xeon(R) CPU E7-8890 v3 @ 2.50GHz, instruction set [SSE2|AVX|AVX2]
+Thread count: 72 physical cores, 144 logical processors, using up to 144 threads
+
+Optimize a model with 54 rows, 145 columns and 98 nonzeros
+Model fingerprint: 0x37a0d389
+Model has 62 quadratic constraints
+Model has 48 general constraints
+Variable types: 82 continuous, 63 integer (25 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+05]
+  QMatrix range    [6e-05, 5e+02]
+  QLMatrix range   [1e+00, 2e+07]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 9e+10]
+  QRHS range       [1e+00, 2e+13]
+  GenCon rhs range [1e+00, 2e+13]
+  GenCon coe range [1e+00, 1e+00]
+Warning: Model contains large rhs
+Warning: Model contains large rhs on quadratic constraints
+Warning: Model contains large rhs on indicator constraints
+         Consider reformulating model or setting NumericFocus parameter
+         to avoid numerical issues.
+Presolve removed 49 rows and 139 columns
+Presolve time: 0.01s
+Presolved: 5 rows, 6 columns, 12 nonzeros
+Variable types: 2 continuous, 4 integer (0 binary)
+Found heuristic solution: objective 1.394955e+09
+
+Root relaxation: cutoff, 0 iterations, 0.00 seconds (0.00 work units)
+
+Explored 1 nodes (0 simplex iterations) in 0.01 seconds (0.00 work units)
+Thread count was 144 (of 144 available processors)
+
+Solution count 1: 1.39496e+09 
+
+Optimal solution found (tolerance 1.00e-03)
+Warning: some integer variables take values larger than the maximum
+         supported value (2000000000)
+Best objective 1.394955250137e+09, best bound 1.394955250137e+09, gap 0.0000%
+TP 1.0
+PP 1.0
+DP 1.0
+num_copy 1.0
+num_chips_per_copy 4096.0
+Shape[0] 8.0
+Shape[1] 512.0
+Link_BW[0] 300.0
+Link_BW[1] 25.0
+FFT_dram_size 4294970703.125
+layer_per_stage 1.0
+tile_size 1.0
+num_tile 1.0
+shard_M[0] 2097152.0
+shard_M[1] 2097152.0
+shard_K[0] 168.0
+shard_K[1] 168.0
+shard_N[0] 512.0
+shard_N[1] 512.0
+shard_intermediate_buffer_size[0] 4294967296.0
+shard_initiation_buffer_size[0] 1409286144.0
+shard_initiation_buffer_size[1] 1409286144.0
+Micro_Batch_Size 1.0
+num_micro_batch_per_pipeline 1.0
+C24 1.0
+ALL_TO_ALL_communication_size[0] 0.0
+ALL_TO_ALL_communication_size[1] 1048576.0
+C27 0.0
+C28 16777216.0
+C29 17592186044416.0
+Config[0] -0.0
+Config[1] 1.0
+Ab_onchip[0,0] 0.0
+Ab_onchip[0,1] 0.0
+Ab_dram[0,0] 1.0
+Ab_dram[0,1] 1.0
+Ac[0,0] 1.0
+Ac[0,1] 0.0
+Ac[1,0] 0.0
+Ac[1,1] 1.0
+Ad[0,0] 1.0
+Ad[0,1] 0.0
+Ad[1,0] 0.0
+Ad[1,1] 1.0
+Par_total[0] 6912.0
+Par_total[1] 6912.0
+C46 0.0
+C47 1.0
+C48 1.0
+C49 1.0
+C50 0.0
+C51 1.0
+C52 1.0
+C53 1.0
+shard_intermediate_buffer_size_depth_original[0] 8589934592.0
+shard_intermediate_buffer_size_depth_two[0] 8589934592.0
+shard_intermediate_buffer_size_depth_one[0] 4294967296.0
+shard_initiation_buffer_size_depth_one[0] 2000000000.0
+shard_initiation_buffer_size_depth_one[1] 2000000000.0
+weight_tiling[0] 1.0
+weight_tiling[1] 1.0
+C61 0.0
+C62 0.0
+SRAM_Per_Config_total[0] 0.0
+SRAM_Per_Config_total[1] 0.0
+SRAM_Per_Config_intermediate_dram[0] 4294967296.0
+SRAM_Per_Config_intermediate_dram[1] 4294967296.0
+SRAM_Per_Config_intermediate_onchip[0] 0.0
+SRAM_Per_Config_intermediate_onchip[1] 0.0
+SRAM_Per_Config_initiation[0] 2000000000.0
+SRAM_Per_Config_initiation[1] 2000000000.0
+dram_bytes_per_config_intermediate[0] 4294967296.0
+dram_bytes_per_config_intermediate[1] 4294967296.0
+dram_bytes_per_config_initiation[0] 1409286144.0
+dram_bytes_per_config_initiation[1] 1409286144.0
+C75 4294967296.0
+C76 4294967296.0
+dram_bytes_initiation 0.0
+dram_bytes_intermediate 0.0
+dram_bytes_total 4294970703.125
+C80 2818572288.0
+C81 8589934592.0
+DRAM_BW 2039.0
+FLOP_per_kernel[0] 360777252864.0
+FLOP_per_kernel[1] 360777252864.0
+C85 2147483648.0
+C86 2147483648.0
+Compute_Latency[0] 20565715.417433355
+Compute_Latency[1] 20565715.417433355
+C89 360777252864.0
+C90 0.0
+C91 360777252864.0
+C92 0.0
+C93 360777252864.0
+C94 360777252864.0
+Memory_Latency[0] 2106408.6787641
+Memory_Latency[1] 2106408.6787641
+memory_latency[0] 2106408.6787641
+memory_latency[1] 2106408.6787641
+explicit_memory_latency[0] 0.0
+explicit_memory_latency[1] 0.0
+C101 4294967296.0
+C102 4294967296.0
+Network_Latency[0] 20565715.417433355
+Network_Latency[1] 1374389534.72
+p2p_latency 0.0
+Network_Latency_ALL_TO_ALL_tmp[0,0] 20565715.417433355
+Network_Latency_ALL_TO_ALL_tmp[0,1] 20565715.417433355
+Network_Latency_ALL_TO_ALL_tmp[1,0] 1374389534.72
+Network_Latency_ALL_TO_ALL_tmp[1,1] 1374389534.72
+Network_Latency_ALL_TO_ALL[0] 20565715.417433355
+Network_Latency_ALL_TO_ALL[1] 1374389534.72
+C112 0.0
+C113 0.0
+C114 1048576.0
+C115 1048576.0
+Per_Config_II[0] 20565715.417433355
+Per_Config_II[1] 1374389534.72
+C118 1394955250.1374333
+ns_per_batch 1394955250.1374333
+LINK_cost[0] 2457600.0
+LINK_cost[1] 25600.0
+SWITCH_cost[0] 29491200.0
+SWITCH_cost[1] 307200.0
+less_or_equal_one_chip 0.0
+less_or_equal_four_chip 0.0
+total_DRAM_cost 8351744.0
+total_accelerator_cost 135168000.0
+total_link_cost 2483200.0
+total_switch_cost 29798400.0
+C130 2483200.0
+C131 29798400.0
+total_cost 175801344.0
+LINK_power[0] 12779.520034790039
+LINK_power[1] 133.12000036239624
+SWITCH_power[0] 63897.601318359375
+SWITCH_power[1] 665.6000137329102
+total_DRAM_power 1356991.3374023438
+total_accelerator_power 3072000.0
+total_link_power 12912.640035152435
+total_switch_power 64563.201332092285
+C141 12912.640035152435
+C142 64563.201332092285
+total_power 4506467.1787695885
+final_ns 1394955250.1374333
+****************************************************************************************************
+TP 1.0
+PP 1.0
+DP 1.0
+global_batch_size 1
+micro_batch_size 1.0
+num_micro_batch_per_pipeline 1.0
+
+DRAM_BW 2039.0
+Link_BW [300.0, 25.0]
+total_cost 175801344.0
+total_power 4506467.1787695885
+
+final_ns 1394955250.1374333
+final_s 1.3949552501374334
+GFLOPS 19491.83953857422
+num_chip 4096
+FLOP 2955487255461888.0
+util 0.02653725756943329

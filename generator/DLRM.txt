@@ -1,0 +1,174 @@
+kernels {
+  name: "MLP_1"
+  id: 1
+  config: -1
+  fwd_bwd: FWD
+  type: SYSTOLIC
+  gemm_input1_weight {
+    outer: 1
+    M: 8000
+    K: 8000
+    N: 16
+    input_tensor_size: 256000.0
+    weight_tensor_size: 128000000.0
+    output_tensor_size: 256000.0
+    tiling: NO_TILING
+  }
+}
+kernels {
+  name: "MLP_2"
+  id: 2
+  config: -1
+  fwd_bwd: FWD
+  type: SYSTOLIC
+  gemm_input1_weight {
+    outer: 1
+    M: 8000
+    K: 8000
+    N: 16
+    input_tensor_size: 256000.0
+    weight_tensor_size: 128000000.0
+    output_tensor_size: 256000.0
+    tiling: NO_TILING
+  }
+}
+kernels {
+  name: "MLP_3"
+  id: 3
+  config: -1
+  fwd_bwd: FWD
+  type: SYSTOLIC
+  gemm_input1_weight {
+    outer: 1
+    M: 8000
+    K: 8000
+    N: 16
+    input_tensor_size: 256000.0
+    weight_tensor_size: 128000000.0
+    output_tensor_size: 256000.0
+    tiling: NO_TILING
+  }
+}
+kernels {
+  name: "MLP_4"
+  id: 4
+  config: -1
+  fwd_bwd: FWD
+  type: SYSTOLIC
+  gemm_input1_weight {
+    outer: 1
+    M: 8000
+    K: 8000
+    N: 16
+    input_tensor_size: 256000.0
+    weight_tensor_size: 128000000.0
+    output_tensor_size: 256000.0
+    communication_type: ALL_TO_ALL
+    communication_size: 20480.0
+    tiling: NO_TILING
+    memory_size: 20480.0
+  }
+}
+kernels {
+  name: "MLP_5"
+  id: 5
+  config: -1
+  fwd_bwd: FWD
+  type: SYSTOLIC
+  gemm_input1_weight {
+    outer: 1
+    M: 8000
+    K: 8000
+    N: 16
+    input_tensor_size: 256000.0
+    weight_tensor_size: 128000000.0
+    output_tensor_size: 256000.0
+    tiling: NO_TILING
+  }
+}
+kernels {
+  name: "MLP_6"
+  id: 6
+  config: -1
+  fwd_bwd: FWD
+  type: SYSTOLIC
+  gemm_input1_weight {
+    outer: 1
+    M: 8000
+    K: 8000
+    N: 16
+    input_tensor_size: 256000.0
+    weight_tensor_size: 128000000.0
+    output_tensor_size: 256000.0
+    tiling: NO_TILING
+  }
+}
+kernels {
+  name: "MLP_7"
+  id: 7
+  config: -1
+  fwd_bwd: FWD
+  type: SYSTOLIC
+  gemm_input1_weight {
+    outer: 1
+    M: 8000
+    K: 8000
+    N: 16
+    input_tensor_size: 256000.0
+    weight_tensor_size: 128000000.0
+    output_tensor_size: 256000.0
+    tiling: NO_TILING
+  }
+}
+kernels {
+  name: "MLP_8"
+  id: 8
+  config: -1
+  fwd_bwd: FWD
+  type: SYSTOLIC
+  gemm_input1_weight {
+    outer: 1
+    M: 8000
+    K: 8000
+    N: 16
+    input_tensor_size: 256000.0
+    weight_tensor_size: 128000000.0
+    output_tensor_size: 256000.0
+    tiling: NO_TILING
+  }
+}
+connections {
+  startIdx: 1
+  endIdx: 2
+  id: 1
+}
+connections {
+  startIdx: 2
+  endIdx: 3
+  id: 2
+}
+connections {
+  startIdx: 3
+  endIdx: 4
+  id: 3
+}
+connections {
+  startIdx: 4
+  endIdx: 5
+  id: 4
+}
+connections {
+  startIdx: 5
+  endIdx: 6
+  id: 5
+}
+connections {
+  startIdx: 6
+  endIdx: 7
+  id: 6
+}
+connections {
+  startIdx: 7
+  endIdx: 8
+  id: 7
+}

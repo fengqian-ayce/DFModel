@@ -1,0 +1,300 @@
+dataflow_graph {
+  kernels {
+    name: "MLP_1"
+    id: 1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 2000
+      K: 2000
+      N: 16
+      input_tensor_size: 64000.0
+      weight_tensor_size: 8000000.0
+      output_tensor_size: 64000.0
+      sharding: NO_SHARDING
+      shard_outer_M: 2000
+      shard_K: 2000
+      shard_N: 16
+      tiling: NO_TILING
+    }
+  }
+  kernels {
+    name: "MLP_2"
+    id: 2
+    topological_number: 1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 2000
+      K: 2000
+      N: 16
+      input_tensor_size: 64000.0
+      weight_tensor_size: 8000000.0
+      output_tensor_size: 64000.0
+      sharding: NO_SHARDING
+      shard_outer_M: 2000
+      shard_K: 2000
+      shard_N: 16
+      tiling: NO_TILING
+    }
+  }
+  kernels {
+    name: "MLP_3"
+    id: 3
+    topological_number: 2
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 2000
+      K: 2000
+      N: 16
+      input_tensor_size: 64000.0
+      weight_tensor_size: 8000000.0
+      output_tensor_size: 64000.0
+      sharding: NO_SHARDING
+      shard_outer_M: 2000
+      shard_K: 2000
+      shard_N: 16
+      tiling: NO_TILING
+    }
+  }
+  kernels {
+    name: "MLP_4"
+    id: 4
+    topological_number: 3
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 2000
+      K: 2000
+      N: 16
+      input_tensor_size: 64000.0
+      weight_tensor_size: 8000000.0
+      output_tensor_size: 64000.0
+      sharding: NO_SHARDING
+      communication_type: ALL_TO_ALL
+      communication_size: 5120.0
+      shard_outer_M: 2000
+      shard_K: 2000
+      shard_N: 16
+      tiling: NO_TILING
+      memory_size: 5120.0
+    }
+  }
+  kernels {
+    name: "MLP_5"
+    id: 5
+    topological_number: 4
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 2000
+      K: 2000
+      N: 16
+      input_tensor_size: 64000.0
+      weight_tensor_size: 8000000.0
+      output_tensor_size: 64000.0
+      sharding: NO_SHARDING
+      shard_outer_M: 2000
+      shard_K: 2000
+      shard_N: 16
+      tiling: NO_TILING
+    }
+  }
+  kernels {
+    name: "MLP_6"
+    id: 6
+    topological_number: 5
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 2000
+      K: 2000
+      N: 16
+      input_tensor_size: 64000.0
+      weight_tensor_size: 8000000.0
+      output_tensor_size: 64000.0
+      sharding: NO_SHARDING
+      shard_outer_M: 2000
+      shard_K: 2000
+      shard_N: 16
+      tiling: NO_TILING
+    }
+  }
+  kernels {
+    name: "MLP_7"
+    id: 7
+    topological_number: 6
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 2000
+      K: 2000
+      N: 16
+      input_tensor_size: 64000.0
+      weight_tensor_size: 8000000.0
+      output_tensor_size: 64000.0
+      sharding: NO_SHARDING
+      shard_outer_M: 2000
+      shard_K: 2000
+      shard_N: 16
+      tiling: NO_TILING
+    }
+  }
+  kernels {
+    name: "MLP_8"
+    id: 8
+    topological_number: 7
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 2000
+      K: 2000
+      N: 16
+      input_tensor_size: 64000.0
+      weight_tensor_size: 8000000.0
+      output_tensor_size: 64000.0
+      sharding: NO_SHARDING
+      shard_outer_M: 2000
+      shard_K: 2000
+      shard_N: 16
+      tiling: NO_TILING
+    }
+  }
+  connections {
+    startIdx: 1
+    endIdx: 2
+    buffer_depth: 2
+    tensor_size: 64000.0
+    shard_tensor_size: 64000.0
+    id: 1
+    startName: "MLP_1"
+    endName: "MLP_2"
+    lane_stage_type: STAGE
+  }
+  connections {
+    startIdx: 2
+    endIdx: 3
+    buffer_depth: 2
+    tensor_size: 64000.0
+    shard_tensor_size: 64000.0
+    id: 2
+    startName: "MLP_2"
+    endName: "MLP_3"
+    lane_stage_type: STAGE
+  }
+  connections {
+    startIdx: 3
+    endIdx: 4
+    buffer_depth: 2
+    tensor_size: 64000.0
+    shard_tensor_size: 64000.0
+    id: 3
+    startName: "MLP_3"
+    endName: "MLP_4"
+    lane_stage_type: STAGE
+  }
+  connections {
+    startIdx: 4
+    endIdx: 5
+    buffer_depth: 2
+    tensor_size: 64000.0
+    shard_tensor_size: 64000.0
+    id: 4
+    startName: "MLP_4"
+    endName: "MLP_5"
+    lane_stage_type: STAGE
+  }
+  connections {
+    startIdx: 5
+    endIdx: 6
+    buffer_depth: 2
+    tensor_size: 64000.0
+    shard_tensor_size: 64000.0
+    id: 5
+    startName: "MLP_5"
+    endName: "MLP_6"
+    lane_stage_type: STAGE
+  }
+  connections {
+    startIdx: 6
+    endIdx: 7
+    buffer_depth: 2
+    tensor_size: 64000.0
+    shard_tensor_size: 64000.0
+    id: 6
+    startName: "MLP_6"
+    endName: "MLP_7"
+    lane_stage_type: STAGE
+  }
+  connections {
+    startIdx: 7
+    endIdx: 8
+    buffer_depth: 2
+    tensor_size: 64000.0
+    shard_tensor_size: 64000.0
+    id: 7
+    startName: "MLP_7"
+    endName: "MLP_8"
+    lane_stage_type: STAGE
+  }
+}
+system {
+  num_chip: 16
+  accelerator {
+    core: 1040
+    systolic_width: 32
+    systolic_height: 6
+    sram_cap: 545259500.0
+    pmu: 1040
+    pmu_cap: 524288.0
+    x: 40
+    y: 52
+    freq: 1.6
+    placement: "rowwise"
+  }
+  r_r {
+    x: 4
+    y: 4
+    link_bw_x: 10.0
+    link_bw_y: 10.0
+  }
+  memory {
+    dram_bw: 1638.0
+  }
+}
+cost {
+  link_unit_price: 2.0
+  switch_unit_price: 24.0
+  dram_unit_price: 1.0
+  accelerator_price: 16522.25
+  link_unit_power_x: 0.052
+  switch_unit_power: 0.052
+  dram_unit_power: 0.16248
+  accelerator_power: 444.7062
+}
+execution {
+  dlrm {
+    num_table: 16
+    emb_dim: 10
+    row: 1000000000
+    global_batch_size: 256
+    num_copy: 1
+  }
+  execution_style: DATAFLOW
+  num_config: 1
+  word: 2
+}
+gurobi {
+  thread: 144
+  gap: 0.001
+  time: 3600
+}

@@ -1,0 +1,35 @@
+kernels {
+  name: "Step_1"
+  id: 1
+  type: SYSTOLIC
+  gemm_input1_weight {
+    outer: 1
+    M: 32
+    K: 128
+    N: 32
+    input_tensor_size: 2048.0
+    output_tensor_size: 2048.0
+    tiling: NO_TILING
+  }
+}
+kernels {
+  name: "Step_2"
+  id: 2
+  type: SYSTOLIC
+  gemm_input1_weight {
+    outer: 1
+    M: 32
+    K: 128
+    N: 32
+    input_tensor_size: 2048.0
+    output_tensor_size: 2048.0
+    communication_type: ALL_TO_ALL
+    communication_size: 2048.0
+    tiling: NO_TILING
+  }
+}
+connections {
+  startIdx: 1
+  endIdx: 2
+  id: 1
+}

@@ -1,0 +1,227 @@
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-11-05
+Set parameter NonConvex to value 2
+Set parameter Threads to value 144
+Set parameter MIPGap to value 1.0000000474974513e-03
+Set parameter TimeLimit to value 120
+Gurobi Optimizer version 10.0.3 build v10.0.3rc0 (linux64)
+
+CPU model: Intel(R) Xeon(R) CPU E7-8890 v3 @ 2.50GHz, instruction set [SSE2|AVX|AVX2]
+Thread count: 72 physical cores, 144 logical processors, using up to 144 threads
+
+Optimize a model with 54 rows, 145 columns and 98 nonzeros
+Model fingerprint: 0xf83d16b9
+Model has 62 quadratic constraints
+Model has 48 general constraints
+Variable types: 82 continuous, 63 integer (25 binary)
+Coefficient statistics:
+  Matrix range     [7e-01, 2e+03]
+  QMatrix range    [6e-05, 2e+01]
+  QLMatrix range   [1e+00, 4e+03]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 9e+10]
+  QRHS range       [1e+00, 3e+11]
+  GenCon rhs range [1e+00, 3e+11]
+  GenCon coe range [1e+00, 1e+00]
+Warning: Model contains large rhs
+Warning: Model contains large rhs on quadratic constraints
+Warning: Model contains large rhs on indicator constraints
+         Consider reformulating model or setting NumericFocus parameter
+         to avoid numerical issues.
+Presolve removed 52 rows and 141 columns
+Presolve time: 0.01s
+Presolved: 2 rows, 4 columns, 4 nonzeros
+Presolved model has 1 SOS constraint(s)
+Presolved model has 1 quadratic constraint(s)
+Variable types: 0 continuous, 4 integer (1 binary)
+
+Root relaxation: objective 1.392017e+09, 1 iterations, 0.00 seconds (0.00 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 1.3920e+09    0    -          - 1.3920e+09      -     -    0s
+     0     0 1.3920e+09    0    -          - 1.3920e+09      -     -    0s
+     0     0 1.3920e+09    0    -          - 1.3920e+09      -     -    0s
+     0     0 1.3920e+09    0    -          - 1.3920e+09      -     -    0s
+     0     0 1.3920e+09    0    -          - 1.3920e+09      -     -    0s
+     0     0 1.3920e+09    0    -          - 1.3920e+09      -     -    0s
+     0     0 1.3920e+09    0    -          - 1.3920e+09      -     -    0s
+     0     0 1.3920e+09    0    -          - 1.3920e+09      -     -    0s
+     0     0 1.3920e+09    0    1          - 1.3920e+09      -     -    0s
+H    0     0                    1.392017e+09 1.3920e+09  0.00%     -    0s
+
+Explored 1 nodes (9 simplex iterations) in 0.01 seconds (0.00 work units)
+Thread count was 144 (of 144 available processors)
+
+Solution count 1: 1.39202e+09 
+
+Optimal solution found (tolerance 1.00e-03)
+Warning: some integer variables take values larger than the maximum
+         supported value (2000000000)
+Best objective 1.392017290792e+09, best bound 1.392017290792e+09, gap 0.0000%
+TP 1.0
+PP 1.0
+DP 1.0
+num_copy 1.0
+num_chips_per_copy 64.0
+Shape[0] 8.0
+Shape[1] 8.0
+Link_BW[0] 300.0
+Link_BW[1] 25.0
+FFT_dram_size 4294967296.0
+layer_per_stage 1.0
+tile_size 1.0
+num_tile 1.0
+shard_M[0] 262144.0
+shard_M[1] 262144.0
+shard_K[0] 144.0
+shard_K[1] 144.0
+shard_N[0] 4096.0
+shard_N[1] 4096.0
+shard_intermediate_buffer_size[0] 4294967296.0
+shard_initiation_buffer_size[0] 150994944.0
+shard_initiation_buffer_size[1] 150994944.0
+Micro_Batch_Size 1.0
+num_micro_batch_per_pipeline 1.0
+C24 1.0
+ALL_TO_ALL_communication_size[0] 0.0
+ALL_TO_ALL_communication_size[1] 67108864.0
+C27 0.0
+C28 4096.0
+C29 274877906944.0
+Config[0] -0.0
+Config[1] 1.0
+Ab_onchip[0,0] 0.0
+Ab_onchip[0,1] 0.0
+Ab_dram[0,0] 1.0
+Ab_dram[0,1] 1.0
+Ac[0,0] 1.0
+Ac[0,1] 0.0
+Ac[1,0] 0.0
+Ac[1,1] 1.0
+Ad[0,0] 1.0
+Ad[0,1] 0.0
+Ad[1,0] 0.0
+Ad[1,1] 1.0
+Par_total[0] 6912.0
+Par_total[1] 6912.0
+C46 0.0
+C47 1.0
+C48 1.0
+C49 1.0
+C50 0.0
+C51 1.0
+C52 1.0
+C53 1.0
+shard_intermediate_buffer_size_depth_original[0] 8589934592.0
+shard_intermediate_buffer_size_depth_two[0] 8589934592.0
+shard_intermediate_buffer_size_depth_one[0] 4294967296.0
+shard_initiation_buffer_size_depth_one[0] 2000000000.0
+shard_initiation_buffer_size_depth_one[1] 150994944.0
+weight_tiling[0] 1.0
+weight_tiling[1] 1.0
+C61 0.0
+C62 0.0
+SRAM_Per_Config_total[0] 0.0
+SRAM_Per_Config_total[1] 0.0
+SRAM_Per_Config_intermediate_dram[0] 4294967296.0
+SRAM_Per_Config_intermediate_dram[1] 4294967296.0
+SRAM_Per_Config_intermediate_onchip[0] 0.0
+SRAM_Per_Config_intermediate_onchip[1] 0.0
+SRAM_Per_Config_initiation[0] 2000000000.0
+SRAM_Per_Config_initiation[1] 150994944.0
+dram_bytes_per_config_intermediate[0] 4294967296.0
+dram_bytes_per_config_intermediate[1] 4294967296.0
+dram_bytes_per_config_initiation[0] 150994944.0
+dram_bytes_per_config_initiation[1] 150994944.0
+C75 4294967296.0
+C76 4294967296.0
+dram_bytes_initiation 0.0
+dram_bytes_intermediate 0.0
+dram_bytes_total 4294967296.0
+C80 301989888.0
+C81 8589934592.0
+DRAM_BW 2039.0
+FLOP_per_kernel[0] 309237645312.0
+FLOP_per_kernel[1] 309237645312.0
+C85 2147483648.0
+C86 2147483648.0
+Compute_Latency[0] 17627756.072085734
+Compute_Latency[1] 17627756.072085734
+C89 309237645312.0
+C90 0.0
+C91 309237645312.0
+C92 0.0
+C93 309237645312.0
+C94 309237645312.0
+Memory_Latency[0] 2106408.6787641
+Memory_Latency[1] 2106408.6787641
+memory_latency[0] 2106408.6787641
+memory_latency[1] 2106408.6787641
+explicit_memory_latency[0] 0.0
+explicit_memory_latency[1] 0.0
+C101 4294967296.0
+C102 4294967296.0
+Network_Latency[0] 17627756.072085734
+Network_Latency[1] 1374389534.72
+p2p_latency 0.0
+Network_Latency_ALL_TO_ALL_tmp[0,0] 17627756.072085734
+Network_Latency_ALL_TO_ALL_tmp[0,1] 17627756.072085734
+Network_Latency_ALL_TO_ALL_tmp[1,0] 1374389534.72
+Network_Latency_ALL_TO_ALL_tmp[1,1] 1374389534.72
+Network_Latency_ALL_TO_ALL[0] 17627756.072085734
+Network_Latency_ALL_TO_ALL[1] 1374389534.72
+C112 0.0
+C113 0.0
+C114 67108864.0
+C115 67108864.0
+Per_Config_II[0] 17627756.072085734
+Per_Config_II[1] 1374389534.72
+C118 1392017290.7920856
+ns_per_batch 1392017290.7920856
+LINK_cost[0] 38400.0
+LINK_cost[1] 400.0
+SWITCH_cost[0] 460800.0
+SWITCH_cost[1] 4800.0
+less_or_equal_one_chip 0.0
+less_or_equal_four_chip 0.0
+total_DRAM_cost 130496.0
+total_accelerator_cost 2112000.0
+total_link_cost 38800.0
+total_switch_cost 465600.0
+C130 38800.0
+C131 465600.0
+total_cost 2746896.0
+LINK_power[0] 199.68000054359436
+LINK_power[1] 2.0800000056624413
+SWITCH_power[0] 998.4000205993652
+SWITCH_power[1] 10.400000214576721
+total_DRAM_power 21202.98964691162
+total_accelerator_power 48000.0
+total_link_power 201.7600005492568
+total_switch_power 1008.800020813942
+C141 201.7600005492568
+C142 1008.800020813942
+total_power 70413.54966827482
+final_ns 1392017290.7920856
+****************************************************************************************************
+TP 1.0
+PP 1.0
+DP 1.0
+global_batch_size 1
+micro_batch_size 1.0
+num_micro_batch_per_pipeline 1.0
+
+DRAM_BW 2039.0
+Link_BW [300.0, 25.0]
+total_cost 2746896.0
+total_power 70413.54966827482
+
+final_ns 1392017290.7920856
+final_s 1.3920172907920856
+GFLOPS 19491.83953857422
+num_chip 64
+FLOP 39582418599936.0
+util 0.022794228418773755

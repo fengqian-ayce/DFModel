@@ -1,0 +1,98 @@
+dataflow_graph {
+  kernels {
+    name: "Step_1"
+    id: 1
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 262144
+      K: 144
+      N: 262144
+      input_tensor_size: 274877900000.0
+      output_tensor_size: 274877900000.0
+      sharding: NO_SHARDING
+      shard_outer_M: 262144
+      shard_K: 144
+      shard_N: 4096
+      tiling: NO_TILING
+    }
+  }
+  kernels {
+    name: "Step_2"
+    id: 2
+    topological_number: 1
+    config: 1
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 262144
+      K: 144
+      N: 262144
+      input_tensor_size: 274877900000.0
+      output_tensor_size: 274877900000.0
+      sharding: NO_SHARDING
+      communication_type: ALL_TO_ALL
+      communication_size: 274877900000.0
+      shard_outer_M: 262144
+      shard_K: 144
+      shard_N: 4096
+      tiling: NO_TILING
+    }
+  }
+  connections {
+    startIdx: 1
+    endIdx: 2
+    buffer_depth: 2
+    tensor_size: 274877900000.0
+    shard_tensor_size: 4294967300.0
+    id: 1
+    startName: "Step_1"
+    endName: "Step_2"
+  }
+}
+system {
+  num_chip: 64
+  accelerator {
+    core: 6912
+    systolic_width: 1
+    systolic_height: 1
+    sram_cap: 105119740.0
+    freq: 1.41
+  }
+  sw_sw {
+    x: 8
+    y: 8
+    link_bw_x: 300.0
+    link_bw_y: 25.0
+  }
+  memory {
+    dram_bw: 2039.0
+    dram_cap: 85899350000.0
+  }
+}
+cost {
+  link_unit_price: 2.0
+  switch_unit_price: 24.0
+  dram_unit_price: 1.0
+  accelerator_price: 33000.0
+  link_unit_power_x: 0.0104
+  link_unit_power_y: 0.0104
+  switch_unit_power: 0.052
+  dram_unit_power: 0.16248
+  accelerator_power: 750.0
+}
+miscellany {
+  fft {
+    length: 68719476736
+    num_copy: 1
+  }
+  execution_style: KERNEL_BY_KERNEL
+  perfect_overlap: true
+  compute_util: 0.9
+  word: 4
+}
+gurobi {
+  thread: 144
+  gap: 0.001
+  time: 120
+}

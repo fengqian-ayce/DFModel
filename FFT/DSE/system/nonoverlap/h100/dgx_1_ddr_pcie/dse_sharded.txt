@@ -1,0 +1,89 @@
+dataflow_graph {
+  kernels {
+    name: "Step_1"
+    id: 1
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 1048576
+      K: 512
+      N: 1048576
+      input_tensor_size: 2199023300000.0
+      output_tensor_size: 2199023300000.0
+      sharding: NO_SHARDING
+      tiling: NO_TILING
+    }
+  }
+  kernels {
+    name: "Step_2"
+    id: 2
+    topological_number: 1
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 1048576
+      K: 512
+      N: 1048576
+      input_tensor_size: 2199023300000.0
+      output_tensor_size: 2199023300000.0
+      sharding: NO_SHARDING
+      communication_type: ALL_TO_ALL
+      communication_size: 2199023300000.0
+      tiling: NO_TILING
+    }
+  }
+  connections {
+    startIdx: 1
+    endIdx: 2
+    buffer_depth: 2
+    tensor_size: 2199023300000.0
+    id: 1
+    startName: "Step_1"
+    endName: "Step_2"
+  }
+}
+system {
+  num_chip: 1024
+  accelerator {
+    core: 1056
+    systolic_width: 16
+    systolic_height: 16
+    sram_cap: 118489090.0
+    freq: 1.837
+  }
+  r_sw {
+    x: 8
+    y: 128
+    link_bw_x: 50.0
+    link_bw_y: 50.0
+  }
+  memory {
+    dram_bw: 300.0
+    dram_cap: 1099511600000.0
+  }
+}
+cost {
+  link_unit_price: 2.0
+  switch_unit_price: 24.0
+  dram_unit_price: 1.0
+  accelerator_price: 20000.0
+  link_unit_power_x: 0.052
+  link_unit_power_y: 0.052
+  switch_unit_power: 0.052
+  dram_unit_power: 0.16248
+  accelerator_power: 511.57712
+}
+miscellany {
+  fft {
+    length: 1099511627776
+    num_copy: 1
+  }
+  execution_style: KERNEL_BY_KERNEL
+  compute_util: 0.9
+  word: 2
+}
+gurobi {
+  thread: 144
+  gap: 0.001
+  time: 120
+}

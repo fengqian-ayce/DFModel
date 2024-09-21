@@ -1,0 +1,550 @@
+syntax = "proto3"; 
+
+message Kernel {
+	string name = 1;
+	int64 id = 2;
+	int64 topological_number = 3;
+	int64 config = 4;
+	FWD_BWD fwd_bwd = 5;
+	KernelType type = 6;
+	
+	oneof kernel_variant {
+		GEMM_Input1_Weight gemm_input1_weight = 7;
+		GEMM_Input1_Input2 gemm_input1_input2 = 8;
+		ElementWise_Input1 elementwise_input1 = 9;
+		ElementWise_Input1_Input2 elementwise_input1_input2 = 10;
+	}
+
+	enum FWD_BWD {
+		FWD_BWD_Placeholder = 0;
+		FWD = 1;
+		BWD = 2;
+	}
+	
+	enum KernelType {
+		KernelType_Placeholder = 0;
+		SYSTOLIC = 1;
+		SIMD = 2;
+	}
+}
+
+
+
+message GEMM_Input1_Weight {
+	int64 outer = 1;
+	int64 M = 2;
+	int64 K = 3;
+	int64 N = 4;
+	float input_tensor_size = 6;
+	float weight_tensor_size = 8;
+	float output_tensor_size = 9;
+	Sharding sharding = 12;
+	Tiling tiling = 20;
+	Communication_Type communication_type = 13;
+	float communication_size = 14;
+	Communication_Type communication_type_2 = 200;
+	float communication_size_2 = 300;
+	int64 shard_outer_M = 16;
+	int64 shard_K = 17;
+	int64 shard_N = 18;
+	float memory_size = 100;
+	enum Communication_Type {
+		Communication_Type_Placeholder = 0;
+		ALL_REDUCE = 1;
+		ALL_TO_ALL = 2;
+		ALL_GATHER = 3;
+		ALL_REDUCE_PERIODIC = 4;
+		POINT_TO_POINT = 5;
+		BROADCAST = 6;
+	}
+	enum Sharding {
+		SHARDING_Placeholder = 0;
+		OUTER_SHARDING = 1;
+		M_SHARDING = 2;
+		K_SHARDING = 3;
+		N_SHARDING = 4;
+		NO_SHARDING = 5;
+	}
+	enum Tiling {
+		TILING_Placeholder = 0;
+		OUTER_TILING = 1;
+		M_TILING = 2;
+		K_TILING = 3;
+		N_TILING = 4;
+		NO_TILING = 5;
+	}
+	bool skip_weight = 1000;
+
+	bool use_effective_stage = 1001;
+
+	int64 num_input = 2000;
+}
+
+message GEMM_Input1_Input2 {
+	int64 outer = 1;
+	int64 M = 2;
+	int64 K = 3;
+	int64 N = 4;
+	float input_tensor_1_size = 6;
+	float input_tensor_2_size = 8;
+	float output_tensor_size = 9;
+	Sharding sharding = 12;
+	Tiling tiling = 20;
+	Communication_Type communication_type = 13;
+	float communication_size = 14;
+	Communication_Type communication_type_2 = 200;
+	float communication_size_2 = 300;
+	int64 shard_outer_M = 16;
+	int64 shard_K = 17;
+	int64 shard_N = 18;
+	float memory_size = 100;
+	enum Communication_Type {
+		Communication_Type_Placeholder = 0;
+		ALL_REDUCE = 1;
+		ALL_TO_ALL = 2;
+		ALL_GATHER = 3;
+		ALL_REDUCE_PERIODIC = 4;
+		POINT_TO_POINT = 5;
+		BROADCAST = 6;
+	}
+	enum Sharding {
+		SHARDING_Placeholder = 0;
+		OUTER_SHARDING = 1;
+		M_SHARDING = 2;
+		K_SHARDING = 3;
+		N_SHARDING = 4;
+		NO_SHARDING = 5;
+	}
+	enum Tiling {
+		TILING_Placeholder = 0;
+		OUTER_TILING = 1;
+		M_TILING = 2;
+		K_TILING = 3;
+		N_TILING = 4;
+		NO_TILING = 5;
+	}
+
+	int64 num_input = 2000;
+}
+
+message ElementWise_Input1 {
+	int64 outer = 1;
+	int64 M = 2;
+	int64 N = 4;
+	
+	float input_tensor_size = 6;
+	float output_tensor_size = 9;
+
+	Sharding sharding = 12;
+	Tiling tiling = 20;
+	Communication_Type communication_type = 13;
+	float communication_size = 14;
+	
+	Communication_Type communication_type_2 = 200;
+	float communication_size_2 = 300;
+
+	int64 shard_outer_M = 16;
+	int64 shard_N = 18;
+	
+	float memory_size = 100;
+
+	enum Communication_Type {
+		Communication_Type_Placeholder = 0;
+		ALL_REDUCE = 1;
+		ALL_TO_ALL = 2;
+		ALL_GATHER = 3;
+		ALL_REDUCE_PERIODIC = 4;
+		POINT_TO_POINT = 5;
+		BROADCAST = 6;
+	}
+
+	enum Sharding {
+		SHARDING_Placeholder = 0;
+		OUTER_SHARDING = 1;
+		M_SHARDING = 2;
+		N_SHARDING = 4;
+		NO_SHARDING = 5;
+	}
+	
+	enum Tiling {
+		TILING_Placeholder = 0;
+		OUTER_TILING = 1;
+		M_TILING = 2;
+		K_TILING = 3;
+		N_TILING = 4;
+		NO_TILING = 5;
+	}
+
+	int64 num_input = 2000;
+}
+
+message ElementWise_Input1_Input2 {
+	int64 outer = 1;
+	int64 M = 2;
+	int64 N = 4;
+	
+	float input_tensor_1_size = 6;
+	float input_tensor_2_size = 30;
+	float output_tensor_size = 9;
+
+	Sharding sharding = 12;
+	Tiling tiling = 20;
+	Communication_Type communication_type = 13;
+	float communication_size = 14;
+	
+	Communication_Type communication_type_2 = 200;
+	float communication_size_2 = 300;
+
+	int64 shard_outer_M = 16;
+	int64 shard_N = 18;
+	
+	float memory_size = 100;
+
+	enum Communication_Type {
+		Communication_Type_Placeholder = 0;
+		ALL_REDUCE = 1;
+		ALL_TO_ALL = 2;
+		ALL_GATHER = 3;
+		ALL_REDUCE_PERIODIC = 4;
+		POINT_TO_POINT = 5;
+		BROADCAST = 6;
+	}
+
+	enum Sharding {
+		SHARDING_Placeholder = 0;
+		OUTER_SHARDING = 1;
+		M_SHARDING = 2;
+		N_SHARDING = 4;
+		NO_SHARDING = 5;
+	}
+	
+	enum Tiling {
+		TILING_Placeholder = 0;
+		OUTER_TILING = 1;
+		M_TILING = 2;
+		K_TILING = 3;
+		N_TILING = 4;
+		NO_TILING = 5;
+	}
+
+	int64 num_input = 2000;
+}
+
+message Connection {
+	int64 id = 10;
+	int64 startIdx = 1;
+	int64 endIdx = 2;
+
+	Communication_Type communication_type = 4;
+	float communication_size = 5;
+
+	enum Communication_Type {
+		Communication_Type_Placeholder = 0;
+		ALL_REDUCE = 1;
+		ALL_TO_ALL = 2;
+		ALL_GATHER = 3;
+		ALL_REDUCE_PERIODIC = 4;
+		POINT_TO_POINT = 5;
+		BROADCAST = 6;
+	}
+
+	int64 buffer_depth = 6;
+	float tensor_size = 7;
+	float shard_tensor_size = 8;
+	
+	string startName = 11;
+	string endName = 12;
+	
+	enum Lane_Stage_Type {
+		Lane_Stage_Type_Placeholder = 0;
+		LANE = 1;
+		STAGE = 2;
+	}
+	Lane_Stage_Type lane_stage_type = 20;
+}
+
+message Dataflow_Graph {
+	repeated Kernel kernels = 1;
+	repeated Connection connections = 2;
+}
+
+message Accelerator {
+	int64 core = 2;
+	int64 systolic_width = 3;
+	int64 systolic_height = 4;
+	float sram_cap = 5;
+	float freq = 10;
+
+	int64 pmu = 6;
+	float pmu_cap = 7;
+	int64 x = 8;
+	int64 y = 9;
+	string placement = 12;
+}
+
+message Memory {
+	float dram_bw = 1;
+	float dram_cap = 2;
+	float second_dram_bw = 3;
+	float second_dram_cap = 4;
+}
+
+message System {
+    int64 num_chip = 1;
+	Accelerator accelerator = 2;
+	Memory memory = 100;
+	
+	oneof topology_variant {
+		R r = 4;
+		SW sw = 5;
+		FC fc = 6;
+		R_R r_r = 7;
+		R_FC r_fc = 8;
+		R_SW r_sw = 9;
+		SW_SW sw_sw = 10;
+		FC_FC fc_fc = 11;
+		R_R_R r_r_r = 12;
+		R_SW_SW r_sw_sw = 13;
+		SW_SW_SW sw_sw_sw = 14;
+	}		
+	int64 HBD = 110;
+}
+
+message R {
+	int64 x = 100;
+	
+	float link_bw_x = 101;
+	
+	string par_x = 102;
+}
+
+message SW {
+	int64 x = 100;
+	
+	float link_bw_x = 101;
+	
+	string par_x = 102;
+}
+
+message FC {
+	int64 x = 100;
+	
+	float link_bw_x = 101;
+	
+	string par_x = 102;
+}
+
+message R_R {
+	int64 x = 100;
+	int64 y = 101;
+	
+	float link_bw_x = 102;
+	float link_bw_y = 103;
+	
+	string par_x = 104;
+	string par_y = 105;
+}
+
+message R_FC {
+	int64 x = 100;
+	int64 y = 101;
+	
+	float link_bw_x = 102;
+	float link_bw_y = 103;
+	
+	string par_x = 104;
+	string par_y = 105;
+}
+
+message FC_FC {
+	int64 x = 100;
+	int64 y = 101;
+	
+	float link_bw_x = 102;
+	float link_bw_y = 103;
+	
+	string par_x = 104;
+	string par_y = 105;
+}
+
+message R_SW {
+	int64 x = 100;
+	int64 y = 101;
+	
+	float link_bw_x = 102;
+	float link_bw_y = 103;
+	
+	string par_x = 104;
+	string par_y = 105;
+}
+
+message SW_SW {
+	int64 x = 100;
+	int64 y = 101;
+	
+	float link_bw_x = 102;
+	float link_bw_y = 103;
+	
+	string par_x = 104;
+	string par_y = 105;
+}
+
+message R_R_R {
+	int64 x = 100;
+	int64 y = 101;
+	int64 z = 102;
+	
+	float link_bw_x = 103;
+	float link_bw_y = 104;
+	float link_bw_z = 105;
+	
+	string par_x = 106;
+	string par_y = 107;
+	string par_z = 108;
+}
+
+message R_SW_SW {
+	int64 x = 100;
+	int64 y = 101;
+	int64 z = 102;
+	
+	float link_bw_x = 103;
+	float link_bw_y = 104;
+	float link_bw_z = 105;
+	
+	string par_x = 106;
+	string par_y = 107;
+	string par_z = 108;
+}
+
+message SW_SW_SW {
+	int64 x = 100;
+	int64 y = 101;
+	int64 z = 102;
+	
+	float link_bw_x = 103;
+	float link_bw_y = 104;
+	float link_bw_z = 105;
+	
+	string par_x = 106;
+	string par_y = 107;
+	string par_z = 108;
+}
+
+message Cost {
+	float link_unit_price = 1;
+    float switch_unit_price = 2;
+    float dram_unit_price = 3;
+    float accelerator_price = 4;
+	
+	float link_unit_power_x = 5;
+	float link_unit_power_y = 6;
+	float link_unit_power_z = 7;
+	float switch_unit_power = 8;
+    float dram_unit_power = 9;
+    float accelerator_power = 10;
+}
+
+message Execution {
+	enum Execution_Style {
+		Optimization_Placeholder = 0;
+		DATAFLOW = 1;
+		KERNEL_BY_KERNEL = 2;
+	}
+	
+	oneof workload_variant {
+		LLM llm = 7;
+		DLRM dlrm = 8;
+		HPL hpl = 9;
+		FFT fft = 10;
+		GEMM_FFT_LLM gemm_fft_llm = 11;
+		VECTOR_FFT_LLM vector_fft_llm = 12;
+		REGULAR_FFT_LLM regular_fft_llm = 13;
+		MAMBA mamba = 21;
+	}
+
+	Execution_Style execution_style = 14;
+	int64 num_config = 15;
+	bool perfect_overlap = 16;
+	float compute_util = 17;
+	int64 word = 18;
+}
+
+
+
+
+
+message LLM {
+	int64 hidden_dim = 1;
+	int64 head_dim = 2;
+	int64 num_head = 3;
+	int64 seq_len = 4;
+	int64 num_layer = 5;
+	int64 global_batch_size = 11;
+	int64 micro_batch_size = 12;
+	int64 tile_size = 13;
+	int64 num_layer_in_graph = 15;
+}
+
+message DLRM {
+	int64 num_table = 6;
+	int64 emb_dim = 7;
+	int64 row = 8;
+	int64 global_batch_size = 11;
+	int64 num_copy = 12;
+}
+
+message HPL {
+	int64 n = 1;
+	int64 b = 2;
+	int64 num_copy = 3;
+}
+
+message FFT {
+	int64 length = 1;
+	int64 num_copy = 2;
+}
+
+
+
+
+message REGULAR_FFT_LLM {
+	int64 hidden = 1;
+	int64 seq_len = 2;
+}
+
+message GEMM_FFT_LLM {
+	int64 hidden = 1;
+	int64 seq_len = 2;
+}
+
+message VECTOR_FFT_LLM {
+	int64 hidden = 1;
+	int64 seq_len = 2;
+	int64 effective_stage = 3; 
+}
+
+message MAMBA {
+	int64 hidden = 1;
+	int64 seq_len = 2;
+	int64 tile_size = 3;
+	int64 effective_stage = 4;
+}
+
+
+
+
+
+message Gurobi {
+	int64 thread = 1;
+	float gap = 2;
+	int64 time = 3;
+}
+
+message DSE {
+	Dataflow_Graph dataflow_graph = 1;
+	System system = 2;
+	Cost cost = 3;
+	Execution execution = 4;
+	Gurobi gurobi = 5;
+}

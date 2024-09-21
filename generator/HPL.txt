@@ -1,0 +1,41 @@
+kernels {
+  name: "Iteration_1"
+  id: 1
+  type: SYSTOLIC
+  gemm_input1_input2 {
+    outer: 1
+    M: 131072
+    K: 131072
+    N: 32
+    input_tensor_1_size: 8388608.0
+    output_tensor_size: 8388608.0
+    communication_type: BROADCAST
+    communication_size: 8388608.0
+    tiling: NO_TILING
+    communication_type_2: POINT_TO_POINT
+    communication_size_2: 8388608.0
+  }
+}
+kernels {
+  name: "Iteration_2"
+  id: 2
+  type: SYSTOLIC
+  gemm_input1_input2 {
+    outer: 1
+    M: 131040
+    K: 131040
+    N: 32
+    input_tensor_1_size: 8386560.0
+    output_tensor_size: 8386560.0
+    communication_type: BROADCAST
+    communication_size: 8386560.0
+    tiling: NO_TILING
+    communication_type_2: POINT_TO_POINT
+    communication_size_2: 8386560.0
+  }
+}
+connections {
+  startIdx: 1
+  endIdx: 2
+  id: 1
+}
