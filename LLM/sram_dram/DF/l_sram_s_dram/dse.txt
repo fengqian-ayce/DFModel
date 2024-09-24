@@ -465,7 +465,6 @@ execution {
   word: 2
 }
 gurobi {
-  thread: 144
   gap: 0.001
   time: 600
 }

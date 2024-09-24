@@ -1101,7 +1101,7 @@ if dse.execution.WhichOneof('workload_variant') == 'llm':
         pass
     else:
         model.addConstr(tile_size == dse.execution.llm.tile_size)
-    model.addConstr(tile_size * num_tile >= seq_len)
+    model.addConstr(tile_size * num_tile == seq_len)
     
 elif dse.execution.WhichOneof('workload_variant') == 'dlrm' or dse.execution.WhichOneof('workload_variant') == 'hpl' or dse.execution.WhichOneof('workload_variant') == 'fft' or dse.execution.WhichOneof('workload_variant') == 'gemm_fft_llm' or dse.execution.WhichOneof('workload_variant') == 'vector_fft_llm' or dse.execution.WhichOneof('workload_variant') == 'regular_fft_llm' or dse.execution.WhichOneof('workload_variant') == 'mamba':
     model.addConstr(num_tile == 1)
@@ -3547,3 +3547,6 @@ if p_and_r_flag == True:
             print('num_of_connections', 'off_chip_config', i, len(connection_list_to_print))
 
             print('\n\n\n\n\n\n\n\n')
+
+
+            

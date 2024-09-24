@@ -11,6 +11,7 @@ parser.add_argument('--seq', type=int, required=True)
 parser.add_argument('--num_head', type=int, required=True)
 parser.add_argument('--head_dim', type=int, required=True)
 parser.add_argument('--word', type=int, required=True)
+parser.add_argument('--mlp_dim', type=int, required=True)
 args = parser.parse_args()
 
 
@@ -19,7 +20,7 @@ seq = args.seq
 num_head = args.num_head
 head_dim = args.head_dim
 word = args.word
-
+mlp_dim = args.mlp_dim
 
 if num_head * head_dim != hidden:
     raise Exception('Wrong!')
@@ -219,12 +220,12 @@ for i in range(1, 42):
         kernel.type = 1
         kernel.config = -1
         kernel.gemm_input1_weight.outer = 1
-        kernel.gemm_input1_weight.M = 4*hidden
+        kernel.gemm_input1_weight.M = mlp_dim
         kernel.gemm_input1_weight.K = hidden
         kernel.gemm_input1_weight.N = seq
         kernel.gemm_input1_weight.input_tensor_size = hidden*seq*word
-        kernel.gemm_input1_weight.weight_tensor_size = 4*hidden*hidden*word
-        kernel.gemm_input1_weight.output_tensor_size = 4*hidden*seq*word
+        kernel.gemm_input1_weight.weight_tensor_size = mlp_dim*hidden*word
+        kernel.gemm_input1_weight.output_tensor_size = mlp_dim*seq*word
         kernel.gemm_input1_weight.tiling = 4
     
     elif i == 15:
@@ -234,10 +235,10 @@ for i in range(1, 42):
         kernel.type = 2
         kernel.config = -1
         kernel.elementwise_input1.outer = 1
-        kernel.elementwise_input1.M = 4*hidden
+        kernel.elementwise_input1.M = mlp_dim
         kernel.elementwise_input1.N = seq 
-        kernel.elementwise_input1.input_tensor_size = 4*hidden*seq*word
-        kernel.elementwise_input1.output_tensor_size = 4*hidden*seq*word
+        kernel.elementwise_input1.input_tensor_size = mlp_dim*seq*word
+        kernel.elementwise_input1.output_tensor_size = mlp_dim*seq*word
         kernel.elementwise_input1.tiling = 4
 
     elif i == 16:
@@ -248,10 +249,10 @@ for i in range(1, 42):
         kernel.config = -1 
         kernel.gemm_input1_weight.outer = 1
         kernel.gemm_input1_weight.M = hidden
-        kernel.gemm_input1_weight.K = 4*hidden
+        kernel.gemm_input1_weight.K = mlp_dim
         kernel.gemm_input1_weight.N = seq
-        kernel.gemm_input1_weight.input_tensor_size = 4*hidden*seq*word
-        kernel.gemm_input1_weight.weight_tensor_size = 4*hidden*hidden*word
+        kernel.gemm_input1_weight.input_tensor_size = mlp_dim*seq*word
+        kernel.gemm_input1_weight.weight_tensor_size = mlp_dim*hidden*word
         kernel.gemm_input1_weight.output_tensor_size = hidden*seq*word
         kernel.gemm_input1_weight.tiling = 4
 
@@ -315,12 +316,12 @@ for i in range(1, 42):
         kernel.type = 1
         kernel.config = -1
         kernel.gemm_input1_weight.outer = 1
-        kernel.gemm_input1_weight.M = 4*hidden
+        kernel.gemm_input1_weight.M = mlp_dim
         kernel.gemm_input1_weight.K = hidden
         kernel.gemm_input1_weight.N = seq
         kernel.gemm_input1_weight.input_tensor_size = hidden*seq*word
-        kernel.gemm_input1_weight.weight_tensor_size = 4*hidden*hidden*word
-        kernel.gemm_input1_weight.output_tensor_size = 4*hidden*seq*word
+        kernel.gemm_input1_weight.weight_tensor_size = mlp_dim*hidden*word
+        kernel.gemm_input1_weight.output_tensor_size = mlp_dim*seq*word
         kernel.gemm_input1_weight.tiling = 4
 
     elif i == 22:
@@ -330,10 +331,10 @@ for i in range(1, 42):
         kernel.fwd_bwd = 2
         kernel.config = -1
         kernel.elementwise_input1.outer = 1
-        kernel.elementwise_input1.M = 4*hidden
+        kernel.elementwise_input1.M = mlp_dim
         kernel.elementwise_input1.N = seq
-        kernel.elementwise_input1.input_tensor_size = 4*hidden*seq*word
-        kernel.elementwise_input1.output_tensor_size = 4*hidden*seq*word
+        kernel.elementwise_input1.input_tensor_size = mlp_dim*seq*word
+        kernel.elementwise_input1.output_tensor_size = mlp_dim*seq*word
         kernel.elementwise_input1.tiling = 4
 
     elif i == 23:
@@ -344,10 +345,10 @@ for i in range(1, 42):
         kernel.config = -1
         kernel.gemm_input1_weight.outer = 1
         kernel.gemm_input1_weight.M = hidden
-        kernel.gemm_input1_weight.K = 4*hidden
+        kernel.gemm_input1_weight.K = mlp_dim
         kernel.gemm_input1_weight.N = seq
-        kernel.gemm_input1_weight.input_tensor_size = 4*hidden*seq*word
-        kernel.gemm_input1_weight.weight_tensor_size = 4*hidden*hidden*word
+        kernel.gemm_input1_weight.input_tensor_size = mlp_dim*seq*word
+        kernel.gemm_input1_weight.weight_tensor_size = mlp_dim*hidden*word
         kernel.gemm_input1_weight.output_tensor_size = hidden*seq*word
         kernel.gemm_input1_weight.tiling = 4        
 
@@ -530,15 +531,15 @@ for i in range(1, 42):
         kernel.fwd_bwd = 2
         kernel.type = 1
         kernel.gemm_input1_input2.outer = 1
-        kernel.gemm_input1_input2.M = 4*hidden
+        kernel.gemm_input1_input2.M = mlp_dim
         kernel.gemm_input1_input2.K = seq
         kernel.gemm_input1_input2.N = hidden
         kernel.gemm_input1_input2.input_tensor_1_size = hidden*seq*word
-        kernel.gemm_input1_input2.input_tensor_2_size = 4*hidden*seq*word
-        kernel.gemm_input1_input2.output_tensor_size = 4*hidden*hidden*word
+        kernel.gemm_input1_input2.input_tensor_2_size = mlp_dim*seq*word
+        kernel.gemm_input1_input2.output_tensor_size = mlp_dim*hidden*word
         kernel.gemm_input1_input2.tiling = 3
         kernel.gemm_input1_input2.communication_type = 4
-        kernel.gemm_input1_input2.communication_size = 4*hidden*hidden*word
+        kernel.gemm_input1_input2.communication_size = mlp_dim*hidden*word
 
     elif i == 37:
         kernel.name = "FFN0_bwd_weight_update"
@@ -549,13 +550,13 @@ for i in range(1, 42):
         kernel.gemm_input1_input2.outer = 1
         kernel.gemm_input1_input2.M = hidden
         kernel.gemm_input1_input2.K = seq
-        kernel.gemm_input1_input2.N = 4*hidden
-        kernel.gemm_input1_input2.input_tensor_1_size = 4*hidden*seq*word
+        kernel.gemm_input1_input2.N = mlp_dim
+        kernel.gemm_input1_input2.input_tensor_1_size = mlp_dim*seq*word
         kernel.gemm_input1_input2.input_tensor_2_size = hidden*seq*word
-        kernel.gemm_input1_input2.output_tensor_size = 4*hidden*hidden*word
+        kernel.gemm_input1_input2.output_tensor_size = mlp_dim*hidden*word
         kernel.gemm_input1_input2.tiling = 3
         kernel.gemm_input1_input2.communication_type = 4
-        kernel.gemm_input1_input2.communication_size = 4*hidden*hidden*word
+        kernel.gemm_input1_input2.communication_size = mlp_dim*hidden*word
         
     elif i == 38:
         kernel.name = "PROJ_GEMM_bwd_weight_update"

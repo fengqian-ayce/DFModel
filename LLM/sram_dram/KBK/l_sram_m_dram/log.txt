@@ -420,85 +420,85 @@ H179574 155056                    2.297992e+12 5.9297e+11  74.2%   1.2   10s
  347482 311590 1.3147e+12  367   45 1.7604e+12 6.1052e+11  65.3%   1.1   15s
 *369716 313372             328    1.755775e+12 6.1052e+11  65.2%   1.1   15s
 *436473 369276             141    1.743353e+12 6.1052e+11  65.0%   1.1   17s
-*555325 472004             936    1.691780e+12 6.2803e+11  62.9%   1.0   19s
-*555329 472004             938    1.691761e+12 6.2803e+11  62.9%   1.0   19s
-*555333 472004             940    1.691748e+12 6.2803e+11  62.9%   1.0   19s
- 566816 480539 1.3542e+12  449   34 1.6917e+12 6.2803e+11  62.9%   1.0   20s
+ 550725 484646 1.3542e+12  398   34 1.7434e+12 6.2803e+11  64.0%   1.1   20s
+*555325 472004             936    1.691780e+12 6.2803e+11  62.9%   1.0   20s
+*555329 472004             938    1.691761e+12 6.2803e+11  62.9%   1.0   20s
+*555333 472004             940    1.691748e+12 6.2803e+11  62.9%   1.0   20s
 *668118 568976             839    1.686358e+12 6.7162e+11  60.2%   1.0   23s
- 739596 636043 infeasible  312      1.6864e+12 6.7162e+11  60.2%   1.1   25s
- 935975 814109 1.5637e+12 1586   25 1.6864e+12 6.7162e+11  60.2%   1.2   30s
-*1081483 908873            3772    1.630230e+12 6.7162e+11  58.8%   1.3   34s
- 1107206 935034 1.5660e+12 2979   26 1.6302e+12 6.7162e+11  58.8%   1.4   35s
- 1257766 1059650 1.5971e+12  426   57 1.6302e+12 1.0312e+12  36.7%   1.6   40s
- 1406817 1178182 1.1599e+12  849   47 1.6302e+12 1.1135e+12  31.7%   1.8   45s
- 1542898 1288436 1.1602e+12 2083   26 1.6302e+12 1.1135e+12  31.7%   1.9   50s
- 1707234 1424634 1.1602e+12 3451   26 1.6302e+12 1.1135e+12  31.7%   2.0   55s
- 1857078 1547251 1.2414e+12 4109   19 1.6302e+12 1.1135e+12  31.7%   2.0   60s
- 2009005 1675631 1.1606e+12 1026   47 1.6302e+12 1.1218e+12  31.2%   2.1   65s
- 2155474 1793683 1.1671e+12  321   47 1.6302e+12 1.1247e+12  31.0%   2.1   70s
-*2314840 1901814            1556    1.627998e+12 1.1247e+12  30.9%   2.1   74s
- 2317813 1912542 1.1912e+12 1550   23 1.6280e+12 1.1247e+12  30.9%   2.1   75s
-*2334681 1923902            1576    1.624633e+12 1.1247e+12  30.8%   2.1   76s
- 2458265 2035102 1.1606e+12 1363   50 1.6246e+12 1.1247e+12  30.8%   2.1   80s
-*2503643 2069931            1871    1.622185e+12 1.1247e+12  30.7%   2.1   81s
-*2555736 2102931            1561    1.621410e+12 1.1247e+12  30.6%   2.1   83s
-*2562181 2106943            1516    1.609463e+12 1.1247e+12  30.1%   2.1   84s
-*2562182 2106943            1515    1.609447e+12 1.1247e+12  30.1%   2.1   84s
-*2562196 2106943            1513    1.609443e+12 1.1247e+12  30.1%   2.1   85s
-*2562201 2106943            1513    1.609431e+12 1.1247e+12  30.1%   2.1   85s
-*2562224 2106943            1516    1.609430e+12 1.1247e+12  30.1%   2.1   86s
-*2658349 2174838            1761    1.597640e+12 1.1247e+12  29.6%   2.1   89s
-*2658360 2174838            1762    1.597624e+12 1.1247e+12  29.6%   2.1   89s
- 2669578 2189194 1.1606e+12 3156   42 1.5976e+12 1.1247e+12  29.6%   2.1   90s
- 2820634 2322829 1.1606e+12 4108   28 1.5976e+12 1.1247e+12  29.6%   2.1   95s
- 2966267 2451971 1.2063e+12  402   50 1.5976e+12 1.1247e+12  29.6%   2.1  100s
- 3120272 2578794 1.5671e+12 2485    8 1.5976e+12 1.1247e+12  29.6%   2.0  105s
-H3221734 2666511                    1.597623e+12 1.1247e+12  29.6%   2.0  108s
- 3257647 2713340 1.2125e+12 2873   18 1.5976e+12 1.1247e+12  29.6%   2.0  110s
- 3424225 2859633 1.2376e+12 4109   13 1.5976e+12 1.1247e+12  29.6%   1.9  115s
- 3575065 3002507 1.1671e+12 1214   56 1.5976e+12 1.1247e+12  29.6%   1.9  120s
- 3736080 3149493 1.1701e+12 2524   52 1.5976e+12 1.1247e+12  29.6%   1.9  125s
- 3878070 3286762 1.1768e+12 3621   28 1.5976e+12 1.1247e+12  29.6%   1.9  130s
- 4010969 3402946 1.1802e+12  295   39 1.5976e+12 1.1247e+12  29.6%   1.9  135s
-*4039635 3417223            4109    1.596587e+12 1.1247e+12  29.6%   1.9  136s
-*4039659 3417179            4109    1.596449e+12 1.1247e+12  29.5%   1.9  137s
- 4149963 3538333 1.1802e+12 1338   39 1.5964e+12 1.1247e+12  29.5%   1.8  140s
-*4297483 3647375            2705    1.590258e+12 1.1247e+12  29.3%   1.8  144s
-*4297487 3647192            2707    1.589715e+12 1.1247e+12  29.3%   1.8  145s
-*4297511 3562159            2717    1.573258e+12 1.1247e+12  28.5%   1.8  145s
-*4297521 3562157            2717    1.573237e+12 1.1247e+12  28.5%   1.8  146s
-*4297546 3562157            2719    1.573236e+12 1.1247e+12  28.5%   1.8  147s
- 4414780 3689380 1.2323e+12  923   52 1.5732e+12 1.1247e+12  28.5%   1.8  150s
-H4606762 3853981                    1.573230e+12 1.1247e+12  28.5%   1.8  155s
-*4729303 3964849            1557    1.568496e+12 1.1247e+12  28.3%   1.7  159s
-*4729306 3964810            1558    1.568359e+12 1.1247e+12  28.3%   1.7  160s
-*4729308 3964810            1559    1.568337e+12 1.1247e+12  28.3%   1.7  161s
-*4729315 3964810            1562    1.568335e+12 1.1247e+12  28.3%   1.7  161s
-*4729318 3964810            1563    1.568333e+12 1.1247e+12  28.3%   1.7  162s
-*4729321 3964810            1562    1.568320e+12 1.1247e+12  28.3%   1.7  163s
- 4790871 4024033 1.2112e+12 1498   20 1.5683e+12 1.1247e+12  28.3%   1.7  165s
- 4992326 4199998 1.2454e+12  358   41 1.5683e+12 1.1247e+12  28.3%   1.7  170s
-*5107987 4289110            4109    1.565534e+12 1.1247e+12  28.2%   1.7  173s
- 5163549 4342173 1.3520e+12 1184   35 1.5655e+12 1.1247e+12  28.2%   1.7  175s
-*5166376 4342134            2865    1.565280e+12 1.1247e+12  28.1%   1.7  176s
-*5179292 4355082            2870    1.565278e+12 1.1247e+12  28.1%   1.7  177s
-*5179293 4355082            2869    1.565277e+12 1.1247e+12  28.1%   1.7  178s
-*5189144 3929327            2304    1.556551e+12 1.1247e+12  27.7%   1.7  180s
-*5189147 3929327            2304    1.556551e+12 1.1247e+12  27.7%   1.7  180s
+ 707197 608278     cutoff  256      1.6864e+12 6.7162e+11  60.2%   1.1   25s
+ 920602 800627 1.5637e+12 1478   25 1.6864e+12 6.7162e+11  60.2%   1.2   30s
+*1081483 908873            3772    1.630230e+12 6.7162e+11  58.8%   1.3   35s
+ 1227094 1035299 1.4536e+12   75   79 1.6302e+12 1.0312e+12  36.7%   1.5   40s
+ 1391592 1165325 1.1599e+12  692   47 1.6302e+12 1.1135e+12  31.7%   1.8   45s
+ 1527481 1275499 1.2023e+12 1949   18 1.6302e+12 1.1135e+12  31.7%   1.9   50s
+ 1691858 1412451 1.1602e+12 3317   26 1.6302e+12 1.1135e+12  31.7%   2.0   55s
+ 1867996 1560064 1.2327e+12 4108   16 1.6302e+12 1.1135e+12  31.7%   2.0   60s
+ 2052919 1714932 1.1606e+12 1423   47 1.6302e+12 1.1218e+12  31.2%   2.1   65s
+ 2202176 1831930 1.1671e+12  745   47 1.6302e+12 1.1247e+12  31.0%   2.1   70s
+*2314840 1901814            1556    1.627998e+12 1.1247e+12  30.9%   2.1   73s
+*2334681 1923902            1576    1.624633e+12 1.1247e+12  30.8%   2.1   74s
+ 2349193 1937350 1.1606e+12  244   50 1.6246e+12 1.1247e+12  30.8%   2.1   75s
+ 2503417 2070824 1.1606e+12 1827   50 1.6246e+12 1.1247e+12  30.8%   2.1   80s
+*2503643 2069931            1871    1.622185e+12 1.1247e+12  30.7%   2.1   80s
+*2555736 2102931            1561    1.621410e+12 1.1247e+12  30.6%   2.1   82s
+*2562181 2106943            1516    1.609463e+12 1.1247e+12  30.1%   2.1   83s
+*2562182 2106943            1515    1.609447e+12 1.1247e+12  30.1%   2.1   83s
+*2562196 2106943            1513    1.609443e+12 1.1247e+12  30.1%   2.1   84s
+*2562201 2106943            1513    1.609431e+12 1.1247e+12  30.1%   2.1   84s
+*2562224 2106943            1516    1.609430e+12 1.1247e+12  30.1%   2.1   84s
+ 2576404 2121229 1.1606e+12 2419   42 1.6094e+12 1.1247e+12  30.1%   2.1   85s
+*2658349 2174838            1761    1.597640e+12 1.1247e+12  29.6%   2.1   88s
+*2658360 2174838            1762    1.597624e+12 1.1247e+12  29.6%   2.1   88s
+ 2693409 2205560 1.1606e+12 3309   33 1.5976e+12 1.1247e+12  29.6%   2.1   90s
+ 2864970 2364638 1.1635e+12 4109   22 1.5976e+12 1.1247e+12  29.6%   2.1   95s
+ 3000461 2481109 1.2063e+12  734   50 1.5976e+12 1.1247e+12  29.6%   2.1  100s
+ 3168728 2635163 1.2063e+12 2268   50 1.5976e+12 1.1247e+12  29.6%   2.0  105s
+H3221734 2666511                    1.597623e+12 1.1247e+12  29.6%   2.0  107s
+ 3304000 2755790 1.2125e+12 3255   18 1.5976e+12 1.1247e+12  29.6%   2.0  110s
+ 3446217 2886190 1.1671e+12   94   56 1.5976e+12 1.1247e+12  29.6%   2.0  115s
+ 3605925 3032359 1.1671e+12 1465   56 1.5976e+12 1.1247e+12  29.6%   1.9  120s
+ 3765260 3182268 1.1768e+12 2699   28 1.5976e+12 1.1247e+12  29.6%   1.9  125s
+ 3893173 3300904 1.1768e+12 3740   28 1.5976e+12 1.1247e+12  29.6%   1.9  130s
+*4039635 3417223            4109    1.596587e+12 1.1247e+12  29.6%   1.9  135s
+*4039659 3417179            4109    1.596449e+12 1.1247e+12  29.5%   1.9  136s
+ 4197350 3579185 1.1807e+12 1527   14 1.5964e+12 1.1247e+12  29.5%   1.8  140s
+*4297483 3647375            2705    1.590258e+12 1.1247e+12  29.3%   1.8  143s
+*4297487 3647192            2707    1.589715e+12 1.1247e+12  29.3%   1.8  143s
+*4297511 3562159            2717    1.573258e+12 1.1247e+12  28.5%   1.8  144s
+*4297521 3562157            2717    1.573237e+12 1.1247e+12  28.5%   1.8  145s
+*4297546 3562157            2719    1.573236e+12 1.1247e+12  28.5%   1.8  146s
+ 4475629 3748645 1.2323e+12 1360   46 1.5732e+12 1.1247e+12  28.5%   1.8  150s
+H4606762 3853981                    1.573230e+12 1.1247e+12  28.5%   1.8  153s
+ 4646569 3906392 1.2063e+12  922   47 1.5732e+12 1.1247e+12  28.5%   1.7  155s
+*4729303 3964849            1557    1.568496e+12 1.1247e+12  28.3%   1.7  157s
+*4729306 3964810            1558    1.568359e+12 1.1247e+12  28.3%   1.7  158s
+*4729308 3964810            1559    1.568337e+12 1.1247e+12  28.3%   1.7  159s
+*4729315 3964810            1562    1.568335e+12 1.1247e+12  28.3%   1.7  160s
+*4729318 3964810            1563    1.568333e+12 1.1247e+12  28.3%   1.7  160s
+*4729321 3964810            1562    1.568320e+12 1.1247e+12  28.3%   1.7  161s
+ 4885607 4101833 1.2112e+12 1582   14 1.5683e+12 1.1247e+12  28.3%   1.7  165s
+*5107987 4289110            4109    1.565534e+12 1.1247e+12  28.2%   1.7  170s
+*5166376 4342134            2865    1.565280e+12 1.1247e+12  28.1%   1.7  173s
+*5179292 4355082            2870    1.565278e+12 1.1247e+12  28.1%   1.7  174s
+*5179293 4355082            2869    1.565277e+12 1.1247e+12  28.1%   1.7  175s
+*5189144 3929327            2304    1.556551e+12 1.1247e+12  27.7%   1.7  177s
+*5189147 3929327            2304    1.556551e+12 1.1247e+12  27.7%   1.7  178s
+H5192142 3944962                    1.556548e+12 1.1247e+12  27.7%   1.7  179s
+H5221213 3966236                    1.556526e+12 1.1247e+12  27.7%   1.7  181s
 
 Cutting planes:
   Gomory: 11
   MIR: 32
   RLT: 33
 
-Explored 5191836 nodes (8910270 simplex iterations) in 181.26 seconds (24.92 work units)
+Explored 5234800 nodes (8960756 simplex iterations) in 181.44 seconds (25.03 work units)
 Thread count was 144 (of 144 available processors)
 
-Solution count 10: 1.55655e+12 1.55655e+12 1.56528e+12 ... 1.56834e+12
+Solution count 10: 1.55653e+12 1.55655e+12 1.55655e+12 ... 1.56833e+12
 
 Time limit reached
 Warning: max constraint violation (4.8828e-04) exceeds tolerance
-Best objective 1.556551204209e+12, best bound 1.124718304297e+12, gap 27.7429%
+Best objective 1.556526466990e+12, best bound 1.124718304297e+12, gap 27.7418%
 TP 4.0
 PP 1.0
 DP 2.0
@@ -548,7 +548,7 @@ shard_K[4] 12288.0
 shard_K[5] 130.0
 shard_K[6] 1.0
 shard_K[7] 1.0
-shard_K[8] 15736.999999999976
+shard_K[8] 15736.0
 shard_K[9] 3148.0
 shard_K[10] 1.0
 shard_K[11] 1.0
@@ -9204,7 +9204,7 @@ shard_intermediate_buffer_size_depth_original[17] 33570816.0
 shard_intermediate_buffer_size_depth_original[18] 10186.0
 shard_intermediate_buffer_size_depth_original[19] 34553856.0
 shard_intermediate_buffer_size_depth_original[20] 117497856.0
-shard_intermediate_buffer_size_depth_two[0] 423575552.0
+shard_intermediate_buffer_size_depth_two[0] 33570816.0
 shard_intermediate_buffer_size_depth_two[1] 33570816.0
 shard_intermediate_buffer_size_depth_two[2] 33570816.0
 shard_intermediate_buffer_size_depth_two[3] 33570816.0
@@ -9212,7 +9212,7 @@ shard_intermediate_buffer_size_depth_two[4] 16785408.0
 shard_intermediate_buffer_size_depth_two[5] 26750.0
 shard_intermediate_buffer_size_depth_two[6] 134283264.0
 shard_intermediate_buffer_size_depth_two[7] 134479872.0
-shard_intermediate_buffer_size_depth_two[8] 33570816.0
+shard_intermediate_buffer_size_depth_two[8] 381612032.0
 shard_intermediate_buffer_size_depth_two[9] 134283264.0
 shard_intermediate_buffer_size_depth_two[10] 8392704.0
 shard_intermediate_buffer_size_depth_two[11] 33570816.0
@@ -9223,14 +9223,14 @@ shard_intermediate_buffer_size_depth_two[15] 33570816.0
 shard_intermediate_buffer_size_depth_two[16] 839271.0
 shard_intermediate_buffer_size_depth_two[17] 523448729.0
 shard_intermediate_buffer_size_depth_two[18] 10186.0
-shard_intermediate_buffer_size_depth_two[19] 490717184.0
+shard_intermediate_buffer_size_depth_two[19] 34553856.0
 shard_intermediate_buffer_size_depth_two[20] 33570816.0
 shard_initiation_buffer_size_depth_one[0] 473931776.0
 shard_initiation_buffer_size_depth_one[1] 60158.0
 shard_initiation_buffer_size_depth_one[2] 75497472.0
 shard_initiation_buffer_size_depth_one[3] 482324480.0
 shard_initiation_buffer_size_depth_one[4] 30198989.0
-shard_initiation_buffer_size_depth_one[5] 366493.0
+shard_initiation_buffer_size_depth_one[5] 829085.0
 tiling_factor[0] 1.0
 tiling_factor[1] 1.0
 tiling_factor[2] 2.0
@@ -9267,33 +9267,33 @@ C8764 0.0
 C8765 1.0
 C8766 0.0
 C8767 0.0
-SRAM_Per_Config_total[0] 457146368.0
-SRAM_Per_Config_total[1] 524288000.0
+SRAM_Per_Config_total[0] 67141632.0
+SRAM_Per_Config_total[1] 134283264.0
 SRAM_Per_Config_total[2] 524288000.0
 SRAM_Per_Config_total[3] 33657724.0
-SRAM_Per_Config_total[4] 142639104.0
+SRAM_Per_Config_total[4] 490680320.0
 SRAM_Per_Config_total[5] 151095422.0
 SRAM_Per_Config_total[6] 268763136.0
 SRAM_Per_Config_total[7] 268763136.0
-SRAM_Per_Config_total[8] 176246784.0
+SRAM_Per_Config_total[8] 524288000.0
 SRAM_Per_Config_total[9] 524288000.0
 SRAM_Per_Config_total[10] 67141632.0
 SRAM_Per_Config_total[11] 134283264.0
 SRAM_Per_Config_total[12] 67141632.0
 SRAM_Per_Config_total[13] 64609076.0
 SRAM_Per_Config_total[14] 524288000.0
-SRAM_Per_Config_total[15] 523825408.0
-SRAM_Per_Config_total[16] 490727370.0
-SRAM_Per_Config_total[17] 524288000.0
-SRAM_Per_Config_intermediate_dram[0] 457146368.0
-SRAM_Per_Config_intermediate_dram[1] 524288000.0
+SRAM_Per_Config_total[15] 524288000.0
+SRAM_Per_Config_total[16] 34564042.0
+SRAM_Per_Config_total[17] 68124672.0
+SRAM_Per_Config_intermediate_dram[0] 67141632.0
+SRAM_Per_Config_intermediate_dram[1] 134283264.0
 SRAM_Per_Config_intermediate_dram[2] 50356224.0
 SRAM_Per_Config_intermediate_dram[3] 33597566.0
-SRAM_Per_Config_intermediate_dram[4] 67141632.0
+SRAM_Per_Config_intermediate_dram[4] 415182848.0
 SRAM_Per_Config_intermediate_dram[5] 151095422.0
 SRAM_Per_Config_intermediate_dram[6] 268763136.0
 SRAM_Per_Config_intermediate_dram[7] 268763136.0
-SRAM_Per_Config_intermediate_dram[8] 176246784.0
+SRAM_Per_Config_intermediate_dram[8] 524288000.0
 SRAM_Per_Config_intermediate_dram[9] 41963520.0
 SRAM_Per_Config_intermediate_dram[10] 67141632.0
 SRAM_Per_Config_intermediate_dram[11] 134283264.0
@@ -9301,8 +9301,8 @@ SRAM_Per_Config_intermediate_dram[12] 67141632.0
 SRAM_Per_Config_intermediate_dram[13] 34410087.0
 SRAM_Per_Config_intermediate_dram[14] 524288000.0
 SRAM_Per_Config_intermediate_dram[15] 523458915.0
-SRAM_Per_Config_intermediate_dram[16] 490727370.0
-SRAM_Per_Config_intermediate_dram[17] 524288000.0
+SRAM_Per_Config_intermediate_dram[16] 34564042.0
+SRAM_Per_Config_intermediate_dram[17] 68124672.0
 SRAM_Per_Config_intermediate_onchip[0] 0.0
 SRAM_Per_Config_intermediate_onchip[1] 0.0
 SRAM_Per_Config_intermediate_onchip[2] 0.0
@@ -9336,27 +9336,27 @@ SRAM_Per_Config_initiation[11] 0.0
 SRAM_Per_Config_initiation[12] 0.0
 SRAM_Per_Config_initiation[13] 30198989.0
 SRAM_Per_Config_initiation[14] 0.0
-SRAM_Per_Config_initiation[15] 366493.0
+SRAM_Per_Config_initiation[15] 829085.0
 SRAM_Per_Config_initiation[16] 0.0
 SRAM_Per_Config_initiation[17] 0.0
-dram_bytes_per_config_intermediate[0] 100712448.00000003
-dram_bytes_per_config_intermediate[1] 251781120.0
-dram_bytes_per_config_intermediate[2] 214013952.0
-dram_bytes_per_config_intermediate[3] 176246784.0
-dram_bytes_per_config_intermediate[4] 138479616.0
+dram_bytes_per_config_intermediate[0] 100712448.0
+dram_bytes_per_config_intermediate[1] 251781119.99999928
+dram_bytes_per_config_intermediate[2] 214013951.99999928
+dram_bytes_per_config_intermediate[3] 176246783.99999875
+dram_bytes_per_config_intermediate[4] 138479615.99999902
 dram_bytes_per_config_intermediate[5] 289548288.0
 dram_bytes_per_config_intermediate[6] 466089984.0
 dram_bytes_per_config_intermediate[7] 466089984.0
-dram_bytes_per_config_intermediate[8] 276959231.99999994
-dram_bytes_per_config_intermediate[9] 113301504.0
+dram_bytes_per_config_intermediate[8] 276959231.9999998
+dram_bytes_per_config_intermediate[9] 113301503.99999905
 dram_bytes_per_config_intermediate[10] 151068672.0
 dram_bytes_per_config_intermediate[11] 201424896.0
 dram_bytes_per_config_intermediate[12] 151068672.0
-dram_bytes_per_config_intermediate[13] 151068672.0
-dram_bytes_per_config_intermediate[14] 151068672.0
+dram_bytes_per_config_intermediate[13] 151068671.99999893
+dram_bytes_per_config_intermediate[14] 151068671.9999999
 dram_bytes_per_config_intermediate[15] 151068672.0
 dram_bytes_per_config_intermediate[16] 152543232.0
-dram_bytes_per_config_intermediate[17] 102187008.0
+dram_bytes_per_config_intermediate[17] 102187007.99999928
 dram_bytes_per_config_initiation[0] 0.0
 dram_bytes_per_config_initiation[1] 0.0
 dram_bytes_per_config_initiation[2] 75497472.0
@@ -9376,23 +9376,23 @@ dram_bytes_per_config_initiation[15] 301989888.0
 dram_bytes_per_config_initiation[16] 0.0
 dram_bytes_per_config_initiation[17] 0.0
 C8876 33570816.0
-C8877 83927040.0
-C8878 71337984.0
-C8879 58748928.0
-C8880 46159872.0
+C8877 83927039.99999976
+C8878 71337983.99999976
+C8879 58748927.99999958
+C8880 46159871.99999967
 C8881 96516096.0
 C8882 155363328.0
 C8883 155363328.0
-C8884 92319744.0
-C8885 37767168.0
-C8886 50356224.0
+C8884 92319743.99999994
+C8885 37767167.99999968
+C8886 50356223.99999998
 C8887 67141632.0
 C8888 50356224.0
-C8889 50356224.0
-C8890 50356224.0
-C8891 50356224.0
+C8889 50356223.99999964
+C8890 50356223.99999997
+C8891 50356223.99999996
 C8892 50847744.0
-C8893 34062336.0
+C8893 34062335.99999976
 dram_bytes_initiation 907837440.0
 dram_bytes_intermediate 466089984.0
 dram_bytes_total 87618484224.0
@@ -9407,7 +9407,7 @@ Cycle[4] 221184.0
 Cycle[5] 314730.0
 Cycle[6] 560196.0
 Cycle[7] 560060.0
-Cycle[8] 314740.0
+Cycle[8] 314720.0
 Cycle[9] 314800.0
 Cycle[10] 140015.0
 Cycle[11] 280030.0
@@ -9415,7 +9415,7 @@ Cycle[12] 140015.0
 Cycle[13] 847872.0
 Cycle[14] 683.0
 Cycle[15] 884736.0
-Cycle[16] 142006.0
+Cycle[16] 141303.0
 Cycle[17] 141927.0
 Cycle_w_streaming[0] 18441.0
 Cycle_w_streaming[1] 280030.0
@@ -9425,7 +9425,7 @@ Cycle_w_streaming[4] 221184.0
 Cycle_w_streaming[5] 314730.0
 Cycle_w_streaming[6] 560196.0
 Cycle_w_streaming[7] 560060.0
-Cycle_w_streaming[8] 314740.0
+Cycle_w_streaming[8] 314720.0
 Cycle_w_streaming[9] 314800.0
 Cycle_w_streaming[10] 140015.0
 Cycle_w_streaming[11] 280030.0
@@ -9433,7 +9433,7 @@ Cycle_w_streaming[12] 140015.0
 Cycle_w_streaming[13] 847872.0
 Cycle_w_streaming[14] 683.0
 Cycle_w_streaming[15] 884736.0
-Cycle_w_streaming[16] 142006.0
+Cycle_w_streaming[16] 141303.0
 Cycle_w_streaming[17] 141927.0
 m_factor[0] 27.0
 m_factor[1] 410.0
@@ -9443,7 +9443,7 @@ m_factor[4] 9.0
 m_factor[5] 2421.0
 m_factor[6] 819.0
 m_factor[7] 820.0
-m_factor[8] 5.000000000000007
+m_factor[8] 5.0
 m_factor[9] 2.0
 m_factor[10] 205.0
 m_factor[11] 410.0
@@ -9451,7 +9451,7 @@ m_factor[12] 205.0
 m_factor[13] 3.0
 m_factor[14] 1.0
 m_factor[15] 24.0
-m_factor[16] 202.0
+m_factor[16] 201.0
 m_factor[17] 3.0
 n_factor[0] 1.0
 n_factor[1] 1.0
@@ -9479,7 +9479,7 @@ MMM[4] 9.0
 MMM[5] 2421.0
 MMM[6] 819.0
 MMM[7] 820.0
-MMM[8] 5.000000000000007
+MMM[8] 5.0
 MMM[9] 2.0
 MMM[10] 205.0
 MMM[11] 410.0
@@ -9487,7 +9487,7 @@ MMM[12] 205.0
 MMM[13] 3.0
 MMM[14] 1.0
 MMM[15] 24.0
-MMM[16] 202.0
+MMM[16] 201.0
 MMM[17] 3.0
 KKK[0] 1.0
 KKK[1] 1.0
@@ -9497,7 +9497,7 @@ KKK[4] 12288.0
 KKK[5] 130.0
 KKK[6] 1.0
 KKK[7] 1.0
-KKK[8] 15736.999999999976
+KKK[8] 15736.0
 KKK[9] 3148.0
 KKK[10] 1.0
 KKK[11] 1.0
@@ -9529,27 +9529,27 @@ C9026 18.0
 C9027 18.0
 C9028 18.0
 C9029 2421.0
-C9030 20.00000000000003
+C9030 20.0
 C9031 100.0
 C9032 69.0
 C9033 72.0
-Compute_Latency[0] 44258.40000000001
-Compute_Latency[1] 672072.0000000001
-Compute_Latency[2] 530841.6000000001
-Compute_Latency[3] 530841.6000000001
-Compute_Latency[4] 530841.6000000001
-Compute_Latency[5] 755352.0000000001
-Compute_Latency[6] 1344470.4000000001
-Compute_Latency[7] 1344144.0000000002
-Compute_Latency[8] 755376.0000000001
-Compute_Latency[9] 755520.0000000001
-Compute_Latency[10] 336036.00000000006
-Compute_Latency[11] 672072.0000000001
-Compute_Latency[12] 336036.00000000006
-Compute_Latency[13] 2034892.8000000003
-Compute_Latency[14] 1639.2000000000003
-Compute_Latency[15] 2123366.4000000004
-Compute_Latency[16] 340814.4
+Compute_Latency[0] 44258.4
+Compute_Latency[1] 672072.0
+Compute_Latency[2] 530841.5999991813
+Compute_Latency[3] 530841.6
+Compute_Latency[4] 530841.6
+Compute_Latency[5] 755352.0
+Compute_Latency[6] 1344470.3999998625
+Compute_Latency[7] 1344144.0
+Compute_Latency[8] 755328.0
+Compute_Latency[9] 755520.0
+Compute_Latency[10] 336036.0
+Compute_Latency[11] 672072.0
+Compute_Latency[12] 336036.00000000035
+Compute_Latency[13] 2034892.8
+Compute_Latency[14] 1639.2
+Compute_Latency[15] 2123366.4
+Compute_Latency[16] 339127.20000000007
 Compute_Latency[17] 340624.80000000005
 C9052 18441.0
 C9053 0.0
@@ -9711,7 +9711,7 @@ C9208 0.0
 C9209 0.0
 C9210 0.0
 C9211 0.0
-C9212 314740.0
+C9212 314720.0
 C9213 0.0
 C9214 0.0
 C9215 0.0
@@ -9721,7 +9721,7 @@ C9218 0.0
 C9219 0.0
 C9220 0.0
 C9221 0.0
-C9222 314740.0
+C9222 314720.0
 C9223 0.0
 C9224 0.0
 C9225 0.0
@@ -9871,9 +9871,9 @@ C9368 0.0
 C9369 0.0
 C9370 0.0
 C9371 0.0
-C9372 142006.0
+C9372 141303.0
 C9373 0.0
-C9374 142006.0
+C9374 141303.0
 C9375 0.0
 C9376 0.0
 C9377 0.0
@@ -9893,42 +9893,42 @@ C9390 0.0
 C9391 0.0
 C9392 141927.0
 C9393 141927.0
-Memory_Latency[0] 335708.16000000015
-Memory_Latency[1] 671416.32
-Memory_Latency[2] 209817.6
-Memory_Latency[3] 209817.6
-Memory_Latency[4] 209817.6
+Memory_Latency[0] 335708.16000000003
+Memory_Latency[1] 671416.3199999976
+Memory_Latency[2] 209817.5999999996
+Memory_Latency[3] 209817.5999999992
+Memory_Latency[4] 209817.59999999995
 Memory_Latency[5] 755343.36
 Memory_Latency[6] 1343815.68
-Memory_Latency[7] 1343815.68
+Memory_Latency[7] 1343815.6800000002
 Memory_Latency[8] 755343.36
-Memory_Latency[9] 209817.6
+Memory_Latency[9] 209817.59999999718
 Memory_Latency[10] 335708.16
 Memory_Latency[11] 671416.3200000001
-Memory_Latency[12] 335708.16
-Memory_Latency[13] 335708.16
-Memory_Latency[14] 335708.16
-Memory_Latency[15] 335708.16
-Memory_Latency[16] 340623.36
-Memory_Latency[17] 340623.36000000004
-memory_latency[0] 335708.16000000015
-memory_latency[1] 671416.32
-memory_latency[2] 209817.6
-memory_latency[3] 209817.6
-memory_latency[4] 209817.6
+Memory_Latency[12] 335708.15999999683
+Memory_Latency[13] 335708.16000000003
+Memory_Latency[14] 335708.1599999999
+Memory_Latency[15] 335708.15999999986
+Memory_Latency[16] 340623.35999999987
+Memory_Latency[17] 340623.35999999766
+memory_latency[0] 335708.16000000003
+memory_latency[1] 671416.3199999976
+memory_latency[2] 209817.5999999996
+memory_latency[3] 209817.5999999992
+memory_latency[4] 209817.59999999995
 memory_latency[5] 755343.36
 memory_latency[6] 1343815.68
-memory_latency[7] 1343815.68
+memory_latency[7] 1343815.6800000002
 memory_latency[8] 755343.36
-memory_latency[9] 209817.6
+memory_latency[9] 209817.59999999718
 memory_latency[10] 335708.16
 memory_latency[11] 671416.3200000001
-memory_latency[12] 335708.16
-memory_latency[13] 335708.16
-memory_latency[14] 335708.16
-memory_latency[15] 335708.16
-memory_latency[16] 340623.36
-memory_latency[17] 340623.36000000004
+memory_latency[12] 335708.15999999683
+memory_latency[13] 335708.16000000003
+memory_latency[14] 335708.1599999999
+memory_latency[15] 335708.15999999986
+memory_latency[16] 340623.35999999987
+memory_latency[17] 340623.35999999766
 explicit_memory_latency[0] 0.0
 explicit_memory_latency[1] 0.0
 explicit_memory_latency[2] 0.0
@@ -9948,23 +9948,23 @@ explicit_memory_latency[15] 0.0
 explicit_memory_latency[16] 0.0
 explicit_memory_latency[17] 0.0
 C9448 33570816.0
-C9449 67141632.0
-C9450 20981760.0
-C9451 20981760.0
-C9452 20981760.0
+C9449 67141631.99999976
+C9450 20981759.99999996
+C9451 20981759.999999918
+C9452 20981759.999999996
 C9453 75534336.0
 C9454 134381568.0
-C9455 134381568.0
+C9455 134381568.00000003
 C9456 75534336.0
-C9457 20981760.0
+C9457 20981759.99999972
 C9458 33570816.0
 C9459 67141632.0
-C9460 33570816.0
-C9461 33570816.0
+C9460 33570815.99999964
+C9461 33570816.00000001
 C9462 33570816.0
-C9463 33570816.0
+C9463 33570815.999999985
 C9464 34062336.0
-C9465 34062336.0
+C9465 34062335.99999976
 Network_Latency[0] 0.0
 Network_Latency[1] 0.0
 Network_Latency[2] 0.0
@@ -9974,13 +9974,13 @@ Network_Latency[5] 0.0
 Network_Latency[6] 0.0
 Network_Latency[7] 0.0
 Network_Latency[8] 0.0
-Network_Latency[9] 755343.36
+Network_Latency[9] 755343.3599999993
 Network_Latency[10] 0.0
 Network_Latency[11] 0.0
 Network_Latency[12] 0.0
 Network_Latency[13] 0.0
 Network_Latency[14] 0.0
-Network_Latency[15] 755343.3600000001
+Network_Latency[15] 755343.3599999999
 Network_Latency[16] 0.0
 Network_Latency[17] 0.0
 p2p_latency 0.0
@@ -10362,30 +10362,30 @@ C9859 0.0
 C9860 0.045
 C9861 0.0
 C9862 0.045
-Per_Config_II[0] 335708.16000000015
-Per_Config_II[1] 672072.0000000001
-Per_Config_II[2] 530841.6000000001
-Per_Config_II[3] 530841.6000000001
-Per_Config_II[4] 530841.6000000001
+Per_Config_II[0] 335708.16000000003
+Per_Config_II[1] 672071.9999999846
+Per_Config_II[2] 530841.599999181
+Per_Config_II[3] 530841.5999999997
+Per_Config_II[4] 530841.6000000003
 Per_Config_II[5] 755352.0
-Per_Config_II[6] 1344470.4
-Per_Config_II[7] 1344144.0
-Per_Config_II[8] 755376.0
-Per_Config_II[9] 755520.0000000001
-Per_Config_II[10] 336036.00000000006
-Per_Config_II[11] 672072.0000000001
-Per_Config_II[12] 336036.00000000006
-Per_Config_II[13] 2034892.8000000003
-Per_Config_II[14] 335708.16000000003
-Per_Config_II[15] 2123366.4000000004
-Per_Config_II[16] 340814.4
+Per_Config_II[6] 1344470.3999998628
+Per_Config_II[7] 1344143.9999999984
+Per_Config_II[8] 755343.36
+Per_Config_II[9] 755519.9999999999
+Per_Config_II[10] 336036.0
+Per_Config_II[11] 672072.0
+Per_Config_II[12] 336036.00000000035
+Per_Config_II[13] 2034892.8
+Per_Config_II[14] 335708.15999999986
+Per_Config_II[15] 2123366.4
+Per_Config_II[16] 340623.3599999997
 Per_Config_II[17] 340624.80000000005
-C9881 1556551204208.6404
-ns_per_batch 1556551204208.6404
-all_config_II 14074717.920000002
-C9884 14074717.920000002
-C9885 1351172920.3200002
-C9886 1556551204208.6404
+C9881 1556526466989.9722
+ns_per_batch 1556526466989.9722
+all_config_II 14074494.239999024
+C9884 14074494.239999024
+C9885 1351151447.0399063
+C9886 1556526466989.9722
 C9887 0.0
 pipeline_factor 1.0
 C9889 95.0
@@ -10415,7 +10415,7 @@ total_switch_power 31.200000643730164
 C9913 41.600000858306885
 C9914 31.200000643730164
 total_power 4020.401651740074
-final_ns 1556551204208.6404
+final_ns 1556526466989.9722
 ------------Statistics------------
 FLOP per kernel:
 SIMD Add_Prev_Layer 12288 1 2048 1 25165824
@@ -10442,7 +10442,7 @@ SIMD Add_2 12288 1 2048 1 25165824
 TP 4.0
 PP 1.0
 DP 2.0
-final_s 1556.5512042086405
+final_s 1556.5264669899723
 Number of Chips 8
 Per-Accelerator Throughput (GFLOPS) 307200.0
 DRAM BW 300.0
@@ -10450,8 +10450,8 @@ Link BW [50.0, 50.0]
 System Cost 150578.0
 System Power 4020.401651740074
 Workload FLOP 1.6874003603411436e+18
-System FLOPS Utilization 0.4411065710367003
-Optimizer Runtime (s) 187.62000131607056
+System FLOPS Utilization 0.44111358135739515
+Optimizer Runtime (s) 188.02708220481873
 
 
 

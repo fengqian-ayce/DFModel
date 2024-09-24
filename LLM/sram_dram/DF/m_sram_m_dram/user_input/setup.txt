@@ -399,7 +399,7 @@ system {
     core: 640
     systolic_width: 32
     systolic_height: 6
-    sram_cap: 314572800.0
+    sram_cap: 315621376.0
     freq: 1.25
   }
   r_r {
@@ -446,7 +446,6 @@ execution {
   word: 2
 }
 gurobi {
-  thread: 144
   gap: 0.001
-  time: 600
+  time: 180
 }

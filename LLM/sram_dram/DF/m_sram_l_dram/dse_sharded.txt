@@ -555,7 +555,7 @@ system {
     core: 640
     systolic_width: 32
     systolic_height: 6
-    sram_cap: 314572800.0
+    sram_cap: 315621380.0
     freq: 1.25
   }
   r_r {
@@ -567,7 +567,7 @@ system {
     par_y: "DP"
   }
   memory {
-    dram_bw: 1000.0
+    dram_bw: 600.0
     dram_cap: 1099511600000.0
   }
 }
@@ -602,5 +602,5 @@ execution {
 gurobi {
   thread: 144
   gap: 0.001
-  time: 7200
+  time: 180
 }
