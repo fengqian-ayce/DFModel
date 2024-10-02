@@ -453,7 +453,7 @@ elif dse.system.WhichOneof('topology_variant') == 'fc': # 1D FC
     par = [dse.system.fc.par_x]
     
     if dse.execution.WhichOneof('workload_variant') == 'dlrm' or dse.execution.WhichOneof('workload_variant') == 'fft':
-        a2a_bw_factor = [dse.system.fc.x**2 / 4]
+        a2a_bw_factor = [dse.system.fc.x*(dse.system.fc.x-1) / 2]
         a2a_msg_factor = [Num_Chips_Per_Copy*(Num_Chips_Per_Copy-1) / 2]
     
 elif dse.system.WhichOneof('topology_variant') == 'r': # 1D Ring
@@ -483,7 +483,7 @@ elif dse.system.WhichOneof('topology_variant') == 'fc_fc': # 2D Dragonfly
     par = [dse.system.fc_fc.par_x, dse.system.fc_fc.par_y]
     
     if dse.execution.WhichOneof('workload_variant') == 'dlrm' or dse.execution.WhichOneof('workload_variant') == 'fft':
-        a2a_bw_factor = [dse.system.fc_fc.x**2 / 4, dse.system.fc_fc.y**2 / 4]
+        a2a_bw_factor = [dse.system.fc_fc.x*(dse.system.fc_fc.x-1) / 2, dse.system.fc_fc.y*(dse.system.fc_fc.y-1) / 2]
         a2a_msg_factor = [dse.system.fc_fc.x*(dse.system.fc_fc.x-1) / 2, Num_Chips_Per_Copy*(Num_Chips_Per_Copy-1) / 2]
     
 elif dse.system.WhichOneof('topology_variant') == 'r_fc': # 2D ZionEX
@@ -493,7 +493,7 @@ elif dse.system.WhichOneof('topology_variant') == 'r_fc': # 2D ZionEX
     par = [dse.system.r_fc.par_x, dse.system.r_fc.par_y]
     
     if dse.execution.WhichOneof('workload_variant') == 'dlrm' or dse.execution.WhichOneof('workload_variant') == 'fft':
-        a2a_bw_factor = [2, dse.system.r_fc.y**2 / 4]
+        a2a_bw_factor = [2, dse.system.r_fc.y*(dse.system.r_fc.y*-1) / 2]
         a2a_msg_factor = [dse.system.r_fc.x*(dse.system.r_fc.x-1) / 2, Num_Chips_Per_Copy*(Num_Chips_Per_Copy-1) / 2]
 
 elif dse.system.WhichOneof('topology_variant') == 'r_sw': # 2D DGX-1
@@ -1934,24 +1934,10 @@ else:
     
 
 
-    
-if dse.system.memory.second_dram_cap == 0:
-    model.addConstr(dram_bytes_total <= DRAM_Cap)
-else:
-    big_flag = model.addVar(name='big_flag', vtype=gp.GRB.BINARY)
-    model.addConstr((big_flag == 0) >> (dram_bytes_total <= DRAM_Cap))
-    model.addConstr((big_flag == 1) >> (dram_bytes_total >= DRAM_Cap + 1e-10))
-    model.addConstr((big_flag == 1) >> (dram_bytes_total <= DRAM_Cap + dse.system.memory.second_dram_cap))
 
-    
-DRAM_BW = model.addVar(name='DRAM_BW', vtype=gp.GRB.CONTINUOUS, lb=0)
-if dse.system.memory.second_dram_cap == 0:
-    model.addConstr(DRAM_BW == dse.system.memory.dram_bw)
-else:
-    xx = (DRAM_Cap * dse.system.memory.dram_bw + dse.system.memory.second_dram_cap * dse.system.memory.second_dram_bw) / (DRAM_Cap + dse.system.memory.second_dram_cap)
-    model.addConstr((big_flag == 0) >> (DRAM_BW == dse.system.memory.dram_bw))
-    model.addConstr((big_flag == 1) >> (DRAM_BW == xx))
 
+model.addConstr(dram_bytes_total <= DRAM_Cap)
+model.addConstr(DRAM_BW == dse.system.memory.dram_bw)
 
 
 # compute cycle
@@ -3478,20 +3464,41 @@ if p_and_r_flag == True:
                 if len(dimension) != 2:
                     raise Exception('Wrong!')
 
-                network_bytes = 0
-                for m in range(num_node):
-                    if int(Config[m]) == i:
-                        network_bytes += ALL_REDUCE_communication_size_node[m]
+                if dse.system.WhichOneof('topology_variant') == 'r_r':
+                    network_bytes = 0
+                    for m in range(num_node):
+                        if int(Config[m]) == i:
+                            network_bytes += ALL_REDUCE_communication_size_node[m]
 
-                network_bytes = network_bytes * (TP-1) / TP;
+                    network_bytes = network_bytes * (TP-1) / TP;
 
-                # all-reduce traffic
-                if network_bytes != 0:
-                    for y in range(dimension[1]):
-                        for x in range(dimension[0]):
-                            connection_list_to_print.append(('router', x, y, 'router', (x+1)%dimension[0], y))
+                    # all-reduce traffic
+                    if network_bytes != 0:
+                        for y in range(dimension[1]):
+                            for x in range(dimension[0]):
+                                connection_list_to_print.append(('router', x, y, 'router', (x+1)%dimension[0], y))
 
-                print('network_bytes off_chip_config', i, network_bytes)
+                    print('network_bytes off_chip_config', i, network_bytes)
+
+                elif dse.system.WhichOneof('topology_variant') == 'fc_fc':
+                    network_bytes = 0
+                    for m in range(num_node):
+                        if int(Config[m]) == i:
+                            network_bytes += ALL_REDUCE_communication_size_node[m]
+
+                    network_bytes = network_bytes * 1 / TP;
+
+                    # all-reduce traffic
+                    if network_bytes != 0:
+                        for y in range(dimension[1]):
+                            for x1 in range(dimension[0]):
+                                for x2 in range(dimension[0]):
+                                    if x1 != x2:
+                                        connection_list_to_print.append(('router', x1, y, 'router', x2, y))
+
+                    print('network_bytes off_chip_config', i, network_bytes)
+
+
 
 
 

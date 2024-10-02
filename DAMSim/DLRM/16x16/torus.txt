@@ -71,7 +71,7 @@ H   48    39                    615761.26269 290760.046  52.8%  13.0    0s
 Cutting planes:
   Implied bound: 7
 
-Explored 6015 nodes (40117 simplex iterations) in 1.04 seconds (0.09 work units)
+Explored 6015 nodes (40117 simplex iterations) in 1.24 seconds (0.09 work units)
 Thread count was 144 (of 144 available processors)
 
 Solution count 5: 615761 935761 1.01576e+06 ... 1.03758e+07
@@ -132,7 +132,7 @@ Cutting planes:
   RLT: 78
   Relax-and-lift: 50
 
-Explored 4021 nodes (42885 simplex iterations) in 2.06 seconds (0.34 work units)
+Explored 4021 nodes (42885 simplex iterations) in 2.26 seconds (0.34 work units)
 Thread count was 144 (of 144 available processors)
 
 Solution count 4: 3984 3987 4051 4061 
@@ -141,7 +141,7 @@ Optimal solution found (tolerance 1.00e-03)
 Best objective 3.984000000000e+03, best bound 3.984000000000e+03, gap 0.0000%
 
 ---------------------------------------------------------------------------
-Multi-objectives: solved in 2.07 seconds (0.34 work units), solution count 8
+Multi-objectives: solved in 2.27 seconds (0.34 work units), solution count 8
 
 TP 1.0
 PP 1.0
@@ -822,7 +822,7 @@ System Cost 4674624.0
 System Power 182143.60111427307
 Workload FLOP 67108864000000.0
 System FLOPS Utilization 0.6655932784338249
-Optimizer Runtime (s) 3.3662028312683105
+Optimizer Runtime (s) 3.387028694152832
 
 
 

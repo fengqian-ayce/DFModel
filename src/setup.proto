@@ -285,8 +285,6 @@ message Accelerator {
 message Memory {
 	float dram_bw = 1;
 	float dram_cap = 2;
-	float second_dram_bw = 3;
-	float second_dram_cap = 4;
 }
 
 message System {

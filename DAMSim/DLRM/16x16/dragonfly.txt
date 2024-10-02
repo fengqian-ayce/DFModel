@@ -11,7 +11,7 @@ CPU model: Intel(R) Xeon(R) CPU E7-8890 v3 @ 2.50GHz, instruction set [SSE2|AVX|
 Thread count: 72 physical cores, 144 logical processors, using up to 144 threads
 
 Optimize a model with 244 rows, 662 columns and 459 nonzeros
-Model fingerprint: 0xa48685a3
+Model fingerprint: 0x88789b97
 Model has 205 quadratic constraints
 Model has 362 general constraints
 Variable types: 127 continuous, 535 integer (338 binary)
@@ -53,29 +53,32 @@ Presolved model has 1 quadratic constraint(s)
 Presolved model has 85 bilinear constraint(s)
 Variable types: 71 continuous, 404 integer (119 binary)
 
-Root relaxation: objective 1.454800e+05, 100 iterations, 0.00 seconds (0.00 work units)
+Root relaxation: objective 1.150160e+05, 100 iterations, 0.00 seconds (0.00 work units)
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
 
-     0     0 145480.048    0   60          - 145480.048      -     -    0s
-     0     0 145480.048    0   59          - 145480.048      -     -    0s
-     0     0 145480.048    0   59          - 145480.048      -     -    0s
-H    0     2                    1.031048e+07 145480.048  98.6%     -    0s
-     0     2 145480.048    0   75 1.0310e+07 145480.048  98.6%     -    0s
-H   38    39                    710481.26030 225480.046  68.3%  13.4    0s
-H   48    39                    550481.26269 225480.046  59.0%  12.7    0s
+     0     0 115016.048    0   60          - 115016.048      -     -    0s
+     0     0 115016.048    0   59          - 115016.048      -     -    0s
+     0     0 115016.048    0   59          - 115016.048      -     -    0s
+H    0     2                    1.028002e+07 115016.048  98.9%     -    0s
+     0     2 115016.048    0   75 1.0280e+07 115016.048  98.9%     -    0s
+H   38    39                    2440017.2341 195016.046  92.0%  13.5    0s
+H   42    39                    920017.25673 195016.046  78.8%  13.0    0s
+H   44    39                    840017.25792 195016.046  76.8%  12.9    0s
+H   48    39                    520017.26269 195016.046  62.5%  12.7    0s
 
 Cutting planes:
   Implied bound: 7
+  Inf proof: 1
 
-Explored 5794 nodes (41030 simplex iterations) in 0.95 seconds (0.08 work units)
+Explored 7339 nodes (50400 simplex iterations) in 0.80 seconds (0.09 work units)
 Thread count was 144 (of 144 available processors)
 
-Solution count 3: 550481 710481 1.03105e+07 
+Solution count 5: 520017 840017 920017 ... 1.028e+07
 
 Optimal solution found (tolerance 1.00e-03)
-Best objective 5.504812626887e+05, best bound 5.504812626887e+05, gap 0.0000%
+Best objective 5.200172626887e+05, best bound 5.200172626887e+05, gap 0.0000%
 ---------------------------------------------------------------------------
 
 Multi-objectives: optimize objective 2 () ...
@@ -92,51 +95,55 @@ Presolved model has 1 quadratic constraint(s)
 Presolved model has 85 bilinear constraint(s)
 Variable types: 71 continuous, 396 integer (111 binary)
 
-Root relaxation: objective 7.513333e+02, 268 iterations, 0.00 seconds (0.00 work units)
+Root relaxation: objective 7.513333e+02, 247 iterations, 0.00 seconds (0.00 work units)
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
 
-     0     0  751.33333    0  182 4061.00000  751.33333  81.5%     -    1s
-     0     0  751.33333    0  199 4061.00000  751.33333  81.5%     -    1s
-H    0     0                    4056.0000000  751.33333  81.5%     -    1s
-     0     0  935.64380    0  315 4056.00000  935.64380  76.9%     -    1s
-     0     0 1009.44583    0  134 4056.00000 1009.44583  75.1%     -    1s
-     0     0 1009.57940    0  376 4056.00000 1009.57940  75.1%     -    1s
-H    0     0                    3987.0000000 1009.57940  74.7%     -    1s
-     0     0 1149.58380    0  379 3987.00000 1149.58380  71.2%     -    1s
-     0     0 1195.48431    0  374 3987.00000 1195.48431  70.0%     -    1s
-     0     0 1249.37036    0  361 3987.00000 1249.37036  68.7%     -    1s
-     0     0 1253.54428    0  360 3987.00000 1253.54428  68.6%     -    1s
-     0     0 1254.24804    0  360 3987.00000 1254.24804  68.5%     -    1s
-     0     0 1254.38670    0  361 3987.00000 1254.38670  68.5%     -    1s
-     0     0 1254.63693    0  358 3987.00000 1254.63693  68.5%     -    1s
-     0     0 1444.68182    0  336 3987.00000 1444.68182  63.8%     -    1s
-     0     2 1444.68182    0  336 3987.00000 1444.68182  63.8%     -    1s
-* 3845    15              25    3984.0000000 2437.56676  38.8%  11.5    1s
+     0     0  751.33333    0  182 4061.00000  751.33333  81.5%     -    0s
+     0     0  753.33333    0  174 4061.00000  753.33333  81.4%     -    0s
+H    0     0                    4046.0000000  753.33333  81.4%     -    0s
+     0     0 1072.61889    0  377 4046.00000 1072.61889  73.5%     -    0s
+     0     0 1074.36970    0  382 4046.00000 1074.36970  73.4%     -    1s
+H    0     0                    3987.0000000 1074.36970  73.1%     -    1s
+     0     0 1221.38394    0  386 3987.00000 1221.38394  69.4%     -    1s
+     0     0 1239.70019    0  395 3987.00000 1239.70019  68.9%     -    1s
+     0     0 1290.33541    0  376 3987.00000 1290.33541  67.6%     -    1s
+     0     0 1290.65409    0  384 3987.00000 1290.65409  67.6%     -    1s
+     0     0 1298.17975    0  319 3987.00000 1298.17975  67.4%     -    1s
+     0     0 1315.01236    0  347 3987.00000 1315.01236  67.0%     -    1s
+     0     0 1316.28633    0  368 3987.00000 1316.28633  67.0%     -    1s
+     0     0 1316.71888    0  383 3987.00000 1316.71888  67.0%     -    1s
+     0     0 1317.04297    0  374 3987.00000 1317.04297  67.0%     -    1s
+     0     0 1317.04297    0  374 3987.00000 1317.04297  67.0%     -    1s
+     0     0 1321.90914    0  375 3987.00000 1321.90914  66.8%     -    1s
+     0     0 1447.86535    0  345 3987.00000 1447.86535  63.7%     -    1s
+     0     2 1447.86535    0  337 3987.00000 1447.86535  63.7%     -    1s
+* 4854     9              24    3984.0000000 3557.16665  10.7%  10.7    1s
 
 Cutting planes:
-  Gomory: 49
-  Cover: 1
-  Implied bound: 109
-  MIR: 99
-  StrongCG: 12
+  Gomory: 10
+  Cover: 4
+  Implied bound: 182
+  Clique: 13
+  MIR: 77
+  StrongCG: 17
   Flow cover: 7
-  Flow path: 5
-  Zero half: 2
-  RLT: 37
-  Relax-and-lift: 42
+  Inf proof: 20
+  Mod-K: 2
+  RLT: 34
+  Relax-and-lift: 21
 
-Explored 3891 nodes (45649 simplex iterations) in 1.95 seconds (0.32 work units)
+Explored 4911 nodes (53026 simplex iterations) in 1.91 seconds (0.38 work units)
 Thread count was 144 (of 144 available processors)
 
-Solution count 4: 3984 3987 4056 4061 
+Solution count 4: 3984 3987 4046 4061 
 
 Optimal solution found (tolerance 1.00e-03)
 Best objective 3.984000000000e+03, best bound 3.984000000000e+03, gap 0.0000%
 
 ---------------------------------------------------------------------------
-Multi-objectives: solved in 1.96 seconds (0.32 work units), solution count 6
+Multi-objectives: solved in 1.92 seconds (0.38 work units), solution count 8
 
 TP 1.0
 PP 1.0
@@ -326,7 +333,7 @@ F[7,1] 1.0
 Par_lane[0] 84.0
 Par_lane[1] 84.0
 Par_lane[2] 84.0
-Par_lane[3] 84.0
+Par_lane[3] 84.00000000000001
 Par_lane[4] 84.0
 Par_lane[5] 84.0
 Par_lane[6] 84.0
@@ -334,7 +341,7 @@ Par_lane[7] 84.0
 Par_stage[0] 3.0
 Par_stage[1] 3.0
 Par_stage[2] 3.0
-Par_stage[3] 3.0
+Par_stage[3] 2.9999999999999996
 Par_stage[4] 3.0
 Par_stage[5] 3.0
 Par_stage[6] 3.0
@@ -352,7 +359,7 @@ C210 1.0
 C211 0.0
 C212 0.0
 C213 1.0
-C214 0.0
+C214 -0.0
 C215 0.0
 C216 1.0
 C217 0.0
@@ -571,13 +578,13 @@ C429 1.0
 C430 1.0
 C431 0.0
 C432 0.0
-shard_intermediate_buffer_size_depth_original[0] 512000.0
-shard_intermediate_buffer_size_depth_original[1] 512000.0
+shard_intermediate_buffer_size_depth_original[0] 524288.0
+shard_intermediate_buffer_size_depth_original[1] 524288.0
 shard_intermediate_buffer_size_depth_original[2] 524288.0
 shard_intermediate_buffer_size_depth_original[3] 512000.0
 shard_intermediate_buffer_size_depth_original[4] 512000.0
 shard_intermediate_buffer_size_depth_original[5] 512000.0
-shard_intermediate_buffer_size_depth_original[6] 512000.0
+shard_intermediate_buffer_size_depth_original[6] 524288.0
 shard_intermediate_buffer_size_depth_two[0] 512000.0
 shard_intermediate_buffer_size_depth_two[1] 512000.0
 shard_intermediate_buffer_size_depth_two[2] 512000.0
@@ -634,17 +641,17 @@ PMU_used_initiation[6] 245.0
 PMU_used_initiation[7] 245.0
 PMU_used_per_config[0] 984.0
 PMU_used_per_config[1] 984.0
-dram_bytes_per_config_intermediate[0] 255999.99999976158
-dram_bytes_per_config_intermediate[1] 255999.99999976158
+dram_bytes_per_config_intermediate[0] 256000.0
+dram_bytes_per_config_intermediate[1] 256000.0
 dram_bytes_per_config_initiation[0] 512000000.0
 dram_bytes_per_config_initiation[1] 512000000.0
-C500 255999.99999976158
-C501 255999.99999976158
+C500 256000.0
+C501 256000.0
 dram_bytes_initiation 1024000000.0
-dram_bytes_intermediate 255999.99999976158
+dram_bytes_intermediate 256000.0
 dram_bytes_total 9.223372036854776e+18
 weight 1024000000.0
-activation 255999.99999976158
+activation 256000.0
 DRAM_BW 1638.0
 Cycle[0] 24000.0
 Cycle[1] 24000.0
@@ -675,7 +682,7 @@ n_factor[1] 1.0
 n_factor[2] 1.0
 n_factor[3] 1.0
 n_factor[4] 1.0
-n_factor[5] 1.0000000000000004
+n_factor[5] 1.0
 n_factor[6] 1.0
 n_factor[7] 1.0
 MMM[0] 3.0
@@ -699,7 +706,7 @@ NNN[1] 1.0
 NNN[2] 1.0
 NNN[3] 1.0
 NNN[4] 1.0
-NNN[5] 1.0000000000000004
+NNN[5] 1.0
 NNN[6] 1.0
 NNN[7] 1.0
 C564 3.0
@@ -730,22 +737,22 @@ C588 24000.0
 C589 24000.0
 C590 24000.0
 C591 24000.0
-Memory_Latency[0] 168.79120879106324
-Memory_Latency[1] 156.28815628801073
-memory_latency[0] 156.28815628801073
-memory_latency[1] 156.28815628801073
+Memory_Latency[0] 168.79120879120882
+Memory_Latency[1] 156.2881562881563
+memory_latency[0] 156.2881562881563
+memory_latency[1] 156.2881562881563
 explicit_memory_latency[0] 12.503052503052503
 explicit_memory_latency[1] 0.0
-C598 255999.99999976158
-C599 255999.99999976158
-Network_Latency[0] 4114.405080613258
+C598 256000.00000000003
+C599 256000.00000000003
+Network_Latency[0] 2208.5010805225284
 Network_Latency[1] 0.0
 p2p_latency 0.0
-Network_Latency_ALL_TO_ALL_tmp[0,0] 4114.405080613258
-Network_Latency_ALL_TO_ALL_tmp[0,1] 4114.405080613258
+Network_Latency_ALL_TO_ALL_tmp[0,0] 2208.5010805225284
+Network_Latency_ALL_TO_ALL_tmp[0,1] 2208.5010805225284
 Network_Latency_ALL_TO_ALL_tmp[1,0] 0.0
 Network_Latency_ALL_TO_ALL_tmp[1,1] 0.0
-Network_Latency_ALL_TO_ALL[0] 4114.405080613258
+Network_Latency_ALL_TO_ALL[0] 2208.5010805225284
 Network_Latency_ALL_TO_ALL[1] 0.0
 C609 80.0
 C610 80.0
@@ -753,14 +760,14 @@ C611 0.0
 C612 0.0
 Network_Latency_ALL_REDUCE_PERIODIC[0] 0.0
 Network_Latency_ALL_REDUCE_PERIODIC[1] 0.0
-Per_Config_II[0] 19283.196065886907
-Per_Config_II[1] 15156.287932770594
-C617 551031.74397852
-ns_per_batch 551031.74397852
-all_config_II 34439.4839986575
-C620 34439.4839986575
-C621 34439.4839986575
-C622 551031.74397852
+Per_Config_II[0] 17377.292065796326
+Per_Config_II[1] 15156.28793277074
+C617 520537.279977073
+ns_per_batch 520537.279977073
+all_config_II 32533.579998567064
+C620 32533.579998567064
+C621 32533.579998567064
+C622 520537.279977073
 C623 0.0
 pipeline_factor 1.0
 C625 1.0
@@ -798,7 +805,7 @@ total_switch_power 133.12000274658203
 C657 1996.8000411987305
 C658 133.12000274658203
 total_power 184107.12115478516
-final_ns 551031.7439785198
+final_ns 520537.2799770728
 total_pcu_pmu_used 3984.0
 ------------Statistics------------
 FLOP per kernel:
@@ -816,7 +823,7 @@ SYSTOLIC MLP_8 8000 8000 16 1 2048000000
 TP 1.0
 PP 1.0
 DP 256.0
-final_s 0.0005510317439785199
+final_s 0.0005205372799770728
 Number of Chips 256
 Per-Accelerator Throughput (GFLOPS) 638976.0095214844
 DRAM BW 1638.0
@@ -824,8 +831,8 @@ Link BW [10.0, 10.0]
 System Cost 4792064.0
 System Power 184107.12115478516
 Workload FLOP 67108864000000.0
-System FLOPS Utilization 0.744524083460255
-Optimizer Runtime (s) 2.96305513381958
+System FLOPS Utilization 0.7881402925861204
+Optimizer Runtime (s) 3.054306745529175
 
 
 

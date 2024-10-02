@@ -87,7 +87,7 @@ Cutting planes:
   MIR: 3
   RLT: 1
 
-Explored 13 nodes (160 simplex iterations) in 0.16 seconds (0.00 work units)
+Explored 13 nodes (160 simplex iterations) in 0.22 seconds (0.00 work units)
 Thread count was 144 (of 144 available processors)
 
 Solution count 6: 120205 125325 135557 ... 4.037e+06
@@ -133,7 +133,7 @@ Cutting planes:
   MIR: 5
   RLT: 2
 
-Explored 5 nodes (71 simplex iterations) in 0.20 seconds (0.01 work units)
+Explored 5 nodes (71 simplex iterations) in 0.27 seconds (0.01 work units)
 Thread count was 144 (of 144 available processors)
 
 Solution count 4: 1114 1118 1296 2080 
@@ -142,7 +142,7 @@ Optimal solution found (tolerance 1.00e-03)
 Best objective 1.114000000000e+03, best bound 1.114000000000e+03, gap 0.0000%
 
 ---------------------------------------------------------------------------
-Multi-objectives: solved in 0.20 seconds (0.01 work units), solution count 9
+Multi-objectives: solved in 0.27 seconds (0.01 work units), solution count 9
 
 TP 1.0
 PP 1.0
@@ -310,7 +310,7 @@ System Cost 4674726.40625
 System Power 182160.2400814332
 Workload FLOP 2198486450176.0
 System FLOPS Utilization 0.11170096461797882
-Optimizer Runtime (s) 0.7437570095062256
+Optimizer Runtime (s) 0.7689716815948486
 
 
 

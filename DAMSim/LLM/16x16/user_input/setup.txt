@@ -408,7 +408,7 @@ system {
     y: 52
     placement: "rowwise"
   }
-  r_r {
+  fc_fc {
     x: 16
     y: 16
     link_bw_x: 10.0

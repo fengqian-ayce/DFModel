@@ -10,7 +10,7 @@ CPU model: Intel(R) Xeon(R) CPU E7-8890 v3 @ 2.50GHz, instruction set [SSE2|AVX|
 Thread count: 72 physical cores, 144 logical processors, using up to 144 threads
 
 Optimize a model with 75 rows, 203 columns and 140 nonzeros
-Model fingerprint: 0x902a2bab
+Model fingerprint: 0xe7f55376
 Model has 85 quadratic constraints
 Model has 75 general constraints
 Variable types: 89 continuous, 114 integer (55 binary)
@@ -51,21 +51,21 @@ Presolved model has 4 quadratic constraint(s)
 Presolved model has 8 bilinear constraint(s)
 Variable types: 1 continuous, 25 integer (2 binary)
 
-Root relaxation: objective 2.903810e+02, 4 iterations, 0.00 seconds (0.00 work units)
+Root relaxation: objective 2.663861e+02, 4 iterations, 0.00 seconds (0.00 work units)
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
 
-     0     0  290.38095    0    2          -  290.38095      -     -    0s
-H    0     0                     290.3809535  290.38095  0.00%     -    0s
+     0     0  266.38608    0    2          -  266.38608      -     -    0s
+H    0     0                     266.3860804  266.38608  0.00%     -    0s
 
 Explored 1 nodes (4 simplex iterations) in 0.02 seconds (0.00 work units)
 Thread count was 144 (of 144 available processors)
 
-Solution count 1: 290.381 
+Solution count 1: 266.386 
 
 Optimal solution found (tolerance 1.00e-03)
-Best objective 2.903809534670e+02, best bound 2.903809534670e+02, gap 0.0000%
+Best objective 2.663860804201e+02, best bound 2.663860804201e+02, gap 0.0000%
 ---------------------------------------------------------------------------
 
 Multi-objectives: optimize objective 2 () ...
@@ -247,22 +247,22 @@ explicit_memory_latency[1] 0.0
 C150 362.0
 C151 362.0
 Network_Latency[0] 0.0
-Network_Latency[1] 51.1890625
+Network_Latency[1] 27.194189453125
 p2p_latency 0.0
 Network_Latency_ALL_TO_ALL_tmp[0,0] 0.0
 Network_Latency_ALL_TO_ALL_tmp[0,1] 0.0
-Network_Latency_ALL_TO_ALL_tmp[1,0] 51.1890625
-Network_Latency_ALL_TO_ALL_tmp[1,1] 51.1890625
+Network_Latency_ALL_TO_ALL_tmp[1,0] 27.194189453125
+Network_Latency_ALL_TO_ALL_tmp[1,1] 27.194189453125
 Network_Latency_ALL_TO_ALL[0] 0.0
-Network_Latency_ALL_TO_ALL[1] 51.1890625
+Network_Latency_ALL_TO_ALL[1] 27.194189453125
 C161 0.0
 C162 0.0
 C163 0.999786376953125
 C164 0.999786376953125
 Per_Config_II[0] 119.59594548350654
-Per_Config_II[1] 170.78500798350652
-C167 290.38095346701306
-ns_per_batch 290.38095346701306
+Per_Config_II[1] 146.79013493663152
+C167 266.38608042013806
+ns_per_batch 266.38608042013806
 LINK_cost[0] 76800.0
 LINK_cost[1] 4800.0
 SWITCH_cost[0] 0.0
@@ -295,7 +295,7 @@ total_switch_power 133.12000274658203
 C198 1996.8000411987305
 C199 133.12000274658203
 total_power 184123.7601219453
-final_ns 290.6713354342724
+final_ns 266.65246751321087
 total_pcu_pmu_used 26.0
 ------------Statistics------------
 FLOP per kernel:
@@ -307,7 +307,7 @@ SYSTOLIC Step_2 181 191 181 1 12514702
 TP 1.0
 PP 1.0
 DP 1.0
-final_s 2.906713354342724e-07
+final_s 2.666524675132109e-07
 Number of Chips 256
 Per-Accelerator Throughput (GFLOPS) 638976.0095214844
 DRAM BW 1638.4000244140625
@@ -315,8 +315,8 @@ Link BW [10.0, 10.0]
 System Cost 4792166.40625
 System Power 184123.7601219453
 Workload FLOP 25029404.0
-System FLOPS Utilization 0.0005264095799965489
-Optimizer Runtime (s) 0.35162997245788574
+System FLOPS Utilization 0.0005738262129354214
+Optimizer Runtime (s) 0.5928716659545898
 
 
 
