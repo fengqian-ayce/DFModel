@@ -455,7 +455,6 @@ execution {
     num_layer_in_graph: 1
   }
   execution_style: KERNEL_BY_KERNEL
-  perfect_overlap: true
   word: 2
 }
 gurobi {

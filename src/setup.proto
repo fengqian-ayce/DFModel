@@ -261,6 +261,8 @@ message Connection {
 		STAGE = 2;
 	}
 	Lane_Stage_Type lane_stage_type = 20;
+
+	bool zero_out = 9999;
 }
 
 message Dataflow_Graph {
@@ -274,6 +276,8 @@ message Accelerator {
 	int64 systolic_height = 4;
 	float sram_cap = 5;
 	float freq = 10;
+
+	float link_latency = 1111;
 
 	int64 pmu = 6;
 	float pmu_cap = 7;
@@ -443,9 +447,17 @@ message Cost {
     float accelerator_power = 10;
 }
 
-message Execution {
+message Execution
+{
+	enum Overlap_Style {
+		Overlap_Style_Placeholder = 0;
+		PERFECT_OVERLAP = 1;
+		NO_OVERLAP = 2;
+		OVERLAP_COMPUTE_MEMORY = 3;
+	}
+
 	enum Execution_Style {
-		Optimization_Placeholder = 0;
+		Execution_Style_Placeholder = 0;
 		DATAFLOW = 1;
 		KERNEL_BY_KERNEL = 2;
 	}
@@ -463,7 +475,8 @@ message Execution {
 
 	Execution_Style execution_style = 14;
 	int64 num_config = 15;
-	bool perfect_overlap = 16;
+	Overlap_Style overlap = 16;
+	bool separate_rs_ag_for_ar = 100;
 	float compute_util = 17;
 	int64 word = 18;
 }

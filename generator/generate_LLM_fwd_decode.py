@@ -366,7 +366,8 @@ for i in range(1, 24):
         connection.id = i
         connection.startIdx = 6
         connection.endIdx = 8
-    
+        connection.zero_out = True
+
     elif i == 9:
         connection.id = i
         connection.startIdx = 8
@@ -386,6 +387,7 @@ for i in range(1, 24):
         connection.id = i
         connection.startIdx = 7
         connection.endIdx = 11
+        connection.zero_out = True
         
     elif i == 13:
         connection.id = i
