@@ -2288,841 +2288,1009 @@ dataflow_graph {
     startIdx: 1
     endIdx: 2
     id: 1
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 2
     endIdx: 3
     id: 2
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 3
     endIdx: 4
     id: 3
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 4
     endIdx: 5
     id: 4
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 5
     endIdx: 6
     id: 5
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 6
     endIdx: 7
     id: 6
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 7
     endIdx: 8
     id: 7
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 8
     endIdx: 9
     id: 8
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 9
     endIdx: 10
     id: 9
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 10
     endIdx: 11
     id: 10
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 11
     endIdx: 12
     id: 11
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 12
     endIdx: 13
     id: 12
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 13
     endIdx: 14
     id: 13
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 14
     endIdx: 15
     id: 14
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 15
     endIdx: 16
     id: 15
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 16
     endIdx: 17
     id: 16
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 17
     endIdx: 18
     id: 17
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 18
     endIdx: 19
     id: 18
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 19
     endIdx: 20
     id: 19
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 20
     endIdx: 21
     id: 20
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 21
     endIdx: 22
     id: 21
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 22
     endIdx: 23
     id: 22
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 23
     endIdx: 24
     id: 23
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 24
     endIdx: 25
     id: 24
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 25
     endIdx: 26
     id: 25
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 26
     endIdx: 27
     id: 26
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 27
     endIdx: 28
     id: 27
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 28
     endIdx: 29
     id: 28
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 29
     endIdx: 30
     id: 29
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 30
     endIdx: 31
     id: 30
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 31
     endIdx: 32
     id: 31
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 32
     endIdx: 33
     id: 32
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 33
     endIdx: 34
     id: 33
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 34
     endIdx: 35
     id: 34
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 35
     endIdx: 36
     id: 35
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 36
     endIdx: 37
     id: 36
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 37
     endIdx: 38
     id: 37
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 38
     endIdx: 39
     id: 38
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 39
     endIdx: 40
     id: 39
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 40
     endIdx: 41
     id: 40
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 41
     endIdx: 42
     id: 41
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 42
     endIdx: 43
     id: 42
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 44
     endIdx: 45
     id: 43
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 45
     endIdx: 46
     id: 44
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 46
     endIdx: 47
     id: 45
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 47
     endIdx: 48
     id: 46
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 48
     endIdx: 49
     id: 47
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 49
     endIdx: 50
     id: 48
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 50
     endIdx: 51
     id: 49
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 51
     endIdx: 52
     id: 50
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 52
     endIdx: 53
     id: 51
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 53
     endIdx: 54
     id: 52
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 54
     endIdx: 55
     id: 53
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 55
     endIdx: 56
     id: 54
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 56
     endIdx: 57
     id: 55
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 57
     endIdx: 58
     id: 56
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 58
     endIdx: 59
     id: 57
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 59
     endIdx: 60
     id: 58
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 60
     endIdx: 61
     id: 59
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 61
     endIdx: 62
     id: 60
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 62
     endIdx: 63
     id: 61
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 63
     endIdx: 64
     id: 62
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 64
     endIdx: 65
     id: 63
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 65
     endIdx: 66
     id: 64
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 66
     endIdx: 67
     id: 65
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 67
     endIdx: 68
     id: 66
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 68
     endIdx: 69
     id: 67
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 69
     endIdx: 70
     id: 68
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 70
     endIdx: 71
     id: 69
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 71
     endIdx: 72
     id: 70
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 72
     endIdx: 73
     id: 71
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 73
     endIdx: 74
     id: 72
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 74
     endIdx: 75
     id: 73
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 75
     endIdx: 76
     id: 74
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 76
     endIdx: 77
     id: 75
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 77
     endIdx: 78
     id: 76
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 78
     endIdx: 79
     id: 77
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 79
     endIdx: 80
     id: 78
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 80
     endIdx: 81
     id: 79
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 81
     endIdx: 82
     id: 80
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 82
     endIdx: 83
     id: 81
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 83
     endIdx: 84
     id: 82
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 84
     endIdx: 85
     id: 83
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 85
     endIdx: 86
     id: 84
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 1
     endIdx: 128
     id: 85
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 2
     endIdx: 127
     id: 86
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 3
     endIdx: 126
     id: 87
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 4
     endIdx: 125
     id: 88
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 5
     endIdx: 124
     id: 89
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 6
     endIdx: 123
     id: 90
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 7
     endIdx: 122
     id: 91
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 8
     endIdx: 121
     id: 92
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 9
     endIdx: 120
     id: 93
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 10
     endIdx: 119
     id: 94
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 11
     endIdx: 118
     id: 95
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 12
     endIdx: 117
     id: 96
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 13
     endIdx: 116
     id: 97
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 14
     endIdx: 115
     id: 98
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 15
     endIdx: 114
     id: 99
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 16
     endIdx: 113
     id: 100
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 17
     endIdx: 112
     id: 101
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 18
     endIdx: 111
     id: 102
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 19
     endIdx: 110
     id: 103
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 20
     endIdx: 109
     id: 104
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 21
     endIdx: 108
     id: 105
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 22
     endIdx: 107
     id: 106
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 23
     endIdx: 106
     id: 107
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 24
     endIdx: 105
     id: 108
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 25
     endIdx: 104
     id: 109
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 26
     endIdx: 103
     id: 110
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 27
     endIdx: 102
     id: 111
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 28
     endIdx: 101
     id: 112
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 29
     endIdx: 100
     id: 113
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 30
     endIdx: 99
     id: 114
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 31
     endIdx: 98
     id: 115
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 32
     endIdx: 97
     id: 116
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 33
     endIdx: 96
     id: 117
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 34
     endIdx: 95
     id: 118
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 35
     endIdx: 94
     id: 119
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 36
     endIdx: 93
     id: 120
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 37
     endIdx: 92
     id: 121
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 38
     endIdx: 91
     id: 122
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 39
     endIdx: 90
     id: 123
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 40
     endIdx: 89
     id: 124
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 41
     endIdx: 88
     id: 125
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 42
     endIdx: 87
     id: 126
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 44
     endIdx: 88
     id: 127
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 45
     endIdx: 89
     id: 128
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 46
     endIdx: 90
     id: 129
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 47
     endIdx: 91
     id: 130
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 48
     endIdx: 92
     id: 131
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 49
     endIdx: 93
     id: 132
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 50
     endIdx: 94
     id: 133
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 51
     endIdx: 95
     id: 134
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 52
     endIdx: 96
     id: 135
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 53
     endIdx: 97
     id: 136
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 54
     endIdx: 98
     id: 137
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 55
     endIdx: 99
     id: 138
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 56
     endIdx: 100
     id: 139
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 57
     endIdx: 101
     id: 140
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 58
     endIdx: 102
     id: 141
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 59
     endIdx: 103
     id: 142
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 60
     endIdx: 104
     id: 143
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 61
     endIdx: 105
     id: 144
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 62
     endIdx: 106
     id: 145
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 63
     endIdx: 107
     id: 146
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 64
     endIdx: 108
     id: 147
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 65
     endIdx: 109
     id: 148
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 66
     endIdx: 110
     id: 149
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 67
     endIdx: 111
     id: 150
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 68
     endIdx: 112
     id: 151
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 69
     endIdx: 113
     id: 152
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 70
     endIdx: 114
     id: 153
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 71
     endIdx: 115
     id: 154
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 72
     endIdx: 116
     id: 155
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 73
     endIdx: 117
     id: 156
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 74
     endIdx: 118
     id: 157
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 75
     endIdx: 119
     id: 158
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 76
     endIdx: 120
     id: 159
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 77
     endIdx: 121
     id: 160
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 78
     endIdx: 122
     id: 161
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 79
     endIdx: 123
     id: 162
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 80
     endIdx: 124
     id: 163
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 81
     endIdx: 125
     id: 164
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 82
     endIdx: 126
     id: 165
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 83
     endIdx: 127
     id: 166
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 84
     endIdx: 128
     id: 167
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 85
     endIdx: 129
     id: 168
+    lane_stage_type: LANE
   }
 }
 system {
@@ -3155,19 +3323,19 @@ cost {
   dram_unit_power: 0.16248
   accelerator_power: 511.57712
 }
-miscellany {
+execution {
   dlrm {
     num_table: 50
     emb_dim: 92
     row: 72173913
     global_batch_size: 128000000
+    num_copy: 1
   }
   execution_style: KERNEL_BY_KERNEL
-  compute_util: 0.9
+  overlap: PERFECT_OVERLAP
   word: 2
 }
 gurobi {
-  thread: 144
   gap: 0.001
-  time: 3600
+  time: 180
 }

@@ -38,7 +38,7 @@ Root relaxation: objective 3.276800e+04, 9 iterations, 0.00 seconds (0.00 work u
 
 *    0     0               0    32768.000000 32768.0000  0.00%     -    0s
 
-Explored 1 nodes (9 simplex iterations) in 0.02 seconds (0.00 work units)
+Explored 1 nodes (9 simplex iterations) in 0.01 seconds (0.00 work units)
 Thread count was 144 (of 144 available processors)
 
 Solution count 2: 32768 106496 
@@ -381,11 +381,11 @@ Gurobi Optimizer version 10.0.3 build v10.0.3rc0 (linux64)
 CPU model: Intel(R) Xeon(R) CPU E7-8890 v3 @ 2.50GHz, instruction set [SSE2|AVX|AVX2]
 Thread count: 72 physical cores, 144 logical processors, using up to 144 threads
 
-Optimize a model with 548 rows, 1187 columns and 827 nonzeros
-Model fingerprint: 0x3b2ede55
-Model has 235 quadratic constraints
-Model has 550 general constraints
-Variable types: 260 continuous, 927 integer (532 binary)
+Optimize a model with 550 rows, 1321 columns and 829 nonzeros
+Model fingerprint: 0xef413da5
+Model has 278 quadratic constraints
+Model has 722 general constraints
+Variable types: 306 continuous, 1015 integer (620 binary)
 Coefficient statistics:
   Matrix range     [1e-01, 5e+01]
   QMatrix range    [1e-02, 8e+00]
@@ -400,8 +400,8 @@ Warning: Model contains large rhs
 Warning: Quadratic constraints contain large coefficients on linear part
          Consider reformulating model or setting NumericFocus parameter
          to avoid numerical issues.
-Presolve removed 496 rows and 940 columns
-Presolve time: 0.00s
+Presolve removed 498 rows and 1074 columns
+Presolve time: 0.01s
 Presolved: 378 rows, 248 columns, 974 nonzeros
 Presolved model has 20 SOS constraint(s)
 Presolved model has 1 quadratic constraint(s)
@@ -442,7 +442,7 @@ Cutting planes:
   Gomory: 11
   MIR: 4
 
-Explored 131 nodes (334 simplex iterations) in 0.38 seconds (0.04 work units)
+Explored 131 nodes (334 simplex iterations) in 0.34 seconds (0.04 work units)
 Thread count was 144 (of 144 available processors)
 
 Solution count 6: 2.09405e+06 2.39194e+06 2.39223e+06 ... 3.06539e+08
@@ -1585,38 +1585,172 @@ C1130 0.0
 Network_Latency[0] 0.0
 p2p_latency 0.0
 Network_Latency_ALL_REDUCE_node[0] 0.0
-C1134 32768.0
+C1134 0.0
 C1135 0.0
-Network_Latency_ALL_TO_ALL_node[0] 0.0
+C1136 0.0
 C1137 0.0
 C1138 0.0
-Network_Latency_ALL_GATHER_node[0] 0.0
+C1139 0.0
 C1140 0.0
 C1141 0.0
-Network_Latency_ALL_REDUCE_PERIODIC_node[0] 0.0
+C1142 0.0
 C1143 0.0
 C1144 0.0
-Network_Latency_ALL_REDUCE_edge[0] 0.0
+C1145 16384.0
 C1146 0.0
 C1147 0.0
-Network_Latency_ALL_TO_ALL_edge[0] 0.0
+C1148 0.0
 C1149 0.0
 C1150 0.0
-Network_Latency_ALL_GATHER_edge[0] 0.0
+C1151 16384.0
 C1152 0.0
 C1153 0.0
+C1154 0.0
+C1155 0.0
+C1156 0.0
+C1157 0.0
+C1158 0.0
+C1159 0.0
+C1160 0.0
+C1161 0.0
+C1162 0.0
+C1163 0.0
+C1164 0.0
+C1165 1.0
+C1166 0.0
+C1167 0.0
+C1168 0.0
+C1169 0.0
+C1170 0.0
+C1171 1.0
+C1172 0.0
+C1173 0.0
+C1174 0.0
+C1175 32768.0
+C1176 0.0
+C1177 0.0
+C1178 0.0
+C1179 0.0
+C1180 0.0
+C1181 0.0
+C1182 0.0
+C1183 0.0
+C1184 0.0
+C1185 0.0
+C1186 0.0
+C1187 0.0
+C1188 1.0
+C1189 0.0
+C1190 0.0
+C1191 0.0
+C1192 0.0
+C1193 0.0
+C1194 1.0
+C1195 0.0
+C1196 0.0
+C1197 0.0
+Network_Latency_ALL_TO_ALL_node[0] 0.0
+C1199 0.0
+C1200 0.0
+Network_Latency_ALL_GATHER_node[0] 0.0
+C1202 0.0
+C1203 0.0
+Network_Latency_ALL_REDUCE_PERIODIC_node[0] 0.0
+C1205 0.0
+C1206 0.0
+Network_Latency_ALL_REDUCE_edge[0] 0.0
+C1208 0.0
+C1209 0.0
+C1210 0.0
+C1211 0.0
+C1212 0.0
+C1213 0.0
+C1214 0.0
+C1215 0.0
+C1216 0.0
+C1217 0.0
+C1218 0.0
+C1219 0.0
+C1220 0.0
+C1221 0.0
+C1222 0.0
+C1223 0.0
+C1224 0.0
+C1225 0.0
+C1226 0.0
+C1227 0.0
+C1228 0.0
+C1229 0.0
+C1230 0.0
+C1231 0.0
+C1232 0.0
+C1233 0.0
+C1234 0.0
+C1235 0.0
+C1236 0.0
+C1237 0.0
+C1238 0.0
+C1239 0.0
+C1240 0.0
+C1241 0.0
+C1242 0.0
+C1243 0.0
+C1244 0.0
+C1245 0.0
+C1246 0.0
+C1247 0.0
+C1248 0.0
+C1249 0.0
+C1250 0.0
+C1251 0.0
+C1252 0.0
+C1253 0.0
+C1254 0.0
+C1255 0.0
+C1256 0.0
+C1257 0.0
+C1258 0.0
+C1259 0.0
+C1260 0.0
+C1261 0.0
+C1262 0.0
+C1263 0.0
+C1264 0.0
+C1265 0.0
+C1266 0.0
+C1267 0.0
+C1268 0.0
+C1269 0.0
+C1270 0.0
+C1271 0.0
+C1272 0.0
+C1273 0.0
+C1274 0.0
+C1275 0.0
+C1276 0.0
+C1277 0.0
+C1278 0.0
+C1279 0.0
+C1280 0.0
+Network_Latency_ALL_TO_ALL_edge[0] 0.0
+C1282 0.0
+C1283 0.0
+Network_Latency_ALL_GATHER_edge[0] 0.0
+C1285 0.0
+C1286 0.0
+Compute_Memory_Latency[0] 0.0
 Per_Config_II[0] 26175.652653213798
-C1155 2094052.2122571038
+C1289 2094052.2122571038
 ns_per_batch 2094052.2122571038
 all_config_II 26175.652653213798
-C1158 26175.652653213798
-C1159 2094052.2122571038
-C1160 2094052.2122571038
-C1161 0.0
+C1292 26175.652653213798
+C1293 2094052.2122571038
+C1294 2094052.2122571038
+C1295 0.0
 pipeline_factor 1.0
-C1163 79.0
-C1164 0.0
-C1165 0.0
+C1297 79.0
+C1298 0.0
+C1299 0.0
 LINK_cost[0] 56203672.0
 SWITCH_cost[0] 1348888128.0
 less_or_equal_one_chip 1.0
@@ -1625,8 +1759,8 @@ total_DRAM_cost 15833498.0
 total_accelerator_cost 33000.0
 total_link_cost 0.0
 total_switch_cost 0.0
-C1174 56203672.0
-C1175 1348888128.0
+C1308 56203672.0
+C1309 1348888128.0
 total_cost 15866498.0
 LINK_power[0] 292259.095195625
 SWITCH_power[0] 2922591.0042999983
@@ -1634,8 +1768,8 @@ total_DRAM_power 2572626.7024919987
 total_accelerator_power 750.0
 total_link_power 0.0
 total_switch_power 0.0
-C1183 292259.095195625
-C1184 2922591.0042999983
+C1317 292259.095195625
+C1318 2922591.0042999983
 total_power 2573376.7024919987
 final_ns 2094052.2122571038
 ------------Statistics------------
@@ -1660,6 +1794,29 @@ SIMD GeLU 28672 1 1 1 28672
 SYSTOLIC FFN1 8192 28672 1 1 469762048
 SIMD DropOut_3 8192 1 1 1 8192
 SIMD Add_2 8192 1 1 1 8192
+memory_size 0.0
+memory_size 0.0
+memory_size 134217728.0
+memory_size 134217728.0
+memory_size 134217728.0
+memory_size 134217728.0
+memory_size 134217728.0
+memory_size 0.0
+memory_size 0.0
+memory_size 0.0
+memory_size 0.0
+memory_size 134217728.0
+memory_size 0.0
+memory_size 0.0
+memory_size 0.0
+memory_size 469762048.0
+memory_size 0.0
+memory_size 469762048.0
+memory_size 0.0
+memory_size 0.0
+kernel_name ['Add_Prev_Layer', 'LayerNorm_1', 'Q', 'K', 'V', 'K_cache', 'V_cache', 'MHA_GEMM_1', 'SOFTMAX', 'DropOut_1', 'MHA_GEMM_2', 'PROJ_GEMM', 'DropOut_2', 'Add_1', 'LayerNorm_2', 'FFN0', 'GeLU', 'FFN1', 'DropOut_3', 'Add_2']
+startIdx [1, 2, 2, 2, 4, 5, 3, 6, 8, 9, 10, 7, 11, 12, 13, 14, 1, 15, 16, 17, 18, 19, 14]
+endIdx [2, 3, 4, 5, 6, 7, 8, 8, 9, 10, 11, 11, 12, 13, 14, 15, 14, 16, 17, 18, 19, 20, 20]
 
 
 
@@ -1675,7 +1832,7 @@ System Cost 15866498.0
 System Power 2573376.7024919987
 Workload FLOP 161241190400.0
 System FLOPS Utilization 0.0048610859846728695
-Optimizer Runtime (s) 1.4582927227020264
+Optimizer Runtime (s) 1.608961820602417
 
 
 

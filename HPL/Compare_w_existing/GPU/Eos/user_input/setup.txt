@@ -1477,14 +1477,14 @@ system {
     freq: 1.755
   }
   sw_sw {
-	x: 86
-	y: 86
+    x: 86
+    y: 86
     link_bw_x: 50
     link_bw_y: 50
   }
   memory {
     dram_bw: 2039.0
-	dram_cap: 85899345920
+	  dram_cap: 85899345920
   }
 }
 cost {
@@ -1499,19 +1499,18 @@ cost {
   dram_unit_power: 0.16248
   accelerator_power: 750
 }
-miscellany {
+execution {
 	hpl {
 		n: 262144
 		b: 4096
 		num_copy: 1
 	}
 	execution_style: KERNEL_BY_KERNEL
-	perfect_overlap: true
-	compute_util: 0.9
+	overlap: PERFECT_OVERLAP
+	#compute_util: 0.9
 	word: 8
 }
 gurobi {
-  thread: 144
   gap: 0.001
   time: 180
 }

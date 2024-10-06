@@ -1040,15 +1040,13 @@ execution {
     num_layer: 128
     global_batch_size: 4096
     micro_batch_size: 1
-    tile_size: 2048
     num_layer_in_graph: 1
   }
   execution_style: KERNEL_BY_KERNEL
-  compute_util: 1.0
+  overlap: NO_OVERLAP
   word: 2
 }
 gurobi {
-  thread: 144
   gap: 0.001
-  time: 36000
+  time: 180
 }

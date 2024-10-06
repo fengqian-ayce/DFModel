@@ -48,6 +48,7 @@ dataflow_graph {
     id: 1
     startName: "Step_1"
     endName: "Step_2"
+    lane_stage_type: LANE
   }
 }
 system {
@@ -63,7 +64,7 @@ system {
     x: 8
     y: 256
     link_bw_x: 300.0
-    link_bw_y: 25.0
+    link_bw_y: 12.5
   }
   memory {
     dram_bw: 2039.0
@@ -81,18 +82,16 @@ cost {
   dram_unit_power: 0.16248
   accelerator_power: 750.0
 }
-miscellany {
+execution {
   fft {
     length: 1855430000000
     num_copy: 1
   }
   execution_style: KERNEL_BY_KERNEL
-  perfect_overlap: true
-  compute_util: 0.9
+  overlap: PERFECT_OVERLAP
   word: 4
 }
 gurobi {
-  thread: 144
   gap: 0.001
-  time: 120
+  time: 180
 }

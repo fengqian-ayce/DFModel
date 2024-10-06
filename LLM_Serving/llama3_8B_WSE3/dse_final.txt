@@ -211,7 +211,7 @@ dataflow_graph {
       output_tensor_size: 8192.0
       sharding: OUTER_SHARDING
       shard_outer_M: 4096
-      shard_K: 4099
+      shard_K: 4097
       shard_N: 1
       tiling: N_TILING
     }
@@ -234,7 +234,7 @@ dataflow_graph {
       communication_type: ALL_REDUCE
       communication_size: 8192.0
       shard_outer_M: 4096
-      shard_K: 4096
+      shard_K: 4098
       shard_N: 1
       tiling: N_TILING
       memory_size: 33554432.0
@@ -671,12 +671,11 @@ system {
   }
   r {
     x: 1
-    link_bw_x: 10.0
+    link_bw_x: 28101836.0
     par_x: "DP"
   }
   memory {
     dram_bw: 15833498.0
-    dram_cap: 44238164000.0
   }
 }
 cost {
@@ -702,6 +701,7 @@ execution {
   }
   execution_style: DATAFLOW
   num_config: 1
+  overlap: NO_OVERLAP
   word: 2
 }
 gurobi {

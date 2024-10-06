@@ -452,12 +452,11 @@ system {
   }
   r {
     x: 1
-    link_bw_x: 10.0
+    link_bw_x: 28101836.8
     par_x: "DP"
   }
   memory {
     dram_bw: 15833497.6
-    dram_cap: 44238163148.8
   }
 }
 cost {
@@ -483,7 +482,7 @@ execution {
   }
   execution_style: DATAFLOW
   num_config: 1
-  perfect_overlap: false
+  overlap: NO_OVERLAP
   #compute_util: 0.9
   word: 2
 }

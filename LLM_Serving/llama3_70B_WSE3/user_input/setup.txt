@@ -457,7 +457,6 @@ system {
   }
   memory {
     dram_bw: 15833497.6
-    dram_cap: 0.0
   }
 }
 cost {
@@ -483,7 +482,7 @@ execution {
   }
   execution_style: DATAFLOW
   num_config: 1
-  perfect_overlap: false
+  overlap: NO_OVERLAP
   #compute_util: 0.9
   word: 2
 }

@@ -438,6 +438,7 @@ GFLOPS = 2*LaneWidth*StageWidth*Core*Freq
 
 if dse.execution.WhichOneof('workload_variant') == 'dlrm':
     Num_Chips_Per_Copy = num_chip / dse.execution.dlrm.num_copy
+    
 elif dse.execution.WhichOneof('workload_variant') == 'fft':
     Num_Chips_Per_Copy = num_chip / dse.execution.fft.num_copy
 
@@ -2148,7 +2149,11 @@ if dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.WhichO
                 model.addConstr((aaa == 0) >> (t4[j, i] == 0))
 
             link_latency_allreduce_node = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            model.addConstr(link_latency_allreduce_node == t4[:, i].sum() * dse.system.accelerator.link_latency * 2 * (dimension[par.index('TP')]-1))
+
+            if 'TP' in par:
+                model.addConstr(link_latency_allreduce_node == t4[:, i].sum() * dse.system.accelerator.link_latency * 2 * (dimension[par.index('TP')]-1))
+            else:
+                model.addConstr(link_latency_allreduce_node == 0)
             model.addConstr(Network_Latency_ALL_REDUCE_node[i] == t1*t2 + link_latency_allreduce_node)
 
     Network_Latency_ALL_TO_ALL_node = model.addMVar(C, name='Network_Latency_ALL_TO_ALL_node', vtype=gp.GRB.CONTINUOUS, lb=0)
@@ -2218,7 +2223,10 @@ if dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.WhichO
             model.addConstr((aaa == 0) >> (t4[j, i] == 0))
 
         link_latency_allreduce_edge = model.addVar(vtype=gp.GRB.CONTINUOUS)
-        model.addConstr(link_latency_allreduce_edge == t4[:, i].sum() * dse.system.accelerator.link_latency * 2 * (dimension[par.index('TP')]-1))
+        if 'TP' in par:
+            model.addConstr(link_latency_allreduce_edge == t4[:, i].sum() * dse.system.accelerator.link_latency * 2 * (dimension[par.index('TP')]-1))
+        else:
+            model.addConstr(link_latency_allreduce_edge == 0)
         model.addConstr(Network_Latency_ALL_REDUCE_edge[i] == t1*t2 + link_latency_allreduce_edge)
         
 

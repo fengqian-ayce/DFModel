@@ -650,6 +650,7 @@ execution {
   }
   execution_style: DATAFLOW
   num_config: 1
+  overlap: NO_OVERLAP
   word: 2
 }
 gurobi {

@@ -773,6 +773,7 @@ dataflow_graph {
     id: 1
     startName: "Add_Prev_Layer"
     endName: "LayerNorm_1"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 2
@@ -782,6 +783,7 @@ dataflow_graph {
     id: 2
     startName: "LayerNorm_1"
     endName: "Q"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 2
@@ -791,6 +793,7 @@ dataflow_graph {
     id: 3
     startName: "LayerNorm_1"
     endName: "K"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 2
@@ -800,6 +803,7 @@ dataflow_graph {
     id: 4
     startName: "LayerNorm_1"
     endName: "V"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 3
@@ -809,6 +813,7 @@ dataflow_graph {
     id: 5
     startName: "Q"
     endName: "MHA_GEMM_1"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 4
@@ -818,6 +823,7 @@ dataflow_graph {
     id: 6
     startName: "K"
     endName: "MHA_GEMM_1"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 6
@@ -827,6 +833,7 @@ dataflow_graph {
     id: 7
     startName: "MHA_GEMM_1"
     endName: "SOFTMAX"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 7
@@ -836,6 +843,7 @@ dataflow_graph {
     id: 8
     startName: "SOFTMAX"
     endName: "DropOut_1"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 5
@@ -845,6 +853,7 @@ dataflow_graph {
     id: 9
     startName: "V"
     endName: "MHA_GEMM_2"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 8
@@ -854,6 +863,7 @@ dataflow_graph {
     id: 10
     startName: "DropOut_1"
     endName: "MHA_GEMM_2"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 9
@@ -863,6 +873,7 @@ dataflow_graph {
     id: 11
     startName: "MHA_GEMM_2"
     endName: "PROJ_GEMM"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 10
@@ -872,6 +883,7 @@ dataflow_graph {
     id: 12
     startName: "PROJ_GEMM"
     endName: "DropOut_2"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 11
@@ -881,6 +893,7 @@ dataflow_graph {
     id: 13
     startName: "DropOut_2"
     endName: "Add_1"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 1
@@ -890,6 +903,7 @@ dataflow_graph {
     id: 14
     startName: "Add_Prev_Layer"
     endName: "Add_1"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 12
@@ -899,6 +913,7 @@ dataflow_graph {
     id: 15
     startName: "Add_1"
     endName: "LayerNorm_2"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 13
@@ -908,6 +923,7 @@ dataflow_graph {
     id: 16
     startName: "LayerNorm_2"
     endName: "FFN0"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 14
@@ -917,6 +933,7 @@ dataflow_graph {
     id: 17
     startName: "FFN0"
     endName: "GeLU"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 15
@@ -926,6 +943,7 @@ dataflow_graph {
     id: 18
     startName: "GeLU"
     endName: "FFN1"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 16
@@ -935,6 +953,7 @@ dataflow_graph {
     id: 19
     startName: "FFN1"
     endName: "DropOut_3"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 17
@@ -944,6 +963,7 @@ dataflow_graph {
     id: 20
     startName: "DropOut_3"
     endName: "Add_2"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 12
@@ -953,6 +973,7 @@ dataflow_graph {
     id: 21
     startName: "Add_1"
     endName: "Add_2"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 19
@@ -962,6 +983,7 @@ dataflow_graph {
     id: 22
     startName: "Loss_bwd"
     endName: "DropOut_3_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 20
@@ -971,6 +993,7 @@ dataflow_graph {
     id: 23
     startName: "DropOut_3_bwd"
     endName: "FFN1_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 21
@@ -980,6 +1003,7 @@ dataflow_graph {
     id: 24
     startName: "FFN1_bwd"
     endName: "GeLU_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 22
@@ -989,6 +1013,7 @@ dataflow_graph {
     id: 25
     startName: "GeLU_bwd"
     endName: "FFN0_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 23
@@ -998,6 +1023,7 @@ dataflow_graph {
     id: 26
     startName: "FFN0_bwd"
     endName: "LayerNorm_2_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 24
@@ -1007,6 +1033,7 @@ dataflow_graph {
     id: 27
     startName: "LayerNorm_2_bwd"
     endName: "DropOut_2_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 25
@@ -1016,6 +1043,7 @@ dataflow_graph {
     id: 28
     startName: "DropOut_2_bwd"
     endName: "PROJ_GEMM_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 26
@@ -1025,6 +1053,7 @@ dataflow_graph {
     id: 29
     startName: "PROJ_GEMM_bwd"
     endName: "MHA_GEMM_2_bwd1"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 5
@@ -1034,6 +1063,7 @@ dataflow_graph {
     id: 30
     startName: "V"
     endName: "MHA_GEMM_2_bwd1"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 26
@@ -1043,6 +1073,7 @@ dataflow_graph {
     id: 31
     startName: "PROJ_GEMM_bwd"
     endName: "MHA_GEMM_2_bwd2"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 8
@@ -1052,6 +1083,7 @@ dataflow_graph {
     id: 32
     startName: "DropOut_1"
     endName: "MHA_GEMM_2_bwd2"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 27
@@ -1061,6 +1093,7 @@ dataflow_graph {
     id: 33
     startName: "MHA_GEMM_2_bwd1"
     endName: "DropOut_1_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 28
@@ -1070,6 +1103,7 @@ dataflow_graph {
     id: 34
     startName: "MHA_GEMM_2_bwd2"
     endName: "V_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 30
@@ -1079,6 +1113,7 @@ dataflow_graph {
     id: 35
     startName: "DropOut_1_bwd"
     endName: "SOFTMAX_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 31
@@ -1088,6 +1123,7 @@ dataflow_graph {
     id: 36
     startName: "SOFTMAX_bwd"
     endName: "MHA_GEMM_1_bwd1"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 31
@@ -1097,6 +1133,7 @@ dataflow_graph {
     id: 37
     startName: "SOFTMAX_bwd"
     endName: "MHA_GEMM_1_bwd2"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 4
@@ -1106,6 +1143,7 @@ dataflow_graph {
     id: 38
     startName: "K"
     endName: "MHA_GEMM_1_bwd1"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 3
@@ -1115,6 +1153,7 @@ dataflow_graph {
     id: 39
     startName: "Q"
     endName: "MHA_GEMM_1_bwd2"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 32
@@ -1124,6 +1163,7 @@ dataflow_graph {
     id: 40
     startName: "MHA_GEMM_1_bwd1"
     endName: "Q_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 33
@@ -1133,6 +1173,7 @@ dataflow_graph {
     id: 41
     startName: "MHA_GEMM_1_bwd2"
     endName: "K_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 20
@@ -1142,6 +1183,7 @@ dataflow_graph {
     id: 42
     startName: "DropOut_3_bwd"
     endName: "FFN1_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 15
@@ -1151,6 +1193,7 @@ dataflow_graph {
     id: 43
     startName: "GeLU"
     endName: "FFN1_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 22
@@ -1160,6 +1203,7 @@ dataflow_graph {
     id: 44
     startName: "GeLU_bwd"
     endName: "FFN0_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 13
@@ -1169,6 +1213,7 @@ dataflow_graph {
     id: 45
     startName: "LayerNorm_2"
     endName: "FFN0_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 25
@@ -1178,6 +1223,7 @@ dataflow_graph {
     id: 46
     startName: "DropOut_2_bwd"
     endName: "PROJ_GEMM_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 9
@@ -1187,6 +1233,7 @@ dataflow_graph {
     id: 47
     startName: "MHA_GEMM_2"
     endName: "PROJ_GEMM_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 28
@@ -1196,6 +1243,7 @@ dataflow_graph {
     id: 48
     startName: "MHA_GEMM_2_bwd2"
     endName: "V_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 2
@@ -1205,6 +1253,7 @@ dataflow_graph {
     id: 49
     startName: "LayerNorm_1"
     endName: "V_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 33
@@ -1214,6 +1263,7 @@ dataflow_graph {
     id: 50
     startName: "MHA_GEMM_1_bwd2"
     endName: "K_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 2
@@ -1223,6 +1273,7 @@ dataflow_graph {
     id: 51
     startName: "LayerNorm_1"
     endName: "K_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 32
@@ -1232,6 +1283,7 @@ dataflow_graph {
     id: 52
     startName: "MHA_GEMM_1_bwd1"
     endName: "Q_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 2
@@ -1241,6 +1293,7 @@ dataflow_graph {
     id: 53
     startName: "LayerNorm_1"
     endName: "Q_bwd_weight_update"
+    lane_stage_type: LANE
   }
 }
 system {
@@ -1256,9 +1309,9 @@ system {
     x: 8
     y: 35
     z: 9
-    link_bw_x: 600.0
-    link_bw_y: 25.0
-    link_bw_z: 25.0
+    link_bw_x: 300.0
+    link_bw_y: 12.5
+    link_bw_z: 12.5
     par_x: "TP"
     par_y: "PP"
     par_z: "DP"
@@ -1279,7 +1332,7 @@ cost {
   dram_unit_power: 0.16248
   accelerator_power: 750.0
 }
-miscellany {
+execution {
   llm {
     hidden_dim: 20480
     head_dim: 160
@@ -1288,14 +1341,14 @@ miscellany {
     num_layer: 105
     global_batch_size: 2520
     micro_batch_size: 1
-    tile_size: 2048
+    num_layer_in_graph: 1
   }
   execution_style: KERNEL_BY_KERNEL
-  compute_util: 0.9
+  overlap: NO_OVERLAP
   word: 2
+  separate_rs_ag_for_ar: true
 }
 gurobi {
-  thread: 29
   gap: 0.001
-  time: 1200
+  time: 180
 }

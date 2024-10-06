@@ -456,7 +456,7 @@ system {
     par_x: "TP"
   }
   memory {
-    dram_bw: 1638.0
+    dram_bw: 1310.72
     dram_cap: 68719476736.0
   }
 }
@@ -483,7 +483,7 @@ execution {
   }
   execution_style: DATAFLOW
   num_config: 1
-  perfect_overlap: false
+  overlap: NO_OVERLAP
   #compute_util: 0.9
   word: 2
 }

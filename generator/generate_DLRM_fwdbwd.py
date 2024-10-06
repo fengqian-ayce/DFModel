@@ -9,11 +9,13 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--mlp_dim', type=int, required=True)
 parser.add_argument('--bottom_num_mlp', type=int, required=True)
 parser.add_argument('--top_num_mlp', type=int, required=True)
-parser.add_argument('--pooled_row', type=int, required=True)
-parser.add_argument('--row', type=int, required=True)
+parser.add_argument('--micro_batch_size', type=int, required=True)
+
 parser.add_argument('--num_table', type=int, required=True)
 parser.add_argument('--emb_dim', type=int, required=True)
-parser.add_argument('--micro_batch_size', type=int, required=True)
+parser.add_argument('--row', type=int, required=True)
+parser.add_argument('--pooled_row', type=int, required=True)
+
 parser.add_argument('--word', type=int, required=True)
 args = parser.parse_args()
 

@@ -956,8 +956,8 @@ system {
     y: 2
     z: 1024
     link_bw_x: 900.0
-    link_bw_y: 50.0
-    link_bw_z: 50.0
+    link_bw_y: 50
+    link_bw_z: 50
     par_x: "TP"
     par_y: "PP"
     par_z: "DP"
@@ -987,16 +987,14 @@ execution {
     num_layer: 128
     global_batch_size: 4096
     micro_batch_size: 1
-    tile_size: 2048
     num_layer_in_graph: 1
   }
   execution_style: KERNEL_BY_KERNEL
-  perfect_overlap: false
-  compute_util: 1
+  overlap: NO_OVERLAP
+  #compute_util: 1
   word: 2
 }
 gurobi {
-  thread: 144
   gap: 0.001
-  time: 36000
+  time: 180
 }

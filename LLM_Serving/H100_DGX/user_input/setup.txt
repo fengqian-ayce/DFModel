@@ -408,7 +408,7 @@ system {
     par_x: "TP"
   }
   memory {
-    dram_bw: 3440.64
+    dram_bw: 2039.0
     dram_cap: 85899345920.0
   }
 }
@@ -434,7 +434,8 @@ execution {
     num_layer_in_graph: 1
   }
   execution_style: KERNEL_BY_KERNEL
-  perfect_overlap: false
+  overlap: PERFECT_OVERLAP
+  separate_rs_ag_for_ar: true
   #compute_util: 0.9
   word: 2
 }

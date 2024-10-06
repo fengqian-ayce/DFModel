@@ -2548,6 +2548,7 @@ dataflow_graph {
     id: 1
     startName: "MLP_1"
     endName: "MLP_2"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 2
@@ -2557,6 +2558,7 @@ dataflow_graph {
     id: 2
     startName: "MLP_2"
     endName: "MLP_3"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 3
@@ -2566,6 +2568,7 @@ dataflow_graph {
     id: 3
     startName: "MLP_3"
     endName: "MLP_4"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 4
@@ -2575,6 +2578,7 @@ dataflow_graph {
     id: 4
     startName: "MLP_4"
     endName: "MLP_5"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 5
@@ -2584,6 +2588,7 @@ dataflow_graph {
     id: 5
     startName: "MLP_5"
     endName: "MLP_6"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 6
@@ -2593,6 +2598,7 @@ dataflow_graph {
     id: 6
     startName: "MLP_6"
     endName: "MLP_7"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 7
@@ -2602,6 +2608,7 @@ dataflow_graph {
     id: 7
     startName: "MLP_7"
     endName: "MLP_8"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 8
@@ -2611,6 +2618,7 @@ dataflow_graph {
     id: 8
     startName: "MLP_8"
     endName: "MLP_9"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 9
@@ -2620,6 +2628,7 @@ dataflow_graph {
     id: 9
     startName: "MLP_9"
     endName: "MLP_10"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 10
@@ -2629,6 +2638,7 @@ dataflow_graph {
     id: 10
     startName: "MLP_10"
     endName: "MLP_11"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 11
@@ -2638,6 +2648,7 @@ dataflow_graph {
     id: 11
     startName: "MLP_11"
     endName: "MLP_12"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 12
@@ -2647,6 +2658,7 @@ dataflow_graph {
     id: 12
     startName: "MLP_12"
     endName: "MLP_13"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 13
@@ -2656,6 +2668,7 @@ dataflow_graph {
     id: 13
     startName: "MLP_13"
     endName: "MLP_14"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 14
@@ -2665,6 +2678,7 @@ dataflow_graph {
     id: 14
     startName: "MLP_14"
     endName: "MLP_15"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 15
@@ -2674,6 +2688,7 @@ dataflow_graph {
     id: 15
     startName: "MLP_15"
     endName: "MLP_16"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 16
@@ -2683,6 +2698,7 @@ dataflow_graph {
     id: 16
     startName: "MLP_16"
     endName: "MLP_17"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 17
@@ -2692,6 +2708,7 @@ dataflow_graph {
     id: 17
     startName: "MLP_17"
     endName: "MLP_18"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 18
@@ -2701,6 +2718,7 @@ dataflow_graph {
     id: 18
     startName: "MLP_18"
     endName: "MLP_19"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 19
@@ -2710,6 +2728,7 @@ dataflow_graph {
     id: 19
     startName: "MLP_19"
     endName: "MLP_20"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 20
@@ -2719,6 +2738,7 @@ dataflow_graph {
     id: 20
     startName: "MLP_20"
     endName: "MLP_21"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 21
@@ -2728,6 +2748,7 @@ dataflow_graph {
     id: 21
     startName: "MLP_21"
     endName: "MLP_22"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 22
@@ -2737,6 +2758,7 @@ dataflow_graph {
     id: 22
     startName: "MLP_22"
     endName: "MLP_23"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 23
@@ -2746,6 +2768,7 @@ dataflow_graph {
     id: 23
     startName: "MLP_23"
     endName: "MLP_24"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 24
@@ -2755,6 +2778,7 @@ dataflow_graph {
     id: 24
     startName: "MLP_24"
     endName: "MLP_25"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 25
@@ -2764,6 +2788,7 @@ dataflow_graph {
     id: 25
     startName: "MLP_25"
     endName: "MLP_26"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 26
@@ -2773,6 +2798,7 @@ dataflow_graph {
     id: 26
     startName: "MLP_26"
     endName: "MLP_27"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 27
@@ -2782,6 +2808,7 @@ dataflow_graph {
     id: 27
     startName: "MLP_27"
     endName: "MLP_28"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 28
@@ -2791,6 +2818,7 @@ dataflow_graph {
     id: 28
     startName: "MLP_28"
     endName: "MLP_29"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 29
@@ -2800,6 +2828,7 @@ dataflow_graph {
     id: 29
     startName: "MLP_29"
     endName: "MLP_30"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 30
@@ -2809,6 +2838,7 @@ dataflow_graph {
     id: 30
     startName: "MLP_30"
     endName: "MLP_31"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 31
@@ -2818,6 +2848,7 @@ dataflow_graph {
     id: 31
     startName: "MLP_31"
     endName: "MLP_32"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 32
@@ -2827,6 +2858,7 @@ dataflow_graph {
     id: 32
     startName: "MLP_32"
     endName: "MLP_33"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 33
@@ -2836,6 +2868,7 @@ dataflow_graph {
     id: 33
     startName: "MLP_33"
     endName: "MLP_34"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 34
@@ -2845,6 +2878,7 @@ dataflow_graph {
     id: 34
     startName: "MLP_34"
     endName: "MLP_35"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 35
@@ -2854,6 +2888,7 @@ dataflow_graph {
     id: 35
     startName: "MLP_35"
     endName: "MLP_36"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 36
@@ -2863,6 +2898,7 @@ dataflow_graph {
     id: 36
     startName: "MLP_36"
     endName: "MLP_37"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 37
@@ -2872,6 +2908,7 @@ dataflow_graph {
     id: 37
     startName: "MLP_37"
     endName: "MLP_38"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 38
@@ -2881,6 +2918,7 @@ dataflow_graph {
     id: 38
     startName: "MLP_38"
     endName: "MLP_39"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 39
@@ -2890,6 +2928,7 @@ dataflow_graph {
     id: 39
     startName: "MLP_39"
     endName: "MLP_40"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 40
@@ -2899,6 +2938,7 @@ dataflow_graph {
     id: 40
     startName: "MLP_40"
     endName: "MLP_41"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 41
@@ -2908,6 +2948,7 @@ dataflow_graph {
     id: 41
     startName: "MLP_41"
     endName: "MLP_42"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 42
@@ -2917,6 +2958,7 @@ dataflow_graph {
     id: 42
     startName: "MLP_42"
     endName: "MLP_43"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 44
@@ -2926,6 +2968,7 @@ dataflow_graph {
     id: 43
     startName: "MLP_43_bwd"
     endName: "MLP_42_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 45
@@ -2935,6 +2978,7 @@ dataflow_graph {
     id: 44
     startName: "MLP_42_bwd"
     endName: "MLP_41_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 46
@@ -2944,6 +2988,7 @@ dataflow_graph {
     id: 45
     startName: "MLP_41_bwd"
     endName: "MLP_40_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 47
@@ -2953,6 +2998,7 @@ dataflow_graph {
     id: 46
     startName: "MLP_40_bwd"
     endName: "MLP_39_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 48
@@ -2962,6 +3008,7 @@ dataflow_graph {
     id: 47
     startName: "MLP_39_bwd"
     endName: "MLP_38_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 49
@@ -2971,6 +3018,7 @@ dataflow_graph {
     id: 48
     startName: "MLP_38_bwd"
     endName: "MLP_37_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 50
@@ -2980,6 +3028,7 @@ dataflow_graph {
     id: 49
     startName: "MLP_37_bwd"
     endName: "MLP_36_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 51
@@ -2989,6 +3038,7 @@ dataflow_graph {
     id: 50
     startName: "MLP_36_bwd"
     endName: "MLP_35_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 52
@@ -2998,6 +3048,7 @@ dataflow_graph {
     id: 51
     startName: "MLP_35_bwd"
     endName: "MLP_34_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 53
@@ -3007,6 +3058,7 @@ dataflow_graph {
     id: 52
     startName: "MLP_34_bwd"
     endName: "MLP_33_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 54
@@ -3016,6 +3068,7 @@ dataflow_graph {
     id: 53
     startName: "MLP_33_bwd"
     endName: "MLP_32_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 55
@@ -3025,6 +3078,7 @@ dataflow_graph {
     id: 54
     startName: "MLP_32_bwd"
     endName: "MLP_31_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 56
@@ -3034,6 +3088,7 @@ dataflow_graph {
     id: 55
     startName: "MLP_31_bwd"
     endName: "MLP_30_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 57
@@ -3043,6 +3098,7 @@ dataflow_graph {
     id: 56
     startName: "MLP_30_bwd"
     endName: "MLP_29_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 58
@@ -3052,6 +3108,7 @@ dataflow_graph {
     id: 57
     startName: "MLP_29_bwd"
     endName: "MLP_28_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 59
@@ -3061,6 +3118,7 @@ dataflow_graph {
     id: 58
     startName: "MLP_28_bwd"
     endName: "MLP_27_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 60
@@ -3070,6 +3128,7 @@ dataflow_graph {
     id: 59
     startName: "MLP_27_bwd"
     endName: "MLP_26_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 61
@@ -3079,6 +3138,7 @@ dataflow_graph {
     id: 60
     startName: "MLP_26_bwd"
     endName: "MLP_25_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 62
@@ -3088,6 +3148,7 @@ dataflow_graph {
     id: 61
     startName: "MLP_25_bwd"
     endName: "MLP_24_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 63
@@ -3097,6 +3158,7 @@ dataflow_graph {
     id: 62
     startName: "MLP_24_bwd"
     endName: "MLP_23_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 64
@@ -3106,6 +3168,7 @@ dataflow_graph {
     id: 63
     startName: "MLP_23_bwd"
     endName: "MLP_22_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 65
@@ -3115,6 +3178,7 @@ dataflow_graph {
     id: 64
     startName: "MLP_22_bwd"
     endName: "MLP_21_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 66
@@ -3124,6 +3188,7 @@ dataflow_graph {
     id: 65
     startName: "MLP_21_bwd"
     endName: "MLP_20_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 67
@@ -3133,6 +3198,7 @@ dataflow_graph {
     id: 66
     startName: "MLP_20_bwd"
     endName: "MLP_19_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 68
@@ -3142,6 +3208,7 @@ dataflow_graph {
     id: 67
     startName: "MLP_19_bwd"
     endName: "MLP_18_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 69
@@ -3151,6 +3218,7 @@ dataflow_graph {
     id: 68
     startName: "MLP_18_bwd"
     endName: "MLP_17_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 70
@@ -3160,6 +3228,7 @@ dataflow_graph {
     id: 69
     startName: "MLP_17_bwd"
     endName: "MLP_16_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 71
@@ -3169,6 +3238,7 @@ dataflow_graph {
     id: 70
     startName: "MLP_16_bwd"
     endName: "MLP_15_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 72
@@ -3178,6 +3248,7 @@ dataflow_graph {
     id: 71
     startName: "MLP_15_bwd"
     endName: "MLP_14_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 73
@@ -3187,6 +3258,7 @@ dataflow_graph {
     id: 72
     startName: "MLP_14_bwd"
     endName: "MLP_13_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 74
@@ -3196,6 +3268,7 @@ dataflow_graph {
     id: 73
     startName: "MLP_13_bwd"
     endName: "MLP_12_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 75
@@ -3205,6 +3278,7 @@ dataflow_graph {
     id: 74
     startName: "MLP_12_bwd"
     endName: "MLP_11_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 76
@@ -3214,6 +3288,7 @@ dataflow_graph {
     id: 75
     startName: "MLP_11_bwd"
     endName: "MLP_10_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 77
@@ -3223,6 +3298,7 @@ dataflow_graph {
     id: 76
     startName: "MLP_10_bwd"
     endName: "MLP_9_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 78
@@ -3232,6 +3308,7 @@ dataflow_graph {
     id: 77
     startName: "MLP_9_bwd"
     endName: "MLP_8_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 79
@@ -3241,6 +3318,7 @@ dataflow_graph {
     id: 78
     startName: "MLP_8_bwd"
     endName: "MLP_7_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 80
@@ -3250,6 +3328,7 @@ dataflow_graph {
     id: 79
     startName: "MLP_7_bwd"
     endName: "MLP_6_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 81
@@ -3259,6 +3338,7 @@ dataflow_graph {
     id: 80
     startName: "MLP_6_bwd"
     endName: "MLP_5_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 82
@@ -3268,6 +3348,7 @@ dataflow_graph {
     id: 81
     startName: "MLP_5_bwd"
     endName: "MLP_4_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 83
@@ -3277,6 +3358,7 @@ dataflow_graph {
     id: 82
     startName: "MLP_4_bwd"
     endName: "MLP_3_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 84
@@ -3286,6 +3368,7 @@ dataflow_graph {
     id: 83
     startName: "MLP_3_bwd"
     endName: "MLP_2_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 85
@@ -3295,6 +3378,7 @@ dataflow_graph {
     id: 84
     startName: "MLP_2_bwd"
     endName: "MLP_1_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 1
@@ -3304,6 +3388,7 @@ dataflow_graph {
     id: 85
     startName: "MLP_1"
     endName: "MLP_2_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 2
@@ -3313,6 +3398,7 @@ dataflow_graph {
     id: 86
     startName: "MLP_2"
     endName: "MLP_3_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 3
@@ -3322,6 +3408,7 @@ dataflow_graph {
     id: 87
     startName: "MLP_3"
     endName: "MLP_4_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 4
@@ -3331,6 +3418,7 @@ dataflow_graph {
     id: 88
     startName: "MLP_4"
     endName: "MLP_5_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 5
@@ -3340,6 +3428,7 @@ dataflow_graph {
     id: 89
     startName: "MLP_5"
     endName: "MLP_6_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 6
@@ -3349,6 +3438,7 @@ dataflow_graph {
     id: 90
     startName: "MLP_6"
     endName: "MLP_7_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 7
@@ -3358,6 +3448,7 @@ dataflow_graph {
     id: 91
     startName: "MLP_7"
     endName: "MLP_8_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 8
@@ -3367,6 +3458,7 @@ dataflow_graph {
     id: 92
     startName: "MLP_8"
     endName: "MLP_9_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 9
@@ -3376,6 +3468,7 @@ dataflow_graph {
     id: 93
     startName: "MLP_9"
     endName: "MLP_10_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 10
@@ -3385,6 +3478,7 @@ dataflow_graph {
     id: 94
     startName: "MLP_10"
     endName: "MLP_11_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 11
@@ -3394,6 +3488,7 @@ dataflow_graph {
     id: 95
     startName: "MLP_11"
     endName: "MLP_12_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 12
@@ -3403,6 +3498,7 @@ dataflow_graph {
     id: 96
     startName: "MLP_12"
     endName: "MLP_13_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 13
@@ -3412,6 +3508,7 @@ dataflow_graph {
     id: 97
     startName: "MLP_13"
     endName: "MLP_14_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 14
@@ -3421,6 +3518,7 @@ dataflow_graph {
     id: 98
     startName: "MLP_14"
     endName: "MLP_15_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 15
@@ -3430,6 +3528,7 @@ dataflow_graph {
     id: 99
     startName: "MLP_15"
     endName: "MLP_16_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 16
@@ -3439,6 +3538,7 @@ dataflow_graph {
     id: 100
     startName: "MLP_16"
     endName: "MLP_17_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 17
@@ -3448,6 +3548,7 @@ dataflow_graph {
     id: 101
     startName: "MLP_17"
     endName: "MLP_18_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 18
@@ -3457,6 +3558,7 @@ dataflow_graph {
     id: 102
     startName: "MLP_18"
     endName: "MLP_19_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 19
@@ -3466,6 +3568,7 @@ dataflow_graph {
     id: 103
     startName: "MLP_19"
     endName: "MLP_20_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 20
@@ -3475,6 +3578,7 @@ dataflow_graph {
     id: 104
     startName: "MLP_20"
     endName: "MLP_21_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 21
@@ -3484,6 +3588,7 @@ dataflow_graph {
     id: 105
     startName: "MLP_21"
     endName: "MLP_22_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 22
@@ -3493,6 +3598,7 @@ dataflow_graph {
     id: 106
     startName: "MLP_22"
     endName: "MLP_23_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 23
@@ -3502,6 +3608,7 @@ dataflow_graph {
     id: 107
     startName: "MLP_23"
     endName: "MLP_24_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 24
@@ -3511,6 +3618,7 @@ dataflow_graph {
     id: 108
     startName: "MLP_24"
     endName: "MLP_25_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 25
@@ -3520,6 +3628,7 @@ dataflow_graph {
     id: 109
     startName: "MLP_25"
     endName: "MLP_26_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 26
@@ -3529,6 +3638,7 @@ dataflow_graph {
     id: 110
     startName: "MLP_26"
     endName: "MLP_27_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 27
@@ -3538,6 +3648,7 @@ dataflow_graph {
     id: 111
     startName: "MLP_27"
     endName: "MLP_28_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 28
@@ -3547,6 +3658,7 @@ dataflow_graph {
     id: 112
     startName: "MLP_28"
     endName: "MLP_29_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 29
@@ -3556,6 +3668,7 @@ dataflow_graph {
     id: 113
     startName: "MLP_29"
     endName: "MLP_30_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 30
@@ -3565,6 +3678,7 @@ dataflow_graph {
     id: 114
     startName: "MLP_30"
     endName: "MLP_31_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 31
@@ -3574,6 +3688,7 @@ dataflow_graph {
     id: 115
     startName: "MLP_31"
     endName: "MLP_32_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 32
@@ -3583,6 +3698,7 @@ dataflow_graph {
     id: 116
     startName: "MLP_32"
     endName: "MLP_33_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 33
@@ -3592,6 +3708,7 @@ dataflow_graph {
     id: 117
     startName: "MLP_33"
     endName: "MLP_34_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 34
@@ -3601,6 +3718,7 @@ dataflow_graph {
     id: 118
     startName: "MLP_34"
     endName: "MLP_35_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 35
@@ -3610,6 +3728,7 @@ dataflow_graph {
     id: 119
     startName: "MLP_35"
     endName: "MLP_36_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 36
@@ -3619,6 +3738,7 @@ dataflow_graph {
     id: 120
     startName: "MLP_36"
     endName: "MLP_37_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 37
@@ -3628,6 +3748,7 @@ dataflow_graph {
     id: 121
     startName: "MLP_37"
     endName: "MLP_38_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 38
@@ -3637,6 +3758,7 @@ dataflow_graph {
     id: 122
     startName: "MLP_38"
     endName: "MLP_39_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 39
@@ -3646,6 +3768,7 @@ dataflow_graph {
     id: 123
     startName: "MLP_39"
     endName: "MLP_40_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 40
@@ -3655,6 +3778,7 @@ dataflow_graph {
     id: 124
     startName: "MLP_40"
     endName: "MLP_41_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 41
@@ -3664,6 +3788,7 @@ dataflow_graph {
     id: 125
     startName: "MLP_41"
     endName: "MLP_42_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 42
@@ -3673,6 +3798,7 @@ dataflow_graph {
     id: 126
     startName: "MLP_42"
     endName: "MLP_43_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 44
@@ -3682,6 +3808,7 @@ dataflow_graph {
     id: 127
     startName: "MLP_43_bwd"
     endName: "MLP_42_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 45
@@ -3691,6 +3818,7 @@ dataflow_graph {
     id: 128
     startName: "MLP_42_bwd"
     endName: "MLP_41_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 46
@@ -3700,6 +3828,7 @@ dataflow_graph {
     id: 129
     startName: "MLP_41_bwd"
     endName: "MLP_40_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 47
@@ -3709,6 +3838,7 @@ dataflow_graph {
     id: 130
     startName: "MLP_40_bwd"
     endName: "MLP_39_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 48
@@ -3718,6 +3848,7 @@ dataflow_graph {
     id: 131
     startName: "MLP_39_bwd"
     endName: "MLP_38_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 49
@@ -3727,6 +3858,7 @@ dataflow_graph {
     id: 132
     startName: "MLP_38_bwd"
     endName: "MLP_37_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 50
@@ -3736,6 +3868,7 @@ dataflow_graph {
     id: 133
     startName: "MLP_37_bwd"
     endName: "MLP_36_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 51
@@ -3745,6 +3878,7 @@ dataflow_graph {
     id: 134
     startName: "MLP_36_bwd"
     endName: "MLP_35_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 52
@@ -3754,6 +3888,7 @@ dataflow_graph {
     id: 135
     startName: "MLP_35_bwd"
     endName: "MLP_34_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 53
@@ -3763,6 +3898,7 @@ dataflow_graph {
     id: 136
     startName: "MLP_34_bwd"
     endName: "MLP_33_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 54
@@ -3772,6 +3908,7 @@ dataflow_graph {
     id: 137
     startName: "MLP_33_bwd"
     endName: "MLP_32_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 55
@@ -3781,6 +3918,7 @@ dataflow_graph {
     id: 138
     startName: "MLP_32_bwd"
     endName: "MLP_31_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 56
@@ -3790,6 +3928,7 @@ dataflow_graph {
     id: 139
     startName: "MLP_31_bwd"
     endName: "MLP_30_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 57
@@ -3799,6 +3938,7 @@ dataflow_graph {
     id: 140
     startName: "MLP_30_bwd"
     endName: "MLP_29_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 58
@@ -3808,6 +3948,7 @@ dataflow_graph {
     id: 141
     startName: "MLP_29_bwd"
     endName: "MLP_28_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 59
@@ -3817,6 +3958,7 @@ dataflow_graph {
     id: 142
     startName: "MLP_28_bwd"
     endName: "MLP_27_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 60
@@ -3826,6 +3968,7 @@ dataflow_graph {
     id: 143
     startName: "MLP_27_bwd"
     endName: "MLP_26_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 61
@@ -3835,6 +3978,7 @@ dataflow_graph {
     id: 144
     startName: "MLP_26_bwd"
     endName: "MLP_25_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 62
@@ -3844,6 +3988,7 @@ dataflow_graph {
     id: 145
     startName: "MLP_25_bwd"
     endName: "MLP_24_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 63
@@ -3853,6 +3998,7 @@ dataflow_graph {
     id: 146
     startName: "MLP_24_bwd"
     endName: "MLP_23_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 64
@@ -3862,6 +4008,7 @@ dataflow_graph {
     id: 147
     startName: "MLP_23_bwd"
     endName: "MLP_22_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 65
@@ -3871,6 +4018,7 @@ dataflow_graph {
     id: 148
     startName: "MLP_22_bwd"
     endName: "MLP_21_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 66
@@ -3880,6 +4028,7 @@ dataflow_graph {
     id: 149
     startName: "MLP_21_bwd"
     endName: "MLP_20_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 67
@@ -3889,6 +4038,7 @@ dataflow_graph {
     id: 150
     startName: "MLP_20_bwd"
     endName: "MLP_19_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 68
@@ -3898,6 +4048,7 @@ dataflow_graph {
     id: 151
     startName: "MLP_19_bwd"
     endName: "MLP_18_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 69
@@ -3907,6 +4058,7 @@ dataflow_graph {
     id: 152
     startName: "MLP_18_bwd"
     endName: "MLP_17_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 70
@@ -3916,6 +4068,7 @@ dataflow_graph {
     id: 153
     startName: "MLP_17_bwd"
     endName: "MLP_16_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 71
@@ -3925,6 +4078,7 @@ dataflow_graph {
     id: 154
     startName: "MLP_16_bwd"
     endName: "MLP_15_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 72
@@ -3934,6 +4088,7 @@ dataflow_graph {
     id: 155
     startName: "MLP_15_bwd"
     endName: "MLP_14_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 73
@@ -3943,6 +4098,7 @@ dataflow_graph {
     id: 156
     startName: "MLP_14_bwd"
     endName: "MLP_13_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 74
@@ -3952,6 +4108,7 @@ dataflow_graph {
     id: 157
     startName: "MLP_13_bwd"
     endName: "MLP_12_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 75
@@ -3961,6 +4118,7 @@ dataflow_graph {
     id: 158
     startName: "MLP_12_bwd"
     endName: "MLP_11_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 76
@@ -3970,6 +4128,7 @@ dataflow_graph {
     id: 159
     startName: "MLP_11_bwd"
     endName: "MLP_10_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 77
@@ -3979,6 +4138,7 @@ dataflow_graph {
     id: 160
     startName: "MLP_10_bwd"
     endName: "MLP_9_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 78
@@ -3988,6 +4148,7 @@ dataflow_graph {
     id: 161
     startName: "MLP_9_bwd"
     endName: "MLP_8_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 79
@@ -3997,6 +4158,7 @@ dataflow_graph {
     id: 162
     startName: "MLP_8_bwd"
     endName: "MLP_7_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 80
@@ -4006,6 +4168,7 @@ dataflow_graph {
     id: 163
     startName: "MLP_7_bwd"
     endName: "MLP_6_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 81
@@ -4015,6 +4178,7 @@ dataflow_graph {
     id: 164
     startName: "MLP_6_bwd"
     endName: "MLP_5_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 82
@@ -4024,6 +4188,7 @@ dataflow_graph {
     id: 165
     startName: "MLP_5_bwd"
     endName: "MLP_4_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 83
@@ -4033,6 +4198,7 @@ dataflow_graph {
     id: 166
     startName: "MLP_4_bwd"
     endName: "MLP_3_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 84
@@ -4042,6 +4208,7 @@ dataflow_graph {
     id: 167
     startName: "MLP_3_bwd"
     endName: "MLP_2_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 85
@@ -4051,6 +4218,7 @@ dataflow_graph {
     id: 168
     startName: "MLP_2_bwd"
     endName: "MLP_1_bwd_weight_update"
+    lane_stage_type: LANE
   }
 }
 system {
@@ -4083,19 +4251,19 @@ cost {
   dram_unit_power: 0.16248
   accelerator_power: 511.57712
 }
-miscellany {
+execution {
   dlrm {
     num_table: 50
     emb_dim: 92
     row: 72173913
     global_batch_size: 128000000
+    num_copy: 1
   }
   execution_style: KERNEL_BY_KERNEL
-  compute_util: 0.9
+  overlap: PERFECT_OVERLAP
   word: 2
 }
 gurobi {
-  thread: 144
   gap: 0.001
-  time: 3600
+  time: 180
 }

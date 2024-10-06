@@ -944,11 +944,6 @@ connections {
 }
 system {
 	num_chip: 16
-	r {
-		x: 16
-		link_bw_x: 50.0
-		par_x: "DP"
-	}
 	accelerator {
 		core: 640
 		systolic_width: 32
@@ -958,6 +953,11 @@ system {
 	}
 	memory {
 		dram_bw: 400.0
+	}
+  r {
+		x: 16
+		link_bw_x: 50.0
+		par_x: "DP"
 	}
 }
 cost {
@@ -972,7 +972,7 @@ cost {
   dram_unit_power: 0.16248
   accelerator_power: 750
 }
-miscellany {
+execution {
 	llm {
 		hidden_dim: 5120
 		head_dim: 128
@@ -981,17 +981,15 @@ miscellany {
 		num_layer: 40
 		global_batch_size: 8192
 		micro_batch_size: 1
-		
-		tile_size: 4096
+		num_layer_in_graph: 1
 	}
 	execution_style: KERNEL_BY_KERNEL
 	#num_config: 6
-	perfect_overlap: true
-	compute_util: 0.9
+	overlap: PERFECT_OVERLAP
+	#compute_util: 0.9
 	word: 2
 }
 gurobi {
-  thread: 144
   gap: 0.001
-  time: 1200
+  time: 180
 }

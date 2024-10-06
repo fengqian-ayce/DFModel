@@ -429,7 +429,7 @@ system {
     par_x: "TP"
   }
   memory {
-    dram_bw: 3440.64
+    dram_bw: 2039.0
     dram_cap: 85899350000.0
   }
 }
@@ -455,7 +455,9 @@ execution {
     num_layer_in_graph: 1
   }
   execution_style: KERNEL_BY_KERNEL
+  overlap: PERFECT_OVERLAP
   word: 2
+  separate_rs_ag_for_ar: true
 }
 gurobi {
   gap: 0.001

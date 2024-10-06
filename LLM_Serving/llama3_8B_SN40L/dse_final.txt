@@ -675,7 +675,7 @@ system {
     par_x: "TP"
   }
   memory {
-    dram_bw: 1638.0
+    dram_bw: 1310.72
     dram_cap: 68719480000.0
   }
 }
@@ -702,6 +702,7 @@ execution {
   }
   execution_style: DATAFLOW
   num_config: 1
+  overlap: NO_OVERLAP
   word: 2
 }
 gurobi {

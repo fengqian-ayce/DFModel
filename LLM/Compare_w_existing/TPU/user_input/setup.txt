@@ -955,9 +955,9 @@ system {
 	  x: 8
 	  y: 16
 	  z: 4
-	  link_bw_x: 25.0
-	  link_bw_y: 25.0
-	  link_bw_z: 25.0
+	  link_bw_x: 50.0
+	  link_bw_y: 50.0
+	  link_bw_z: 50.0
 	  par_x: "TP"
     par_y: "PP"
     par_z: "DP"
@@ -991,12 +991,12 @@ execution {
 		num_layer_in_graph: 1
 	}
 	execution_style: KERNEL_BY_KERNEL
-	perfect_overlap: false
+	overlap: NO_OVERLAP
+  separate_rs_ag_for_ar: true
 	#compute_util: 0.9
 	word: 2
 }
 gurobi {
-  thread: 144
   gap: 0.001
   time: 180
 }

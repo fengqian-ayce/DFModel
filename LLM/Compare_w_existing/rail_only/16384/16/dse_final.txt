@@ -30,8 +30,8 @@ dataflow_graph {
       input_tensor_size: 104857600.0
       output_tensor_size: 104857600.0
       sharding: NO_SHARDING
-      shard_outer_M: 25600
-      shard_N: 128
+      shard_outer_M: 25601
+      shard_N: 137
       tiling: N_TILING
     }
   }
@@ -887,7 +887,7 @@ dataflow_graph {
     endIdx: 3
     buffer_depth: 2
     tensor_size: 104857600.0
-    shard_tensor_size: 6553600.0
+    shard_tensor_size: 7014674.0
     id: 2
     startName: "LayerNorm_1"
     endName: "Q"
@@ -898,7 +898,7 @@ dataflow_graph {
     endIdx: 4
     buffer_depth: 2
     tensor_size: 104857600.0
-    shard_tensor_size: 6553600.0
+    shard_tensor_size: 7014674.0
     id: 3
     startName: "LayerNorm_1"
     endName: "K"
@@ -909,7 +909,7 @@ dataflow_graph {
     endIdx: 5
     buffer_depth: 2
     tensor_size: 104857600.0
-    shard_tensor_size: 6553600.0
+    shard_tensor_size: 7014674.0
     id: 4
     startName: "LayerNorm_1"
     endName: "V"
@@ -1414,7 +1414,7 @@ dataflow_graph {
     communication_size: -0.0
     buffer_depth: 9
     tensor_size: 104857600.0
-    shard_tensor_size: 6553600.0
+    shard_tensor_size: 7014674.0
     id: 49
     startName: "LayerNorm_1"
     endName: "V_bwd_weight_update"
@@ -1436,7 +1436,7 @@ dataflow_graph {
     endIdx: 40
     buffer_depth: 12
     tensor_size: 104857600.0
-    shard_tensor_size: 6553600.0
+    shard_tensor_size: 7014674.0
     id: 51
     startName: "LayerNorm_1"
     endName: "K_bwd_weight_update"
@@ -1458,7 +1458,7 @@ dataflow_graph {
     endIdx: 41
     buffer_depth: 12
     tensor_size: 104857600.0
-    shard_tensor_size: 6553600.0
+    shard_tensor_size: 7014674.0
     id: 53
     startName: "LayerNorm_1"
     endName: "Q_bwd_weight_update"
@@ -1510,15 +1510,13 @@ execution {
     num_layer: 128
     global_batch_size: 4096
     micro_batch_size: 1
-    tile_size: 2048
     num_layer_in_graph: 1
   }
   execution_style: KERNEL_BY_KERNEL
-  compute_util: 1.0
+  overlap: NO_OVERLAP
   word: 2
 }
 gurobi {
-  thread: 144
   gap: 0.001
-  time: 36000
+  time: 180
 }

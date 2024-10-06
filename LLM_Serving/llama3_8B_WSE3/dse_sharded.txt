@@ -620,12 +620,11 @@ system {
   }
   r {
     x: 1
-    link_bw_x: 10.0
+    link_bw_x: 28101836.0
     par_x: "DP"
   }
   memory {
     dram_bw: 15833498.0
-    dram_cap: 44238164000.0
   }
 }
 cost {
@@ -651,6 +650,7 @@ execution {
   }
   execution_style: DATAFLOW
   num_config: 1
+  overlap: NO_OVERLAP
   word: 2
 }
 gurobi {
