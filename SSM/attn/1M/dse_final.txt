@@ -1,0 +1,295 @@
+dataflow_graph {
+  kernels {
+    name: "Q"
+    id: 1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 2
+      M: 16
+      K: 32
+      N: 1048576
+      input_tensor_size: 67108864.0
+      weight_tensor_size: 2048.0
+      output_tensor_size: 67108864.0
+      sharding: OUTER_SHARDING
+      shard_outer_M: 726
+      shard_K: 234
+      shard_N: 12
+      tiling: N_TILING
+    }
+  }
+  kernels {
+    name: "K"
+    id: 2
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 2
+      M: 16
+      K: 32
+      N: 1048576
+      input_tensor_size: 67108864.0
+      weight_tensor_size: 2048.0
+      output_tensor_size: 67108864.0
+      sharding: OUTER_SHARDING
+      shard_outer_M: 32
+      shard_K: 42
+      shard_N: 84
+      tiling: N_TILING
+    }
+  }
+  kernels {
+    name: "V"
+    id: 3
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 2
+      M: 16
+      K: 32
+      N: 1048576
+      input_tensor_size: 67108864.0
+      weight_tensor_size: 2048.0
+      output_tensor_size: 67108864.0
+      sharding: OUTER_SHARDING
+      shard_outer_M: 32
+      shard_K: 32
+      shard_N: 12
+      tiling: N_TILING
+    }
+  }
+  kernels {
+    name: "MHA_GEMM_1"
+    id: 4
+    topological_number: 1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_input2 {
+      outer: 2
+      M: 1048576
+      K: 16
+      N: 1048576
+      input_tensor_1_size: 67108864.0
+      input_tensor_2_size: 67108864.0
+      output_tensor_size: 4398046500000.0
+      sharding: OUTER_SHARDING
+      shard_outer_M: 2097152
+      shard_K: 16
+      shard_N: 12
+      tiling: N_TILING
+    }
+  }
+  kernels {
+    name: "SOFTMAX"
+    id: 5
+    topological_number: 2
+    fwd_bwd: FWD
+    type: SIMD
+    elementwise_input1 {
+      outer: 2
+      M: 1048576
+      N: 1048576
+      input_tensor_size: 4398046500000.0
+      output_tensor_size: 4398046500000.0
+      sharding: OUTER_SHARDING
+      shard_outer_M: 2097152
+      shard_N: 12
+      tiling: N_TILING
+    }
+  }
+  kernels {
+    name: "MHA_GEMM_2"
+    id: 6
+    topological_number: 3
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_input2 {
+      outer: 2
+      M: 16
+      K: 1048576
+      N: 1048576
+      input_tensor_1_size: 67108864.0
+      input_tensor_2_size: 4398046500000.0
+      output_tensor_size: 67108864.0
+      sharding: OUTER_SHARDING
+      shard_outer_M: 32
+      shard_K: 12
+      shard_N: 1048576
+      tiling: K_TILING
+    }
+  }
+  kernels {
+    name: "FFN0"
+    id: 7
+    topological_number: 4
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 128
+      K: 32
+      N: 1048576
+      input_tensor_size: 67108864.0
+      weight_tensor_size: 8192.0
+      output_tensor_size: 268435460.0
+      sharding: M_SHARDING
+      shard_outer_M: 128
+      shard_K: 32
+      shard_N: 12
+      tiling: N_TILING
+    }
+  }
+  kernels {
+    name: "FFN1"
+    id: 8
+    topological_number: 5
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 32
+      K: 128
+      N: 1048576
+      input_tensor_size: 268435460.0
+      weight_tensor_size: 8192.0
+      output_tensor_size: 67108864.0
+      sharding: K_SHARDING
+      communication_type: ALL_REDUCE
+      communication_size: 67108864.0
+      shard_outer_M: 32
+      shard_K: 128
+      shard_N: 12
+      tiling: N_TILING
+    }
+  }
+  connections {
+    startIdx: 1
+    endIdx: 4
+    buffer_depth: 2
+    tensor_size: 67108864.0
+    shard_tensor_size: 17424.0
+    id: 1
+    startName: "Q"
+    endName: "MHA_GEMM_1"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 2
+    endIdx: 4
+    buffer_depth: 2
+    tensor_size: 67108864.0
+    shard_tensor_size: 5376.0
+    id: 2
+    startName: "K"
+    endName: "MHA_GEMM_1"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 4
+    endIdx: 5
+    buffer_depth: 2
+    tensor_size: 4398046500000.0
+    shard_tensor_size: 50331650.0
+    id: 3
+    startName: "MHA_GEMM_1"
+    endName: "SOFTMAX"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 5
+    endIdx: 6
+    buffer_depth: 2
+    tensor_size: 4398046500000.0
+    shard_tensor_size: 50331650.0
+    id: 4
+    startName: "SOFTMAX"
+    endName: "MHA_GEMM_2"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 3
+    endIdx: 6
+    buffer_depth: 4
+    tensor_size: 67108864.0
+    shard_tensor_size: 768.0
+    id: 5
+    startName: "V"
+    endName: "MHA_GEMM_2"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 6
+    endIdx: 7
+    communication_type: ALL_GATHER
+    communication_size: 67108864.0
+    buffer_depth: 2
+    tensor_size: 67108864.0
+    shard_tensor_size: 67108864.0
+    id: 6
+    startName: "MHA_GEMM_2"
+    endName: "FFN0"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 7
+    endIdx: 8
+    communication_size: -0.0
+    buffer_depth: 2
+    tensor_size: 268435460.0
+    shard_tensor_size: 3072.0
+    id: 7
+    startName: "FFN0"
+    endName: "FFN1"
+    lane_stage_type: LANE
+  }
+}
+system {
+  num_chip: 1
+  accelerator {
+    core: 520
+    systolic_width: 32
+    systolic_height: 12
+    sram_cap: 545259500.0
+    freq: 1.6
+  }
+  r {
+    link_bw_x: 10.0
+    par_x: "DP"
+  }
+  memory {
+    dram_bw: 1638.4
+    dram_cap: 68719480000.0
+  }
+}
+cost {
+  link_unit_price: 2.0
+  switch_unit_price: 24.0
+  dram_unit_price: 1.0
+  accelerator_price: 16522.25
+  link_unit_power_x: 0.052
+  link_unit_power_y: 0.052
+  switch_unit_power: 0.052
+  dram_unit_power: 0.16248
+  accelerator_power: 444.7062
+}
+execution {
+  llm {
+    hidden_dim: 32
+    head_dim: 16
+    num_head: 2
+    seq_len: 1048576
+    num_layer: 1
+    global_batch_size: 1
+    micro_batch_size: 1
+    num_layer_in_graph: 1
+  }
+  execution_style: DATAFLOW
+  num_config: 1
+  overlap: PERFECT_OVERLAP
+  word: 2
+}
+gurobi {
+  gap: 0.001
+  time: 180
+}

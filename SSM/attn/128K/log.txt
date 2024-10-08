@@ -1,0 +1,852 @@
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-11-05
+Set parameter NonConvex to value 2
+Set parameter MIPGap to value 0.001
+Set parameter Threads to value 144
+Gurobi Optimizer version 10.0.3 build v10.0.3rc0 (linux64)
+
+CPU model: Intel(R) Xeon(R) CPU E7-8890 v3 @ 2.50GHz, instruction set [SSE2|AVX|AVX2]
+Thread count: 72 physical cores, 144 logical processors, using up to 144 threads
+
+Optimize a model with 45 rows, 113 columns and 120 nonzeros
+Model fingerprint: 0x12333471
+Model has 14 quadratic constraints
+Model has 102 general constraints
+Variable types: 23 continuous, 90 integer (82 binary)
+Coefficient statistics:
+  Matrix range     [1e+00, 1e+00]
+  QMatrix range    [2e+00, 7e+10]
+  QLMatrix range   [1e+00, 1e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 3e+00]
+  RHS range        [1e+00, 1e+00]
+  GenCon rhs range [1e+00, 7e+10]
+  GenCon coe range [1e+00, 1e+00]
+Warning: Quadratic constraints contain large coefficient range
+Warning: Model contains large rhs on indicator constraints
+         Consider reformulating model or setting NumericFocus parameter
+         to avoid numerical issues.
+Presolve removed 41 rows and 104 columns
+Presolve time: 0.00s
+Presolved: 8 rows, 10 columns, 19 nonzeros
+Presolved model has 4 SOS constraint(s)
+Variable types: 2 continuous, 8 integer (5 binary)
+Found heuristic solution: objective 4.194304e+07
+
+Root relaxation: objective 0.000000e+00, 1 iterations, 0.00 seconds (0.00 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0    0.00000    0    1 4.1943e+07    0.00000   100%     -    0s
+H    0     0                    3.355443e+07    0.00000   100%     -    0s
+H    0     0                    1.677722e+07    0.00000   100%     -    0s
+
+Explored 1 nodes (1 simplex iterations) in 0.02 seconds (0.00 work units)
+Thread count was 144 (of 144 available processors)
+
+Solution count 3: 1.67772e+07 3.35544e+07 4.1943e+07 
+
+Optimal solution found (tolerance 1.00e-03)
+Best objective 1.677721600000e+07, best bound 1.677721600000e+07, gap 0.0000%
+sharding[0,0] 1.0
+sharding[0,1] 0.0
+sharding[0,2] 0.0
+sharding[0,3] 0.0
+sharding[0,4] 0.0
+sharding[1,0] 1.0
+sharding[1,1] 0.0
+sharding[1,2] 0.0
+sharding[1,3] 0.0
+sharding[1,4] 0.0
+sharding[2,0] 1.0
+sharding[2,1] 0.0
+sharding[2,2] 0.0
+sharding[2,3] 0.0
+sharding[2,4] 0.0
+sharding[3,0] 1.0
+sharding[3,1] 0.0
+sharding[3,2] 0.0
+sharding[3,3] 0.0
+sharding[3,4] 0.0
+sharding[4,0] 1.0
+sharding[4,1] 0.0
+sharding[4,2] 0.0
+sharding[4,3] 0.0
+sharding[4,4] 0.0
+sharding[5,0] 1.0
+sharding[5,1] 0.0
+sharding[5,2] 0.0
+sharding[5,3] 0.0
+sharding[5,4] 0.0
+sharding[6,0] 0.0
+sharding[6,1] 1.0
+sharding[6,2] 0.0
+sharding[6,3] 0.0
+sharding[6,4] 0.0
+sharding[7,0] 0.0
+sharding[7,1] 0.0
+sharding[7,2] 1.0
+sharding[7,3] 0.0
+sharding[7,4] 0.0
+communication_type[0] 0.0
+communication_type[1] 0.0
+communication_type[2] 0.0
+communication_type[3] 0.0
+communication_type[4] 0.0
+communication_type[5] 0.0
+communication_type[6] 0.0
+communication_type[7] 1.0
+communication_size[0] 0.0
+communication_size[1] 0.0
+communication_size[2] 0.0
+communication_size[3] 0.0
+communication_size[4] 0.0
+communication_size[5] 0.0
+communication_size[6] -0.0
+communication_size[7] 8388608.0
+upstream_sharding[0,0] 0.0
+upstream_sharding[0,1] 0.0
+upstream_sharding[0,2] 1.0
+upstream_sharding[1,0] 0.0
+upstream_sharding[1,1] 0.0
+upstream_sharding[1,2] 1.0
+upstream_sharding[2,0] 0.0
+upstream_sharding[2,1] 0.0
+upstream_sharding[2,2] 1.0
+upstream_sharding[3,0] 0.0
+upstream_sharding[3,1] 0.0
+upstream_sharding[3,2] 1.0
+upstream_sharding[4,0] 0.0
+upstream_sharding[4,1] 0.0
+upstream_sharding[4,2] 1.0
+upstream_sharding[5,0] 0.0
+upstream_sharding[5,1] 0.0
+upstream_sharding[5,2] 1.0
+upstream_sharding[6,0] 0.0
+upstream_sharding[6,1] 0.0
+upstream_sharding[6,2] 1.0
+downstream_sharding[0,0] 0.0
+downstream_sharding[0,1] 0.0
+downstream_sharding[0,2] 1.0
+downstream_sharding[1,0] 0.0
+downstream_sharding[1,1] 0.0
+downstream_sharding[1,2] 1.0
+downstream_sharding[2,0] 0.0
+downstream_sharding[2,1] 0.0
+downstream_sharding[2,2] 1.0
+downstream_sharding[3,0] 0.0
+downstream_sharding[3,1] 0.0
+downstream_sharding[3,2] 1.0
+downstream_sharding[4,0] 0.0
+downstream_sharding[4,1] 0.0
+downstream_sharding[4,2] 1.0
+downstream_sharding[5,0] 1.0
+downstream_sharding[5,1] 0.0
+downstream_sharding[5,2] 0.0
+downstream_sharding[6,0] 0.0
+downstream_sharding[6,1] 0.0
+downstream_sharding[6,2] 1.0
+edge_communication_type[0] 0.0
+edge_communication_type[1] 0.0
+edge_communication_type[2] 0.0
+edge_communication_type[3] 0.0
+edge_communication_type[4] 0.0
+edge_communication_type[5] 3.0
+edge_communication_type[6] 0.0
+edge_communication_size[0] 0.0
+edge_communication_size[1] 0.0
+edge_communication_size[2] 0.0
+edge_communication_size[3] 0.0
+edge_communication_size[4] 0.0
+edge_communication_size[5] 8388608.0
+edge_communication_size[6] -0.0
+total_communication_size 16777216.0
+Set parameter Username
+Academic license - for non-commercial use only - expires 2024-11-05
+Set parameter NonConvex to value 2
+Set parameter Threads to value 144
+Set parameter MIPGap to value 1.0000000474974513e-03
+Set parameter TimeLimit to value 180
+xxxxxxxxxxxx 0 1 4
+None
+xxxxxxxxxxxx 1 1 4
+None
+xxxxxxxxxxxx 2 1 4
+None
+xxxxxxxxxxxx 3 1 4
+None
+xxxxxxxxxxxx 4 1 4
+None
+xxxxxxxxxxxx 5 1 3
+None
+xxxxxxxxxxxx 6 2 4
+None
+xxxxxxxxxxxx 7 3 4
+None
+Gurobi Optimizer version 10.0.3 build v10.0.3rc0 (linux64)
+
+CPU model: Intel(R) Xeon(R) CPU E7-8890 v3 @ 2.50GHz, instruction set [SSE2|AVX|AVX2]
+Thread count: 72 physical cores, 144 logical processors, using up to 144 threads
+
+Optimize a model with 202 rows, 535 columns and 315 nonzeros
+Model fingerprint: 0x8f6883ea
+Model has 157 quadratic constraints
+Model has 253 general constraints
+Variable types: 165 continuous, 370 integer (203 binary)
+Coefficient statistics:
+  Matrix range     [1e-01, 5e+01]
+  QMatrix range    [5e-02, 3e+01]
+  QLMatrix range   [1e+00, 2e+00]
+  Objective range  [1e+00, 1e+00]
+  Bounds range     [1e+00, 1e+00]
+  RHS range        [1e+00, 7e+10]
+  QRHS range       [1e+00, 5e+05]
+  GenCon rhs range [1e+00, 5e+02]
+  GenCon coe range [1e+00, 1e+00]
+Warning: Model contains large rhs
+         Consider reformulating model or setting NumericFocus parameter
+         to avoid numerical issues.
+Presolve removed 176 rows and 408 columns
+Presolve time: 0.00s
+Presolved: 208 rows, 128 columns, 523 nonzeros
+Presolved model has 10 SOS constraint(s)
+Presolved model has 9 quadratic constraint(s)
+Presolved model has 53 bilinear constraint(s)
+Variable types: 27 continuous, 101 integer (10 binary)
+
+Root relaxation: objective 4.192000e+04, 18 iterations, 0.00 seconds (0.00 work units)
+
+    Nodes    |    Current Node    |     Objective Bounds      |     Work
+ Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
+
+     0     0 41919.9994    0   12          - 41919.9994      -     -    0s
+     0     0 83104.6753    0   22          - 83104.6753      -     -    0s
+H    0     0                    7.864335e+07 83104.6753   100%     -    0s
+     0     0 163302.295    0   47 7.8643e+07 163302.295   100%     -    0s
+     0     0 163302.295    0   47 7.8643e+07 163302.295   100%     -    0s
+     0     0 314115.515    0   49 7.8643e+07 314115.515   100%     -    0s
+     0     0 314115.515    0   49 7.8643e+07 314115.515   100%     -    0s
+     0     0 490001.392    0   67 7.8643e+07 490001.392  99.4%     -    0s
+     0     0 490001.392    0   67 7.8643e+07 490001.392  99.4%     -    0s
+     0     0 490001.757    0   67 7.8643e+07 490001.757  99.4%     -    0s
+     0     0 499268.368    0   67 7.8643e+07 499268.368  99.4%     -    0s
+     0     0 505305.968    0   67 7.8643e+07 505305.968  99.4%     -    0s
+     0     0 505305.968    0   67 7.8643e+07 505305.968  99.4%     -    0s
+     0     0 505306.143    0   67 7.8643e+07 505306.143  99.4%     -    0s
+     0     0 507608.079    0   66 7.8643e+07 507608.079  99.4%     -    0s
+     0     0 507890.740    0   66 7.8643e+07 507890.740  99.4%     -    0s
+     0     0 508037.675    0   66 7.8643e+07 508037.675  99.4%     -    0s
+     0     0 523373.904    0   57 7.8643e+07 523373.904  99.3%     -    0s
+     0     0 523373.904    0   57 7.8643e+07 523373.904  99.3%     -    0s
+     0     0 581874.605    0   47 7.8643e+07 581874.605  99.3%     -    0s
+     0     0 581874.605    0   47 7.8643e+07 581874.605  99.3%     -    0s
+     0     0 661472.299    0   69 7.8643e+07 661472.299  99.2%     -    0s
+     0     0 661472.299    0   69 7.8643e+07 661472.299  99.2%     -    0s
+     0     0 661551.735    0   69 7.8643e+07 661551.735  99.2%     -    0s
+     0     0 690102.374    0   69 7.8643e+07 690102.374  99.1%     -    0s
+     0     0 690102.374    0   69 7.8643e+07 690102.374  99.1%     -    0s
+     0     0 692218.927    0   68 7.8643e+07 692218.927  99.1%     -    0s
+     0     0 693396.504    0   68 7.8643e+07 693396.504  99.1%     -    0s
+     0     0 693776.882    0   68 7.8643e+07 693776.882  99.1%     -    0s
+     0     0 693834.662    0   68 7.8643e+07 693834.662  99.1%     -    0s
+     0     0 693863.179    0   68 7.8643e+07 693863.179  99.1%     -    0s
+     0     0 693864.173    0   68 7.8643e+07 693864.173  99.1%     -    0s
+     0     0 693864.173    0   68 7.8643e+07 693864.173  99.1%     -    0s
+     0     2 693864.173    0   68 7.8643e+07 693864.173  99.1%     -    0s
+H  931   991                    1.468040e+07 1884562.00  87.2%  15.8    0s
+H 1166   876                    1.363232e+07 1884562.00  86.2%  14.8    0s
+H 1346   876                    1.343488e+07 1884562.00  86.0%  13.5    0s
+H 1487   814                    1.258320e+07 1884562.00  85.0%  13.1    0s
+* 1913  1120              21    1.146880e+07 1884562.00  83.6%  12.7    0s
+H 2080  1120                    1.143936e+07 1884562.00  83.5%  12.6    0s
+H 2098  1120                    1.123021e+07 1884562.00  83.2%  12.5    0s
+
+Cutting planes:
+  Gomory: 6
+  MIR: 4
+  RLT: 3
+
+Explored 2139 nodes (28823 simplex iterations) in 1.68 seconds (0.65 work units)
+Thread count was 144 (of 144 available processors)
+
+Solution count 8: 1.12302e+07 1.14394e+07 1.14688e+07 ... 7.86433e+07
+
+Optimal solution found (tolerance 1.00e-03)
+Best objective 1.123020920766e+07, best bound 1.123020920766e+07, gap 0.0000%
+TP 1.0
+PP 1.0
+DP 1.0
+num_copy 1.0
+num_chips_per_copy 1.0
+ALL_REDUCE_ratio 0.0
+ALL_TO_ALL_ratio 0.0
+ALL_GATHER_ratio 0.0
+ALL_REDUCE_PERIODIC_ratio 0.0
+P2P_ratio 0.0
+Shape[0] 1.0
+Link_BW[0] 10.0
+Link_BW_TP 0.0
+Link_BW_PP 0.0
+Link_BW_DP 10.0
+C15 10.0
+layer_per_stage 1.0
+layers 1.0
+tile_size 48.0
+num_tile 10923.0
+shard_M[0] 32.0
+shard_M[1] 32.0
+shard_M[2] 32.0
+shard_M[3] 262144.0
+shard_M[4] 262144.0
+shard_M[5] 32.0
+shard_M[6] 128.0
+shard_M[7] 32.0
+shard_K[0] 35.0
+shard_K[1] 32.0
+shard_K[2] 32.0
+shard_K[3] 16.0
+shard_K[4] 1.0
+shard_K[5] 12.0
+shard_K[6] 32.0
+shard_K[7] 128.0
+shard_N[0] 12.0
+shard_N[1] 12.0
+shard_N[2] 12.0
+shard_N[3] 12.0
+shard_N[4] 12.0
+shard_N[5] 131072.0
+shard_N[6] 12.0
+shard_N[7] 12.0
+shard_intermediate_buffer_size[0] 768.0
+shard_intermediate_buffer_size[1] 768.0
+shard_intermediate_buffer_size[2] 6291456.0
+shard_intermediate_buffer_size[3] 6291456.0
+shard_intermediate_buffer_size[4] 768.0
+shard_intermediate_buffer_size[5] 8388608.0
+shard_intermediate_buffer_size[6] 3072.0
+shard_initiation_buffer_size[0] 2240.0
+shard_initiation_buffer_size[1] 2048.0
+shard_initiation_buffer_size[2] 2048.0
+shard_initiation_buffer_size[3] 8192.0
+shard_initiation_buffer_size[4] 8192.0
+Micro_Batch_Size 1.0
+num_micro_batch_per_pipeline 1.0
+C58 1.0
+ALL_REDUCE_communication_size_node[0] 0.0
+ALL_REDUCE_communication_size_node[1] 0.0
+ALL_REDUCE_communication_size_node[2] 0.0
+ALL_REDUCE_communication_size_node[3] 0.0
+ALL_REDUCE_communication_size_node[4] 0.0
+ALL_REDUCE_communication_size_node[5] 0.0
+ALL_REDUCE_communication_size_node[6] 0.0
+ALL_REDUCE_communication_size_node[7] 768.0
+ALL_TO_ALL_communication_size_node[0] 0.0
+ALL_TO_ALL_communication_size_node[1] 0.0
+ALL_TO_ALL_communication_size_node[2] 0.0
+ALL_TO_ALL_communication_size_node[3] 0.0
+ALL_TO_ALL_communication_size_node[4] 0.0
+ALL_TO_ALL_communication_size_node[5] 0.0
+ALL_TO_ALL_communication_size_node[6] 0.0
+ALL_TO_ALL_communication_size_node[7] 0.0
+ALL_GATHER_communication_size_node[0] 0.0
+ALL_GATHER_communication_size_node[1] 0.0
+ALL_GATHER_communication_size_node[2] 0.0
+ALL_GATHER_communication_size_node[3] 0.0
+ALL_GATHER_communication_size_node[4] 0.0
+ALL_GATHER_communication_size_node[5] 0.0
+ALL_GATHER_communication_size_node[6] 0.0
+ALL_GATHER_communication_size_node[7] 0.0
+ALL_REDUCE_PERIODIC_communication_size_node[0] 0.0
+ALL_REDUCE_PERIODIC_communication_size_node[1] 0.0
+ALL_REDUCE_PERIODIC_communication_size_node[2] 0.0
+ALL_REDUCE_PERIODIC_communication_size_node[3] 0.0
+ALL_REDUCE_PERIODIC_communication_size_node[4] 0.0
+ALL_REDUCE_PERIODIC_communication_size_node[5] 0.0
+ALL_REDUCE_PERIODIC_communication_size_node[6] 0.0
+ALL_REDUCE_PERIODIC_communication_size_node[7] 0.0
+ALL_REDUCE_communication_size_edge[0] 0.0
+ALL_REDUCE_communication_size_edge[1] 0.0
+ALL_REDUCE_communication_size_edge[2] 0.0
+ALL_REDUCE_communication_size_edge[3] 0.0
+ALL_REDUCE_communication_size_edge[4] 0.0
+ALL_REDUCE_communication_size_edge[5] 0.0
+ALL_REDUCE_communication_size_edge[6] 0.0
+ALL_TO_ALL_communication_size_edge[0] 0.0
+ALL_TO_ALL_communication_size_edge[1] 0.0
+ALL_TO_ALL_communication_size_edge[2] 0.0
+ALL_TO_ALL_communication_size_edge[3] 0.0
+ALL_TO_ALL_communication_size_edge[4] 0.0
+ALL_TO_ALL_communication_size_edge[5] 0.0
+ALL_TO_ALL_communication_size_edge[6] 0.0
+ALL_GATHER_communication_size_edge[0] 0.0
+ALL_GATHER_communication_size_edge[1] 0.0
+ALL_GATHER_communication_size_edge[2] 0.0
+ALL_GATHER_communication_size_edge[3] 0.0
+ALL_GATHER_communication_size_edge[4] 0.0
+ALL_GATHER_communication_size_edge[5] 8388608.0
+ALL_GATHER_communication_size_edge[6] 0.0
+Config[0] 0.0
+Config[1] 0.0
+Config[2] 0.0
+Config[3] 0.0
+Config[4] 0.0
+Config[5] 0.0
+Config[6] 0.0
+Config[7] 0.0
+A[0,0] 1.0
+A[1,0] 1.0
+A[2,0] 1.0
+A[3,0] 1.0
+A[4,0] 1.0
+A[5,0] 1.0
+A[6,0] 1.0
+A[7,0] 1.0
+B[0,0] 1.0
+B[1,0] 1.0
+B[2,0] 1.0
+B[3,0] 1.0
+B[4,0] 1.0
+B[5,0] 1.0
+B[6,0] 1.0
+D[0,0] 0.0
+D[1,0] 0.0
+D[2,0] 0.0
+D[3,0] 0.0
+D[4,0] 0.0
+D[5,0] 0.0
+D[6,0] 0.0
+Z[0,0] 1.0
+Z[1,0] 1.0
+Z[2,0] 1.0
+Z[3,0] 1.0
+Z[4,0] 1.0
+Z[5,0] 1.0
+Z[6,0] 1.0
+E[0,0] 0.0
+E[1,0] 0.0
+E[2,0] 0.0
+E[3,0] 0.0
+E[4,0] 0.0
+E[5,0] 0.0
+E[6,0] 0.0
+H[0,0] 1.0
+H[1,0] 1.0
+H[2,0] 1.0
+H[3,0] 1.0
+H[4,0] 1.0
+H[5,0] 1.0
+H[6,0] 1.0
+F[0,0] 1.0
+F[1,0] 1.0
+F[2,0] 1.0
+F[3,0] 1.0
+F[4,0] 1.0
+Par_lane[0] 1.0
+Par_lane[1] 1.0
+Par_lane[2] 1.0
+Par_lane[3] 256.0
+Par_lane[4] 60.0
+Par_lane[5] 1.0
+Par_lane[6] 1.0
+Par_lane[7] 1.0
+Par_stage[0] 1.0
+Par_stage[1] 1.0
+Par_stage[2] 1.0
+Par_stage[3] 1.0
+Par_stage[4] 1.0
+Par_stage[5] 199.0
+Par_stage[6] 1.0
+Par_stage[7] 1.0
+Par_total[0] 1.0
+Par_total[1] 1.0
+Par_total[2] 1.0
+Par_total[3] 256.0
+Par_total[4] 60.0
+Par_total[5] 199.0
+Par_total[6] 1.0
+Par_total[7] 1.0
+C192 1.0
+C193 1.0
+C194 0.0
+C195 0.0
+C196 1.0
+C197 1.0
+C198 1.0
+C199 0.0
+C200 0.0
+C201 1.0
+C202 1.0
+C203 1.0
+C204 0.0
+C205 0.0
+C206 1.0
+C207 1.0
+C208 1.0
+C209 0.0
+C210 0.0
+C211 1.0
+C212 1.0
+C213 1.0
+C214 0.0
+C215 0.0
+C216 1.0
+C217 1.0
+C218 1.0
+C219 0.0
+C220 0.0
+C221 1.0
+C222 1.0
+C223 1.0
+C224 0.0
+C225 0.0
+C226 1.0
+C227 1.0
+C228 0.0
+C229 0.0
+C230 1.0
+C231 1.0
+C232 1.0
+C233 1.0
+C234 1.0
+C235 1.0
+C236 0.0
+C237 0.0
+C238 1.0
+C239 0.0
+C240 0.0
+C241 1.0
+C242 1.0
+C243 1.0
+C244 1.0
+C245 1.0
+C246 1.0
+C247 0.0
+C248 0.0
+C249 1.0
+C250 0.0
+C251 0.0
+C252 1.0
+C253 1.0
+C254 1.0
+C255 1.0
+C256 1.0
+C257 1.0
+C258 0.0
+C259 0.0
+C260 1.0
+C261 0.0
+C262 0.0
+C263 1.0
+C264 1.0
+C265 1.0
+C266 1.0
+C267 1.0
+C268 1.0
+C269 0.0
+C270 0.0
+C271 1.0
+C272 0.0
+C273 0.0
+C274 1.0
+C275 1.0
+C276 1.0
+C277 1.0
+C278 1.0
+C279 1.0
+C280 0.0
+C281 0.0
+C282 1.0
+C283 0.0
+C284 0.0
+C285 1.0
+C286 1.0
+C287 1.0
+C288 1.0
+C289 1.0
+C290 1.0
+C291 0.0
+C292 0.0
+C293 1.0
+C294 0.0
+C295 0.0
+C296 1.0
+C297 1.0
+C298 1.0
+C299 1.0
+C300 1.0
+C301 1.0
+C302 0.0
+C303 0.0
+shard_intermediate_buffer_size_depth_original[0] 478126400.0
+shard_intermediate_buffer_size_depth_original[1] 1536.0
+shard_intermediate_buffer_size_depth_original[2] 12582912.0
+shard_intermediate_buffer_size_depth_original[3] 12582912.0
+shard_intermediate_buffer_size_depth_original[4] 12582912.0
+shard_intermediate_buffer_size_depth_original[5] 16777216.0
+shard_intermediate_buffer_size_depth_original[6] 12582912.0
+shard_intermediate_buffer_size_depth_two[0] 1536.0
+shard_intermediate_buffer_size_depth_two[1] 1536.0
+shard_intermediate_buffer_size_depth_two[2] 12582912.0
+shard_intermediate_buffer_size_depth_two[3] 12582912.0
+shard_intermediate_buffer_size_depth_two[4] 12582912.0
+shard_intermediate_buffer_size_depth_two[5] 16777216.0
+shard_intermediate_buffer_size_depth_two[6] 12582912.0
+shard_initiation_buffer_size_depth_one[0] 2240.0
+shard_initiation_buffer_size_depth_one[1] 2048.0
+shard_initiation_buffer_size_depth_one[2] 2048.0
+shard_initiation_buffer_size_depth_one[3] 8192.0
+shard_initiation_buffer_size_depth_one[4] 8192.0
+tiling_factor[0] 1.0
+tiling_factor[1] 1.0
+tiling_factor[2] 1.0
+tiling_factor[3] 1.0
+tiling_factor[4] 1.0
+tiling_factor[5] 1.0
+tiling_factor[6] 1.0
+tiling_factor[7] 1.0
+C331 0.0
+C332 0.0
+C333 0.0
+C334 0.0
+C335 0.0
+C336 0.0
+C337 0.0
+C338 0.0
+SRAM_Per_Config_total[0] 545259520.0
+SRAM_Per_Config_intermediate_dram[0] 0.0
+SRAM_Per_Config_intermediate_onchip[0] 545236800.0
+SRAM_Per_Config_initiation[0] 22720.0
+dram_bytes_per_config_intermediate[0] 0.0
+dram_bytes_per_config_initiation[0] 22720.0
+C345 0.0
+dram_bytes_initiation 22720.0
+dram_bytes_intermediate 0.0
+dram_bytes_total 22720.0
+weight 22720.0
+activation 0.0
+DRAM_BW 1638.4000244140625
+Cycle[0] 1645.0000000000002
+Cycle[1] 32.0
+Cycle[2] 32.0
+Cycle[3] 512.0
+Cycle[4] 1644.0
+Cycle[5] 660.0
+Cycle[6] 128.0
+Cycle[7] 128.0
+Cycle_w_streaming[0] 1645.0000000000002
+Cycle_w_streaming[1] 32.0
+Cycle_w_streaming[2] 32.0
+Cycle_w_streaming[3] 512.0
+Cycle_w_streaming[4] 1644.0
+Cycle_w_streaming[5] 660.0
+Cycle_w_streaming[6] 128.0
+Cycle_w_streaming[7] 128.0
+m_factor[0] 47.0
+m_factor[1] 1.0
+m_factor[2] 1.0
+m_factor[3] 32.0
+m_factor[4] 137.0
+m_factor[5] 1.0
+m_factor[6] 4.0
+m_factor[7] 1.0
+n_factor[0] 1.0
+n_factor[1] 1.0
+n_factor[2] 1.0
+n_factor[3] 1.0
+n_factor[4] 1.0
+n_factor[5] 55.0
+n_factor[6] 1.0
+n_factor[7] 1.0
+MMM[0] 47.0
+MMM[1] 1.0
+MMM[2] 1.0
+MMM[3] 32.0
+MMM[4] 137.0
+MMM[5] 1.0
+MMM[6] 4.0
+MMM[7] 1.0
+KKK[0] 35.0
+KKK[1] 32.0
+KKK[2] 32.0
+KKK[3] 16.0
+KKK[4] 1.0
+KKK[5] 12.0
+KKK[6] 32.0
+KKK[7] 128.0
+NNN[0] 1.0
+NNN[1] 1.0
+NNN[2] 1.0
+NNN[3] 1.0
+NNN[4] 12.0
+NNN[5] 55.0
+NNN[6] 1.0
+NNN[7] 1.0
+C408 47.0
+C409 1.0
+C410 1.0
+C411 32.0
+C412 55.0
+C413 4.0
+C414 1.0
+Compute_Latency[0] 11230209.207656842
+C416 1645.0000000000002
+C417 32.0
+C418 32.0
+C419 512.0
+C420 1644.0
+C421 660.0
+C422 128.0
+C423 128.0
+C424 1645.0
+Memory_Latency[0] 0.0
+memory_latency[0] 0.0
+explicit_memory_latency[0] 0.0
+C428 0.0
+Network_Latency[0] 0.0
+p2p_latency 0.0
+Network_Latency_ALL_REDUCE_node[0] 0.0
+C432 0.0
+C433 0.0
+C434 0.0
+C435 0.0
+C436 0.0
+C437 0.0
+C438 0.0
+C439 768.0
+C440 0.0
+C441 0.0
+C442 0.0
+C443 0.0
+C444 0.0
+C445 0.0
+C446 0.0
+C447 1.0
+C448 0.0
+C449 768.0
+C450 0.0
+C451 0.0
+C452 0.0
+C453 0.0
+C454 0.0
+C455 0.0
+C456 0.0
+C457 0.0
+C458 1.0
+C459 0.0
+Network_Latency_ALL_TO_ALL_node[0] 0.0
+C461 0.0
+C462 0.0
+Network_Latency_ALL_GATHER_node[0] 0.0
+C464 0.0
+C465 0.0
+Network_Latency_ALL_REDUCE_PERIODIC_node[0] 0.0
+C467 0.0
+C468 0.0
+Network_Latency_ALL_REDUCE_edge[0] 0.0
+C470 0.0
+C471 0.0
+C472 0.0
+C473 0.0
+C474 0.0
+C475 0.0
+C476 0.0
+C477 0.0
+C478 0.0
+C479 0.0
+C480 0.0
+C481 0.0
+C482 0.0
+C483 0.0
+C484 0.0
+C485 0.0
+C486 0.0
+C487 0.0
+C488 0.0
+C489 0.0
+C490 0.0
+C491 0.0
+C492 0.0
+C493 0.0
+C494 0.0
+Network_Latency_ALL_TO_ALL_edge[0] 0.0
+C496 0.0
+C497 0.0
+Network_Latency_ALL_GATHER_edge[0] 0.0
+C499 8388608.0
+C500 0.0
+Compute_Memory_Latency[0] 0.0
+Per_Config_II[0] 11230209.207656842
+C503 11230209.207656842
+ns_per_batch 11230209.207656842
+all_config_II 11230209.207656842
+C506 11230209.207656842
+C507 11230209.207656842
+C508 11230209.207656842
+C509 0.0
+pipeline_factor 1.0
+C511 1.0
+C512 0.0
+C513 1.0
+LINK_cost[0] 20.0
+SWITCH_cost[0] 480.0
+less_or_equal_one_chip 1.0
+less_or_equal_four_chip 1.0
+total_DRAM_cost 1638.4000244140625
+total_accelerator_cost 16522.25
+total_link_cost 0.0
+total_switch_cost 0.0
+C522 20.0
+C523 480.0
+total_cost 18160.650024414062
+LINK_power[0] 0.5200000107288361
+SWITCH_power[0] 1.0400000214576721
+total_DRAM_power 266.2072305292968
+total_accelerator_power 444.7062072753906
+total_link_power 0.0
+total_switch_power 0.0
+C531 0.5200000107288361
+C532 1.0400000214576721
+total_power 710.9134378046874
+final_ns 11230209.207656842
+------------Statistics------------
+FLOP per kernel:
+SYSTOLIC Q 32 32 131072 1 268435456
+SYSTOLIC K 32 32 131072 1 268435456
+SYSTOLIC V 32 32 131072 1 268435456
+SYSTOLIC MHA_GEMM_1 262144 16 131072 1 1099511627776
+SIMD SOFTMAX 262144 1 131072 1 34359738368
+SYSTOLIC MHA_GEMM_2 32 131072 131072 1 1099511627776
+SYSTOLIC FFN0 128 32 131072 1 1073741824
+SYSTOLIC FFN1 32 128 131072 1 1073741824
+memory_size 0.0
+memory_size 0.0
+memory_size 0.0
+memory_size 0.0
+memory_size 0.0
+memory_size 0.0
+memory_size 0.0
+memory_size 0.0
+kernel_name ['Q', 'K', 'V', 'MHA_GEMM_1', 'SOFTMAX', 'MHA_GEMM_2', 'FFN0', 'FFN1']
+startIdx [1, 2, 4, 5, 3, 6, 7]
+endIdx [4, 4, 5, 6, 6, 7, 8]
+
+
+
+TP 1.0
+PP 1.0
+DP 1.0
+final_s 0.011230209207656841
+Number of Chips 1
+Per-Accelerator Throughput (GFLOPS) 638976.0095214844
+DRAM BW 1638.4000244140625
+Link BW [10.0]
+System Cost 18160.650024414062
+System Power 710.9134378046874
+Workload FLOP 2236335783936.0
+System FLOPS Utilization 0.31164819325004456
+Optimizer Runtime (s) 2.240658760070801
+
+
+
+

@@ -1,7 +1,6 @@
 dataflow_graph {
   kernels {
     name: "Q_stage0"
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -24,7 +23,6 @@ dataflow_graph {
     name: "Q_stage1"
     id: 1
     topological_number: 1
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -47,7 +45,6 @@ dataflow_graph {
     name: "Q_stage2"
     id: 2
     topological_number: 2
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -70,7 +67,6 @@ dataflow_graph {
     name: "Q_stage3"
     id: 3
     topological_number: 3
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -93,7 +89,6 @@ dataflow_graph {
     name: "Q_stage4"
     id: 4
     topological_number: 4
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -116,7 +111,6 @@ dataflow_graph {
     name: "Q_stage5"
     id: 5
     topological_number: 5
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -139,7 +133,6 @@ dataflow_graph {
     name: "Q_stage6"
     id: 6
     topological_number: 6
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -162,7 +155,6 @@ dataflow_graph {
     name: "Q_stage7"
     id: 7
     topological_number: 7
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -185,7 +177,6 @@ dataflow_graph {
     name: "Q_stage8"
     id: 8
     topological_number: 8
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -208,7 +199,6 @@ dataflow_graph {
     name: "Q_stage9"
     id: 9
     topological_number: 9
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -231,7 +221,6 @@ dataflow_graph {
     name: "Q_stage10"
     id: 10
     topological_number: 10
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -254,7 +243,6 @@ dataflow_graph {
     name: "Q_stage11"
     id: 11
     topological_number: 11
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -277,7 +265,6 @@ dataflow_graph {
     name: "Q_stage12"
     id: 12
     topological_number: 12
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -300,7 +287,6 @@ dataflow_graph {
     name: "Q_stage13"
     id: 13
     topological_number: 13
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -323,7 +309,6 @@ dataflow_graph {
     name: "Q_stage14"
     id: 14
     topological_number: 14
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -346,7 +331,6 @@ dataflow_graph {
     name: "Q_stage15"
     id: 15
     topological_number: 15
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -369,7 +353,6 @@ dataflow_graph {
     name: "Q_stage16"
     id: 16
     topological_number: 16
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -392,7 +375,6 @@ dataflow_graph {
     name: "Q_stage17"
     id: 17
     topological_number: 17
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -415,7 +397,6 @@ dataflow_graph {
     name: "Q_stage18"
     id: 18
     topological_number: 18
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -438,7 +419,6 @@ dataflow_graph {
     name: "Q_stage19"
     id: 19
     topological_number: 19
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -460,7 +440,6 @@ dataflow_graph {
   kernels {
     name: "K_stage0"
     id: 20
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -483,7 +462,6 @@ dataflow_graph {
     name: "K_stage1"
     id: 21
     topological_number: 1
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -506,7 +484,6 @@ dataflow_graph {
     name: "K_stage2"
     id: 22
     topological_number: 2
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -529,7 +506,6 @@ dataflow_graph {
     name: "K_stage3"
     id: 23
     topological_number: 3
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -552,7 +528,6 @@ dataflow_graph {
     name: "K_stage4"
     id: 24
     topological_number: 4
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -575,7 +550,6 @@ dataflow_graph {
     name: "K_stage5"
     id: 25
     topological_number: 5
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -598,7 +572,6 @@ dataflow_graph {
     name: "K_stage6"
     id: 26
     topological_number: 6
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -621,7 +594,6 @@ dataflow_graph {
     name: "K_stage7"
     id: 27
     topological_number: 7
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -644,7 +616,6 @@ dataflow_graph {
     name: "K_stage8"
     id: 28
     topological_number: 8
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -667,7 +638,6 @@ dataflow_graph {
     name: "K_stage9"
     id: 29
     topological_number: 9
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -690,7 +660,6 @@ dataflow_graph {
     name: "K_stage10"
     id: 30
     topological_number: 10
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -713,7 +682,6 @@ dataflow_graph {
     name: "K_stage11"
     id: 31
     topological_number: 11
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -736,7 +704,6 @@ dataflow_graph {
     name: "K_stage12"
     id: 32
     topological_number: 12
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -759,7 +726,6 @@ dataflow_graph {
     name: "K_stage13"
     id: 33
     topological_number: 13
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -782,7 +748,6 @@ dataflow_graph {
     name: "K_stage14"
     id: 34
     topological_number: 14
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -805,7 +770,6 @@ dataflow_graph {
     name: "K_stage15"
     id: 35
     topological_number: 15
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -828,7 +792,6 @@ dataflow_graph {
     name: "K_stage16"
     id: 36
     topological_number: 16
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -851,7 +814,6 @@ dataflow_graph {
     name: "K_stage17"
     id: 37
     topological_number: 17
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -874,7 +836,6 @@ dataflow_graph {
     name: "K_stage18"
     id: 38
     topological_number: 18
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -897,7 +858,6 @@ dataflow_graph {
     name: "K_stage19"
     id: 39
     topological_number: 19
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -920,7 +880,6 @@ dataflow_graph {
     name: "QKi_stage0"
     id: 40
     topological_number: 21
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -943,7 +902,6 @@ dataflow_graph {
     name: "QKi_stage1"
     id: 41
     topological_number: 22
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -966,7 +924,6 @@ dataflow_graph {
     name: "QKi_stage2"
     id: 42
     topological_number: 23
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -989,7 +946,6 @@ dataflow_graph {
     name: "QKi_stage3"
     id: 43
     topological_number: 24
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1012,7 +968,6 @@ dataflow_graph {
     name: "QKi_stage4"
     id: 44
     topological_number: 25
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1035,7 +990,6 @@ dataflow_graph {
     name: "QKi_stage5"
     id: 45
     topological_number: 26
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1058,7 +1012,6 @@ dataflow_graph {
     name: "QKi_stage6"
     id: 46
     topological_number: 27
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1081,7 +1034,6 @@ dataflow_graph {
     name: "QKi_stage7"
     id: 47
     topological_number: 28
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1104,7 +1056,6 @@ dataflow_graph {
     name: "QKi_stage8"
     id: 48
     topological_number: 29
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1127,7 +1078,6 @@ dataflow_graph {
     name: "QKi_stage9"
     id: 49
     topological_number: 30
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1150,7 +1100,6 @@ dataflow_graph {
     name: "QKi_stage10"
     id: 50
     topological_number: 31
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1173,7 +1122,6 @@ dataflow_graph {
     name: "QKi_stage11"
     id: 51
     topological_number: 32
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1196,7 +1144,6 @@ dataflow_graph {
     name: "QKi_stage12"
     id: 52
     topological_number: 33
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1219,7 +1166,6 @@ dataflow_graph {
     name: "QKi_stage13"
     id: 53
     topological_number: 34
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1242,7 +1188,6 @@ dataflow_graph {
     name: "QKi_stage14"
     id: 54
     topological_number: 35
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1265,7 +1210,6 @@ dataflow_graph {
     name: "QKi_stage15"
     id: 55
     topological_number: 36
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1288,7 +1232,6 @@ dataflow_graph {
     name: "QKi_stage16"
     id: 56
     topological_number: 37
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1311,7 +1254,6 @@ dataflow_graph {
     name: "QKi_stage17"
     id: 57
     topological_number: 38
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1334,7 +1276,6 @@ dataflow_graph {
     name: "QKi_stage18"
     id: 58
     topological_number: 39
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1357,7 +1298,6 @@ dataflow_graph {
     name: "QKi_stage19"
     id: 59
     topological_number: 40
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1380,7 +1320,6 @@ dataflow_graph {
     name: "inter_stage0"
     id: 60
     topological_number: 42
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1403,7 +1342,6 @@ dataflow_graph {
     name: "inter_stage1"
     id: 61
     topological_number: 43
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1426,7 +1364,6 @@ dataflow_graph {
     name: "inter_stage2"
     id: 62
     topological_number: 44
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1449,7 +1386,6 @@ dataflow_graph {
     name: "inter_stage3"
     id: 63
     topological_number: 45
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1472,7 +1408,6 @@ dataflow_graph {
     name: "inter_stage4"
     id: 64
     topological_number: 46
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1495,7 +1430,6 @@ dataflow_graph {
     name: "inter_stage5"
     id: 65
     topological_number: 47
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1518,7 +1452,6 @@ dataflow_graph {
     name: "inter_stage6"
     id: 66
     topological_number: 48
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1541,7 +1474,6 @@ dataflow_graph {
     name: "inter_stage7"
     id: 67
     topological_number: 49
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1564,7 +1496,6 @@ dataflow_graph {
     name: "inter_stage8"
     id: 68
     topological_number: 50
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1587,7 +1518,6 @@ dataflow_graph {
     name: "inter_stage9"
     id: 69
     topological_number: 51
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1610,7 +1540,6 @@ dataflow_graph {
     name: "inter_stage10"
     id: 70
     topological_number: 52
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1633,7 +1562,6 @@ dataflow_graph {
     name: "inter_stage11"
     id: 71
     topological_number: 53
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1656,7 +1584,6 @@ dataflow_graph {
     name: "inter_stage12"
     id: 72
     topological_number: 54
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1679,7 +1606,6 @@ dataflow_graph {
     name: "inter_stage13"
     id: 73
     topological_number: 55
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1702,7 +1628,6 @@ dataflow_graph {
     name: "inter_stage14"
     id: 74
     topological_number: 56
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1725,7 +1650,6 @@ dataflow_graph {
     name: "inter_stage15"
     id: 75
     topological_number: 57
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1748,7 +1672,6 @@ dataflow_graph {
     name: "inter_stage16"
     id: 76
     topological_number: 58
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1771,7 +1694,6 @@ dataflow_graph {
     name: "inter_stage17"
     id: 77
     topological_number: 59
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1794,7 +1716,6 @@ dataflow_graph {
     name: "inter_stage18"
     id: 78
     topological_number: 60
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1817,7 +1738,6 @@ dataflow_graph {
     name: "inter_stage19"
     id: 79
     topological_number: 61
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1839,7 +1759,6 @@ dataflow_graph {
   kernels {
     name: "V_stage0"
     id: 80
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1862,7 +1781,6 @@ dataflow_graph {
     name: "V_stage1"
     id: 81
     topological_number: 1
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1885,7 +1803,6 @@ dataflow_graph {
     name: "V_stage2"
     id: 82
     topological_number: 2
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1908,7 +1825,6 @@ dataflow_graph {
     name: "V_stage3"
     id: 83
     topological_number: 3
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1931,7 +1847,6 @@ dataflow_graph {
     name: "V_stage4"
     id: 84
     topological_number: 4
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1954,7 +1869,6 @@ dataflow_graph {
     name: "V_stage5"
     id: 85
     topological_number: 5
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -1977,7 +1891,6 @@ dataflow_graph {
     name: "V_stage6"
     id: 86
     topological_number: 6
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -2000,7 +1913,6 @@ dataflow_graph {
     name: "V_stage7"
     id: 87
     topological_number: 7
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -2023,7 +1935,6 @@ dataflow_graph {
     name: "V_stage8"
     id: 88
     topological_number: 8
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -2046,7 +1957,6 @@ dataflow_graph {
     name: "V_stage9"
     id: 89
     topological_number: 9
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -2069,7 +1979,6 @@ dataflow_graph {
     name: "V_stage10"
     id: 90
     topological_number: 10
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -2092,7 +2001,6 @@ dataflow_graph {
     name: "V_stage11"
     id: 91
     topological_number: 11
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -2115,7 +2023,6 @@ dataflow_graph {
     name: "V_stage12"
     id: 92
     topological_number: 12
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -2138,7 +2045,6 @@ dataflow_graph {
     name: "V_stage13"
     id: 93
     topological_number: 13
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -2161,7 +2067,6 @@ dataflow_graph {
     name: "V_stage14"
     id: 94
     topological_number: 14
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -2184,7 +2089,6 @@ dataflow_graph {
     name: "V_stage15"
     id: 95
     topological_number: 15
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -2207,7 +2111,6 @@ dataflow_graph {
     name: "V_stage16"
     id: 96
     topological_number: 16
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -2230,7 +2133,6 @@ dataflow_graph {
     name: "V_stage17"
     id: 97
     topological_number: 17
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -2253,7 +2155,6 @@ dataflow_graph {
     name: "V_stage18"
     id: 98
     topological_number: 18
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -2276,7 +2177,6 @@ dataflow_graph {
     name: "V_stage19"
     id: 99
     topological_number: 19
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -2299,7 +2199,6 @@ dataflow_graph {
     name: "interVi_stage0"
     id: 100
     topological_number: 63
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -2322,7 +2221,6 @@ dataflow_graph {
     name: "interVi_stage1"
     id: 101
     topological_number: 64
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -2345,7 +2243,6 @@ dataflow_graph {
     name: "interVi_stage2"
     id: 102
     topological_number: 65
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -2368,7 +2265,6 @@ dataflow_graph {
     name: "interVi_stage3"
     id: 103
     topological_number: 66
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -2391,7 +2287,6 @@ dataflow_graph {
     name: "interVi_stage4"
     id: 104
     topological_number: 67
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -2414,7 +2309,6 @@ dataflow_graph {
     name: "interVi_stage5"
     id: 105
     topological_number: 68
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -2437,7 +2331,6 @@ dataflow_graph {
     name: "interVi_stage6"
     id: 106
     topological_number: 69
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -2460,7 +2353,6 @@ dataflow_graph {
     name: "interVi_stage7"
     id: 107
     topological_number: 70
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -2483,7 +2375,6 @@ dataflow_graph {
     name: "interVi_stage8"
     id: 108
     topological_number: 71
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -2506,7 +2397,6 @@ dataflow_graph {
     name: "interVi_stage9"
     id: 109
     topological_number: 72
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -2529,7 +2419,6 @@ dataflow_graph {
     name: "interVi_stage10"
     id: 110
     topological_number: 73
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -2552,7 +2441,6 @@ dataflow_graph {
     name: "interVi_stage11"
     id: 111
     topological_number: 74
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -2575,7 +2463,6 @@ dataflow_graph {
     name: "interVi_stage12"
     id: 112
     topological_number: 75
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -2598,7 +2485,6 @@ dataflow_graph {
     name: "interVi_stage13"
     id: 113
     topological_number: 76
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -2621,7 +2507,6 @@ dataflow_graph {
     name: "interVi_stage14"
     id: 114
     topological_number: 77
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -2644,7 +2529,6 @@ dataflow_graph {
     name: "interVi_stage15"
     id: 115
     topological_number: 78
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -2667,7 +2551,6 @@ dataflow_graph {
     name: "interVi_stage16"
     id: 116
     topological_number: 79
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -2690,7 +2573,6 @@ dataflow_graph {
     name: "interVi_stage17"
     id: 117
     topological_number: 80
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -2713,7 +2595,6 @@ dataflow_graph {
     name: "interVi_stage18"
     id: 118
     topological_number: 81
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -2736,7 +2617,6 @@ dataflow_graph {
     name: "interVi_stage19"
     id: 119
     topological_number: 82
-    config: 1
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
@@ -2759,7 +2639,6 @@ dataflow_graph {
     name: "QKmultiply"
     id: 120
     topological_number: 20
-    config: 1
     fwd_bwd: FWD
     type: SIMD
     elementwise_input1_input2 {
@@ -2780,7 +2659,6 @@ dataflow_graph {
     name: "softmax"
     id: 121
     topological_number: 41
-    config: 1
     fwd_bwd: FWD
     type: SIMD
     elementwise_input1_input2 {
@@ -2801,7 +2679,6 @@ dataflow_graph {
     name: "interVmultiply"
     id: 122
     topological_number: 62
-    config: 1
     fwd_bwd: FWD
     type: SIMD
     elementwise_input1_input2 {
@@ -4168,20 +4045,14 @@ system {
     sram_cap: 545259500.0
     freq: 1.6
   }
-  r_r_r {
+  r {
     x: 1
-    y: 1
-    z: 1
-    link_bw_x: 50.0
-    link_bw_y: 50.0
-    link_bw_z: 50.0
-    par_x: "TP"
-    par_y: "PP"
-    par_z: "DP"
+    link_bw_x: 10.0
+    par_x: "DP"
   }
   memory {
-    dram_bw: 3072.0
-    dram_cap: 103079215000.0
+    dram_bw: 1638.4
+    dram_cap: 68719480000.0
   }
 }
 cost {
@@ -4202,11 +4073,10 @@ execution {
   }
   execution_style: DATAFLOW
   num_config: 2
-  perfect_overlap: true
+  overlap: PERFECT_OVERLAP
   word: 2
 }
 gurobi {
-  thread: 144
   gap: 0.001
-  time: 36000
+  time: 180
 }

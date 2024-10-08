@@ -255,7 +255,7 @@ GFLOPS = 2*VecWidth*StageWidth*Core*Freq
 
 
 
-if dse.execution.WhichOneof('workload_variant') != 'llm':
+if dse.execution.WhichOneof('workload_variant') != 'llm' or dse.execution.skip_inter_chip_optimization:
     sharding = []
     for i in range(5*num_kernel):
         sharding.append(Dim.NO_DIM.value)
@@ -273,11 +273,10 @@ if dse.execution.WhichOneof('workload_variant') != 'llm':
         edge_communication_type.append(Communication.NO_COMMUNICATION.value)
     
 else:
-    num_layer_in_graph = dse.execution.llm.num_layer_in_graph
-    if num_layer_in_graph == 0:
+    if dse.execution.llm.num_layer_in_graph == 0:
         raise Exception('Wrong!')
         
-    if num_layer_in_graph == 1: # assume users inputs only the dataflow graph of one layer, but there are many otehr layers denoted in "num_layer", which will be divided into PP (pipeline parallelism)
+    if dse.execution.llm.num_layer_in_graph == 1: # assume users inputs only the dataflow graph of one layer, but there are many otehr layers denoted in "num_layer", which will be divided into PP (pipeline parallelism)
     
         model = gp.Model()
         model.params.NonConvex = 2
@@ -1469,7 +1468,7 @@ for connection in dse.dataflow_graph.connections:
     connection.communication_type = int(edge_communication_type[i])
     i += 1
 
-if dse.execution.WhichOneof('workload_variant') == 'llm' and num_layer_in_graph > 1:
+if dse.execution.WhichOneof('workload_variant') == 'llm' and dse.execution.llm.num_layer_in_graph > 1:
     # get the longest partition
     maxV = max(latency_per_partition)
     idx = latency_per_partition.index(maxV)

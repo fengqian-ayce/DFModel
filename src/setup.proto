@@ -477,6 +477,7 @@ message Execution
 	int64 num_config = 15;
 	Overlap_Style overlap = 16;
 	bool separate_rs_ag_for_ar = 100;
+	bool skip_inter_chip_optimization = 1000;
 	float compute_util = 17;
 	int64 word = 18;
 }

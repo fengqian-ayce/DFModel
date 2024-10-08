@@ -1,0 +1,169 @@
+kernels {
+  name: "Q"
+  id: 1
+  config: -1
+  fwd_bwd: FWD
+  type: SYSTOLIC
+  gemm_input1_weight {
+    outer: 2
+    M: 16
+    K: 32
+    N: 131072
+    input_tensor_size: 8388608.0
+    weight_tensor_size: 2048.0
+    output_tensor_size: 8388608.0
+    tiling: N_TILING
+  }
+}
+kernels {
+  name: "K"
+  id: 2
+  config: -1
+  fwd_bwd: FWD
+  type: SYSTOLIC
+  gemm_input1_weight {
+    outer: 2
+    M: 16
+    K: 32
+    N: 131072
+    input_tensor_size: 8388608.0
+    weight_tensor_size: 2048.0
+    output_tensor_size: 8388608.0
+    tiling: N_TILING
+  }
+}
+kernels {
+  name: "V"
+  id: 3
+  config: -1
+  fwd_bwd: FWD
+  type: SYSTOLIC
+  gemm_input1_weight {
+    outer: 2
+    M: 16
+    K: 32
+    N: 131072
+    input_tensor_size: 8388608.0
+    weight_tensor_size: 2048.0
+    output_tensor_size: 8388608.0
+    tiling: N_TILING
+  }
+}
+kernels {
+  name: "MHA_GEMM_1"
+  id: 4
+  config: -1
+  fwd_bwd: FWD
+  type: SYSTOLIC
+  gemm_input1_input2 {
+    outer: 2
+    M: 131072
+    K: 16
+    N: 131072
+    input_tensor_1_size: 8388608.0
+    input_tensor_2_size: 8388608.0
+    output_tensor_size: 68719480000.0
+    tiling: N_TILING
+  }
+}
+kernels {
+  name: "SOFTMAX"
+  id: 5
+  config: -1
+  fwd_bwd: FWD
+  type: SIMD
+  elementwise_input1 {
+    outer: 2
+    M: 131072
+    N: 131072
+    input_tensor_size: 68719480000.0
+    output_tensor_size: 68719480000.0
+    tiling: N_TILING
+  }
+}
+kernels {
+  name: "MHA_GEMM_2"
+  id: 6
+  config: -1
+  fwd_bwd: FWD
+  type: SYSTOLIC
+  gemm_input1_input2 {
+    outer: 2
+    M: 16
+    K: 131072
+    N: 131072
+    input_tensor_1_size: 8388608.0
+    input_tensor_2_size: 68719480000.0
+    output_tensor_size: 8388608.0
+    tiling: K_TILING
+  }
+}
+kernels {
+  name: "FFN0"
+  id: 7
+  config: -1
+  fwd_bwd: FWD
+  type: SYSTOLIC
+  gemm_input1_weight {
+    outer: 1
+    M: 128
+    K: 32
+    N: 131072
+    input_tensor_size: 8388608.0
+    weight_tensor_size: 8192.0
+    output_tensor_size: 33554432.0
+    tiling: N_TILING
+  }
+}
+kernels {
+  name: "FFN1"
+  id: 8
+  config: -1
+  fwd_bwd: FWD
+  type: SYSTOLIC
+  gemm_input1_weight {
+    outer: 1
+    M: 32
+    K: 128
+    N: 131072
+    input_tensor_size: 33554432.0
+    weight_tensor_size: 8192.0
+    output_tensor_size: 8388608.0
+    tiling: N_TILING
+  }
+}
+connections {
+  startIdx: 1
+  endIdx: 4
+  id: 1
+}
+connections {
+  startIdx: 2
+  endIdx: 4
+  id: 2
+}
+connections {
+  startIdx: 4
+  endIdx: 5
+  id: 3
+}
+connections {
+  startIdx: 5
+  endIdx: 6
+  id: 4
+}
+connections {
+  startIdx: 3
+  endIdx: 6
+  id: 5
+}
+connections {
+  startIdx: 6
+  endIdx: 7
+  id: 6
+}
+connections {
+  startIdx: 7
+  endIdx: 8
+  id: 7
+}

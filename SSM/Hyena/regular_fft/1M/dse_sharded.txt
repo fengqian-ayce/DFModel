@@ -3680,20 +3680,14 @@ system {
     sram_cap: 545259500.0
     freq: 1.6
   }
-  r_r_r {
+  r {
     x: 1
-    y: 1
-    z: 1
-    link_bw_x: 50.0
-    link_bw_y: 50.0
-    link_bw_z: 50.0
-    par_x: "TP"
-    par_y: "PP"
-    par_z: "DP"
+    link_bw_x: 10.0
+    par_x: "DP"
   }
   memory {
-    dram_bw: 3072.0
-    dram_cap: 103079215000.0
+    dram_bw: 1638.4
+    dram_cap: 68719480000.0
   }
 }
 cost {
@@ -3714,11 +3708,10 @@ execution {
   }
   execution_style: DATAFLOW
   num_config: 2
-  perfect_overlap: true
+  overlap: PERFECT_OVERLAP
   word: 2
 }
 gurobi {
-  thread: 144
   gap: 0.001
-  time: 36000
+  time: 180
 }

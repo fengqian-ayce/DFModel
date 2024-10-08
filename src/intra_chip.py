@@ -1158,7 +1158,11 @@ if dse.execution.WhichOneof('workload_variant') == 'llm':
         pass
     else:
         model.addConstr(tile_size == dse.execution.llm.tile_size)
-    model.addConstr(tile_size * num_tile == seq_len)
+    
+    if seq_len >= 32*1024:
+        model.addConstr(tile_size * num_tile >= seq_len)
+    else:
+        model.addConstr(tile_size * num_tile == seq_len)
     
 elif dse.execution.WhichOneof('workload_variant') == 'dlrm' or dse.execution.WhichOneof('workload_variant') == 'hpl' or dse.execution.WhichOneof('workload_variant') == 'fft' or dse.execution.WhichOneof('workload_variant') == 'gemm_fft_llm' or dse.execution.WhichOneof('workload_variant') == 'vector_fft_llm' or dse.execution.WhichOneof('workload_variant') == 'regular_fft_llm' or dse.execution.WhichOneof('workload_variant') == 'mamba':
     model.addConstr(num_tile == 1)
@@ -1191,6 +1195,8 @@ elif dse.execution.WhichOneof('workload_variant') == 'fft':
     
 else:
     for i in range(num_node):
+        print(print('xxxxxxxxxxxx', i, sharding[i], tiling[i]))
+
         if sharding[i] == Dim.OUTER_DIM.value or sharding[i] == Dim.M_DIM.value:
             if tiling[i] == Dim.OUTER_DIM.value or tiling[i] == Dim.M_DIM.value:
                 raise Exception('Wrong!')
