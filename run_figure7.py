@@ -31,9 +31,9 @@ import os
 # os.system('./run.sh FFT/Compare_w_existing/FP32/2048/ > FFT/Compare_w_existing/FP32/2048/log.txt')
 # os.system('./run.sh FFT/Compare_w_existing/FP32/4096/ > FFT/Compare_w_existing/FP32/4096/log.txt')
 
-os.system('./run.sh DLRM/Compare_w_existing/A/ > DLRM/Compare_w_existing/A/log.txt')
+# os.system('./run.sh DLRM/Compare_w_existing/A/ > DLRM/Compare_w_existing/A/log.txt')
 # os.system('./run.sh DLRM/Compare_w_existing/F/ > DLRM/Compare_w_existing/F/log.txt')
-# os.system('./run.sh DLRM/Compare_w_existing/I/ > DLRM/Compare_w_existing/I/log.txt')
+os.system('./run.sh DLRM/Compare_w_existing/I/ > DLRM/Compare_w_existing/I/log.txt')
 
 # os.system('./run.sh LLM_Serving/H100_DGX/ > LLM_Serving/H100_DGX/log.txt')
 # os.system('./run.sh LLM_Serving/llama3_8B_SN40L/ > LLM_Serving/llama3_8B_SN40L/log.txt')

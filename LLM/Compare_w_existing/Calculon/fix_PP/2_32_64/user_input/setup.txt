@@ -941,68 +941,63 @@ connections {
   endIdx: 41
   id: 53
 }
-
-
-
 }
 system {
-	num_chip: 4096
-  
-	sw_sw_sw {
-		x: 2
-		y: 32
-		z: 64
-		
-		link_bw_x: 150.0
-		link_bw_y: 25.0
-		link_bw_z: 25.0
-		
-		par_x: 'TP'
-		par_y: 'PP'
-		par_z: 'DP'
-	}
-	
-	accelerator {
-		core: 432
-		systolic_width: 16
-		systolic_height: 16
-		sram_cap: 88080384.0
-		freq: 1.41
-		dram_bw: 2039.0
-		dram_cap: 99429496729600.0
-	}
+  num_chip: 4096
+  accelerator {
+    core: 432
+	systolic_width: 16
+	systolic_height: 16
+	sram_cap: 88080384.0
+	freq: 1.41
+  }
+  sw_sw_sw {
+    x: 2
+    y: 32
+    z: 64
+    link_bw_x: 150.0
+    link_bw_y: 25.0
+    link_bw_z: 25.0
+    par_x: "TP"
+    par_y: "PP"
+    par_z: "DP"
+  }
+  memory {
+    dram_bw: 2039.0
+    dram_cap: 4294967296000.0
+  }
 }
 cost {
-	link_unit_price: 2.0
-	switch_unit_price: 24.0
-	dram_unit_price: 1.0
+  link_unit_price: 2.0
+  switch_unit_price: 24.0
+  dram_unit_price: 1.0
+  accelerator_price: 16522.25023
+  
+  link_unit_power_x: 0.052
+  link_unit_power_y: 0.052
+  link_unit_power_z: 0.052
+  switch_unit_power: 0.052
+  dram_unit_power: 0.16248
+  accelerator_power: 444.7061955
 }
-training {
-	llm {
-		hidden_dim: 25600
-		head_dim: 160
-		num_head: 160
-		seq_len: 2048
-		num_layer: 128
-		#seq_tile_size: 2048
-	}
-
-	global_batch_size: 3072
-	micro_batch_size: 1
-	
-	optimization: KERNEL_BY_KERNEL
-	objective: PERFORMANCE
-		
-	training: True
-	skip_inter_chip: False
-	pydot: True
-	word: 2
-	perfect_overlap: False
-	
-	skip_intermediate_buffer: False
-	skip_initiation_buffer: False
+execution {
+  llm {
+    hidden_dim: 25600
+    head_dim: 160
+    num_head: 160
+    seq_len: 2048
+    num_layer: 128
+    global_batch_size: 3072
+    micro_batch_size: 1
+    num_layer_in_graph: 1
+  }
+  execution_style: KERNEL_BY_KERNEL
+  overlap: NO_OVERLAP
+  separate_rs_ag_for_ar: true
+  compute_util: 0.9
+  word: 2
 }
 gurobi {
-	thread: 24
-	gap: 0.001
+  gap: 0.001
+  time: 180
 }

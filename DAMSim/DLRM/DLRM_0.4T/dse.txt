@@ -225,10 +225,10 @@ execution {
   }
   execution_style: DATAFLOW
   num_config: 1
+  overlap: PERFECT_OVERLAP
   word: 2
 }
 gurobi {
-  thread: 144
   gap: 0.001
-  time: 3600
+  time: 180
 }

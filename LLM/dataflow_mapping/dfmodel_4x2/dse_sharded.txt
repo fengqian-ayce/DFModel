@@ -336,6 +336,7 @@ dataflow_graph {
     id: 1
     startName: "Add_Prev_Layer"
     endName: "LayerNorm_1"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 2
@@ -345,6 +346,7 @@ dataflow_graph {
     id: 2
     startName: "LayerNorm_1"
     endName: "Q"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 2
@@ -354,6 +356,7 @@ dataflow_graph {
     id: 3
     startName: "LayerNorm_1"
     endName: "K"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 2
@@ -363,6 +366,7 @@ dataflow_graph {
     id: 4
     startName: "LayerNorm_1"
     endName: "V"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 3
@@ -372,6 +376,7 @@ dataflow_graph {
     id: 5
     startName: "Q"
     endName: "MHA_GEMM_1"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 4
@@ -381,6 +386,7 @@ dataflow_graph {
     id: 6
     startName: "K"
     endName: "MHA_GEMM_1"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 6
@@ -390,6 +396,7 @@ dataflow_graph {
     id: 7
     startName: "MHA_GEMM_1"
     endName: "SOFTMAX"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 7
@@ -399,6 +406,7 @@ dataflow_graph {
     id: 8
     startName: "SOFTMAX"
     endName: "DropOut_1"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 5
@@ -408,6 +416,7 @@ dataflow_graph {
     id: 9
     startName: "V"
     endName: "MHA_GEMM_2"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 8
@@ -417,6 +426,7 @@ dataflow_graph {
     id: 10
     startName: "DropOut_1"
     endName: "MHA_GEMM_2"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 9
@@ -426,6 +436,7 @@ dataflow_graph {
     id: 11
     startName: "MHA_GEMM_2"
     endName: "PROJ_GEMM"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 10
@@ -436,6 +447,7 @@ dataflow_graph {
     id: 12
     startName: "PROJ_GEMM"
     endName: "DropOut_2"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 11
@@ -446,6 +458,7 @@ dataflow_graph {
     id: 13
     startName: "DropOut_2"
     endName: "Add_1"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 1
@@ -456,6 +469,7 @@ dataflow_graph {
     id: 14
     startName: "Add_Prev_Layer"
     endName: "Add_1"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 12
@@ -466,6 +480,7 @@ dataflow_graph {
     id: 15
     startName: "Add_1"
     endName: "LayerNorm_2"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 13
@@ -476,6 +491,7 @@ dataflow_graph {
     id: 16
     startName: "LayerNorm_2"
     endName: "FFN0"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 14
@@ -486,6 +502,7 @@ dataflow_graph {
     id: 17
     startName: "FFN0"
     endName: "GeLU"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 15
@@ -496,6 +513,7 @@ dataflow_graph {
     id: 18
     startName: "GeLU"
     endName: "FFN1"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 16
@@ -506,6 +524,7 @@ dataflow_graph {
     id: 19
     startName: "FFN1"
     endName: "DropOut_3"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 17
@@ -516,6 +535,7 @@ dataflow_graph {
     id: 20
     startName: "DropOut_3"
     endName: "Add_2"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 12
@@ -526,6 +546,7 @@ dataflow_graph {
     id: 21
     startName: "Add_1"
     endName: "Add_2"
+    lane_stage_type: LANE
   }
 }
 system {
@@ -540,8 +561,8 @@ system {
   r_r {
     x: 4
     y: 2
-    link_bw_x: 50.0
-    link_bw_y: 50.0
+    link_bw_x: 25.0
+    link_bw_y: 25.0
     par_x: "TP"
     par_y: "DP"
   }
@@ -562,7 +583,7 @@ cost {
   dram_unit_power: 0.16248
   accelerator_power: 444.7062
 }
-miscellany {
+execution {
   llm {
     hidden_dim: 12288
     head_dim: 128
@@ -571,15 +592,14 @@ miscellany {
     num_layer: 96
     global_batch_size: 2304
     micro_batch_size: 1
+    num_layer_in_graph: 1
   }
   execution_style: DATAFLOW
-  num_config: 4
-  perfect_overlap: true
-  compute_util: 0.9
+  num_config: 5
+  overlap: PERFECT_OVERLAP
   word: 2
 }
 gurobi {
-  thread: 144
   gap: 0.001
-  time: 1200
+  time: 180
 }

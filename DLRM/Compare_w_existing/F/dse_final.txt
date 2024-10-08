@@ -36,7 +36,7 @@ dataflow_graph {
       output_tensor_size: 501760.0
       sharding: NO_SHARDING
       communication_type: ALL_TO_ALL
-      communication_size: 4096000.0
+      communication_size: 524288000.0
       shard_outer_M: 490
       shard_K: 490
       shard_N: 512
@@ -280,7 +280,7 @@ dataflow_graph {
       output_tensor_size: 501760.0
       sharding: NO_SHARDING
       communication_type: ALL_TO_ALL
-      communication_size: 4096000.0
+      communication_size: 524288000.0
       shard_outer_M: 490
       shard_K: 490
       shard_N: 512
@@ -487,6 +487,7 @@ dataflow_graph {
     id: 1
     startName: "MLP_1"
     endName: "MLP_2"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 2
@@ -497,6 +498,7 @@ dataflow_graph {
     id: 2
     startName: "MLP_2"
     endName: "MLP_3"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 3
@@ -507,6 +509,7 @@ dataflow_graph {
     id: 3
     startName: "MLP_3"
     endName: "MLP_4"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 4
@@ -517,6 +520,7 @@ dataflow_graph {
     id: 4
     startName: "MLP_4"
     endName: "MLP_5"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 5
@@ -527,6 +531,7 @@ dataflow_graph {
     id: 5
     startName: "MLP_5"
     endName: "MLP_6"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 6
@@ -537,6 +542,7 @@ dataflow_graph {
     id: 6
     startName: "MLP_6"
     endName: "MLP_7"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 8
@@ -547,6 +553,7 @@ dataflow_graph {
     id: 7
     startName: "MLP_7_bwd"
     endName: "MLP_6_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 9
@@ -557,6 +564,7 @@ dataflow_graph {
     id: 8
     startName: "MLP_6_bwd"
     endName: "MLP_5_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 10
@@ -567,6 +575,7 @@ dataflow_graph {
     id: 9
     startName: "MLP_5_bwd"
     endName: "MLP_4_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 11
@@ -577,6 +586,7 @@ dataflow_graph {
     id: 10
     startName: "MLP_4_bwd"
     endName: "MLP_3_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 12
@@ -587,6 +597,7 @@ dataflow_graph {
     id: 11
     startName: "MLP_3_bwd"
     endName: "MLP_2_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 13
@@ -597,6 +608,7 @@ dataflow_graph {
     id: 12
     startName: "MLP_2_bwd"
     endName: "MLP_1_bwd"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 1
@@ -607,6 +619,7 @@ dataflow_graph {
     id: 13
     startName: "MLP_1"
     endName: "MLP_2_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 2
@@ -617,6 +630,7 @@ dataflow_graph {
     id: 14
     startName: "MLP_2"
     endName: "MLP_3_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 3
@@ -627,6 +641,7 @@ dataflow_graph {
     id: 15
     startName: "MLP_3"
     endName: "MLP_4_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 4
@@ -637,6 +652,7 @@ dataflow_graph {
     id: 16
     startName: "MLP_4"
     endName: "MLP_5_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 5
@@ -647,6 +663,7 @@ dataflow_graph {
     id: 17
     startName: "MLP_5"
     endName: "MLP_6_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 6
@@ -657,6 +674,7 @@ dataflow_graph {
     id: 18
     startName: "MLP_6"
     endName: "MLP_7_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 8
@@ -667,6 +685,7 @@ dataflow_graph {
     id: 19
     startName: "MLP_7_bwd"
     endName: "MLP_6_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 9
@@ -677,6 +696,7 @@ dataflow_graph {
     id: 20
     startName: "MLP_6_bwd"
     endName: "MLP_5_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 10
@@ -687,6 +707,7 @@ dataflow_graph {
     id: 21
     startName: "MLP_5_bwd"
     endName: "MLP_4_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 11
@@ -697,6 +718,7 @@ dataflow_graph {
     id: 22
     startName: "MLP_4_bwd"
     endName: "MLP_3_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 12
@@ -707,6 +729,7 @@ dataflow_graph {
     id: 23
     startName: "MLP_3_bwd"
     endName: "MLP_2_bwd_weight_update"
+    lane_stage_type: LANE
   }
   connections {
     startIdx: 13
@@ -717,6 +740,7 @@ dataflow_graph {
     id: 24
     startName: "MLP_2_bwd"
     endName: "MLP_1_bwd_weight_update"
+    lane_stage_type: LANE
   }
 }
 system {
@@ -731,11 +755,11 @@ system {
   r_fc {
     x: 8
     y: 16
-    link_bw_x: 600.0
+    link_bw_x: 300.0
     link_bw_y: 25.0
   }
   memory {
-    dram_bw: 400.0
+    dram_bw: 40.0
     dram_cap: 206158430000.0
   }
 }
@@ -749,19 +773,19 @@ cost {
   dram_unit_power: 0.16248
   accelerator_power: 511.57712
 }
-miscellany {
+execution {
   dlrm {
     num_table: 100
     emb_dim: 256
     row: 468750000
     global_batch_size: 128000000
+    num_copy: 1
   }
   execution_style: KERNEL_BY_KERNEL
-  compute_util: 0.9
+  overlap: PERFECT_OVERLAP
   word: 2
 }
 gurobi {
-  thread: 144
   gap: 0.001
-  time: 3600
+  time: 180
 }

@@ -1,5 +1,5 @@
 dataflow_graph {
-	kernels {
+kernels {
   name: "MLP_1"
   id: 1
   config: -1
@@ -81,10 +81,7 @@ kernels {
     input_tensor_size: 3456000.0
     weight_tensor_size: 22781250.0
     output_tensor_size: 3456000.0
-    communication_type: ALL_TO_ALL
-    communication_size: 6696000.0
     tiling: NO_TILING
-    memory_size: 857088000.0
   }
 }
 kernels {
@@ -169,7 +166,10 @@ kernels {
     input_tensor_size: 3456000.0
     weight_tensor_size: 22781250.0
     output_tensor_size: 3456000.0
+    communication_type: ALL_TO_ALL
+    communication_size: 1142784000.0
     tiling: NO_TILING
+    memory_size: 1142784000.0
   }
 }
 kernels {
@@ -526,7 +526,10 @@ kernels {
     input_tensor_size: 3456000.0
     weight_tensor_size: 22781250.0
     output_tensor_size: 3456000.0
+    communication_type: ALL_TO_ALL
+    communication_size: 1142784000.0
     tiling: NO_TILING
+    memory_size: 1142784000.0
   }
 }
 kernels {
@@ -611,10 +614,7 @@ kernels {
     input_tensor_size: 3456000.0
     weight_tensor_size: 22781250.0
     output_tensor_size: 3456000.0
-    communication_type: ALL_TO_ALL
-    communication_size: 6696000.0
     tiling: NO_TILING
-    memory_size: 857088000.0
   }
 }
 kernels {
@@ -1458,7 +1458,7 @@ system {
 	r_fc {
 		x: 8
 		y: 16
-		link_bw_x: 600.0
+		link_bw_x: 300.0
 		link_bw_y: 25.0
 	}
 	memory {
@@ -1478,9 +1478,9 @@ cost {
 }
 execution {
 	dlrm {
-		num_table: 600
+		num_table: 800
 		emb_dim: 93
-		row: 14211469
+		row: 10658602
 		global_batch_size: 128000000
     num_copy: 1
 	}

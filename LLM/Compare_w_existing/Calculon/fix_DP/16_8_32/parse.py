@@ -31,9 +31,9 @@ for line in lines:
         Memory_Latency.append(float(line.split()[-1]))
     if line.startswith('Compute_Latency['):
         Compute_Latency.append(float(line.split()[-1]))
-    if line.startswith('Network_Latency_ALL_REDUCE['):
+    if line.startswith('Network_Latency_ALL_REDUCE_node['):
         Network_Latency_ALL_REDUCE.append(float(line.split()[-1]))
-    if line.startswith('Network_Latency_ALL_REDUCE_PERIODIC['):
+    if line.startswith('Network_Latency_ALL_REDUCE_PERIODIC_node['):
         Network_Latency_ALL_REDUCE_PERIODIC.append(float(line.split()[-1]))
     if line.startswith('pipeline_factor'):
         pipeline_factor = float(line.split()[-1])
@@ -65,26 +65,26 @@ print(sec_per_batch)
 
 
 # get memory usage
-weight = 0
-weight_grad = 0
-activation = 0
-activation_grad = 0
+# weight = 0
+# weight_grad = 0
+# activation = 0
+# activation_grad = 0
 
-for line in lines:
-    if line.startswith('weight '):
-        weight = float(line.split()[-1]) / 1024**3
-    if line.startswith('weight_grad '):
-        weight_grad = float(line.split()[-1]) / 1024**3
-    if line.startswith('activation '):
-        activation = float(line.split()[-1]) / 1024**3
-    if line.startswith('activation_grad '):
-        activation_grad = float(line.split()[-1]) / 1024**3
+# for line in lines:
+#     if line.startswith('weight '):
+#         weight = float(line.split()[-1]) / 1024**3
+#     if line.startswith('weight_grad '):
+#         weight_grad = float(line.split()[-1]) / 1024**3
+#     if line.startswith('activation '):
+#         activation = float(line.split()[-1]) / 1024**3
+#     if line.startswith('activation_grad '):
+#         activation_grad = float(line.split()[-1]) / 1024**3
         
-print(weight)
-print(activation)
-print(activation_grad)
-print(weight_grad)
-print(weight + activation + activation_grad + weight_grad)
+# print(weight)
+# print(activation)
+# print(activation_grad)
+# print(weight_grad)
+# print(weight + activation + activation_grad + weight_grad)
 
 
 

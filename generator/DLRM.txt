@@ -6,12 +6,12 @@ kernels {
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 8000
-    K: 8000
+    M: 4000
+    K: 4000
     N: 16
-    input_tensor_size: 256000.0
-    weight_tensor_size: 128000000.0
-    output_tensor_size: 256000.0
+    input_tensor_size: 128000.0
+    weight_tensor_size: 32000000.0
+    output_tensor_size: 128000.0
     tiling: NO_TILING
   }
 }
@@ -23,12 +23,12 @@ kernels {
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 8000
-    K: 8000
+    M: 4000
+    K: 4000
     N: 16
-    input_tensor_size: 256000.0
-    weight_tensor_size: 128000000.0
-    output_tensor_size: 256000.0
+    input_tensor_size: 128000.0
+    weight_tensor_size: 32000000.0
+    output_tensor_size: 128000.0
     tiling: NO_TILING
   }
 }
@@ -40,12 +40,12 @@ kernels {
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 8000
-    K: 8000
+    M: 4000
+    K: 4000
     N: 16
-    input_tensor_size: 256000.0
-    weight_tensor_size: 128000000.0
-    output_tensor_size: 256000.0
+    input_tensor_size: 128000.0
+    weight_tensor_size: 32000000.0
+    output_tensor_size: 128000.0
     tiling: NO_TILING
   }
 }
@@ -57,16 +57,16 @@ kernels {
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 8000
-    K: 8000
+    M: 4000
+    K: 4000
     N: 16
-    input_tensor_size: 256000.0
-    weight_tensor_size: 128000000.0
-    output_tensor_size: 256000.0
+    input_tensor_size: 128000.0
+    weight_tensor_size: 32000000.0
+    output_tensor_size: 128000.0
     communication_type: ALL_TO_ALL
-    communication_size: 20480.0
+    communication_size: 10240.0
     tiling: NO_TILING
-    memory_size: 20480.0
+    memory_size: 10240.0
   }
 }
 kernels {
@@ -77,12 +77,12 @@ kernels {
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 8000
-    K: 8000
+    M: 4000
+    K: 4000
     N: 16
-    input_tensor_size: 256000.0
-    weight_tensor_size: 128000000.0
-    output_tensor_size: 256000.0
+    input_tensor_size: 128000.0
+    weight_tensor_size: 32000000.0
+    output_tensor_size: 128000.0
     tiling: NO_TILING
   }
 }
@@ -94,12 +94,12 @@ kernels {
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 8000
-    K: 8000
+    M: 4000
+    K: 4000
     N: 16
-    input_tensor_size: 256000.0
-    weight_tensor_size: 128000000.0
-    output_tensor_size: 256000.0
+    input_tensor_size: 128000.0
+    weight_tensor_size: 32000000.0
+    output_tensor_size: 128000.0
     tiling: NO_TILING
   }
 }
@@ -111,12 +111,12 @@ kernels {
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 8000
-    K: 8000
+    M: 4000
+    K: 4000
     N: 16
-    input_tensor_size: 256000.0
-    weight_tensor_size: 128000000.0
-    output_tensor_size: 256000.0
+    input_tensor_size: 128000.0
+    weight_tensor_size: 32000000.0
+    output_tensor_size: 128000.0
     tiling: NO_TILING
   }
 }
@@ -128,12 +128,12 @@ kernels {
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 8000
-    K: 8000
+    M: 4000
+    K: 4000
     N: 16
-    input_tensor_size: 256000.0
-    weight_tensor_size: 128000000.0
-    output_tensor_size: 256000.0
+    input_tensor_size: 128000.0
+    weight_tensor_size: 32000000.0
+    output_tensor_size: 128000.0
     tiling: NO_TILING
   }
 }

@@ -31,7 +31,7 @@ dataflow_graph {
       weight_tensor_size: 480200.0
       output_tensor_size: 501760.0
       communication_type: ALL_TO_ALL
-      communication_size: 4096000.0
+      communication_size: 524288000.0
       tiling: NO_TILING
       memory_size: 524288000.0
     }
@@ -221,7 +221,7 @@ dataflow_graph {
       weight_tensor_size: 480200.0
       output_tensor_size: 501760.0
       communication_type: ALL_TO_ALL
-      communication_size: 4096000.0
+      communication_size: 524288000.0
       tiling: NO_TILING
       memory_size: 524288000.0
     }
@@ -533,11 +533,11 @@ system {
   r_fc {
     x: 8
     y: 16
-    link_bw_x: 600.0
+    link_bw_x: 300.0
     link_bw_y: 25.0
   }
   memory {
-    dram_bw: 400.0
+    dram_bw: 40.0
     dram_cap: 206158430000.0
   }
 }

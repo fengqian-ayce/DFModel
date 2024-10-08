@@ -438,7 +438,7 @@ GFLOPS = 2*LaneWidth*StageWidth*Core*Freq
 
 if dse.execution.WhichOneof('workload_variant') == 'dlrm':
     Num_Chips_Per_Copy = num_chip / dse.execution.dlrm.num_copy
-    
+
 elif dse.execution.WhichOneof('workload_variant') == 'fft':
     Num_Chips_Per_Copy = num_chip / dse.execution.fft.num_copy
 
@@ -502,7 +502,7 @@ elif dse.system.WhichOneof('topology_variant') == 'r_fc': # 2D ZionEX
     par = [dse.system.r_fc.par_x, dse.system.r_fc.par_y]
     
     if dse.execution.WhichOneof('workload_variant') == 'dlrm' or dse.execution.WhichOneof('workload_variant') == 'fft':
-        a2a_bw_factor = [2, dse.system.r_fc.y*(dse.system.r_fc.y*-1) / 2]
+        a2a_bw_factor = [2, dse.system.r_fc.y*(dse.system.r_fc.y-1) / 2]
         a2a_msg_factor = [dse.system.r_fc.x*(dse.system.r_fc.x-1) / 2, Num_Chips_Per_Copy*(Num_Chips_Per_Copy-1) / 2]
 
 elif dse.system.WhichOneof('topology_variant') == 'r_sw': # 2D DGX-1
@@ -825,11 +825,17 @@ elif dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.Whic
             bbb = model.addVar(vtype=gp.GRB.CONTINUOUS)
             model.addConstr(bbb == DP * Link_BW_DP)
             if topology[0] == BasicTopology.R.value:
-                model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
+                if dse.execution.separate_rs_ag_for_ar:
+                    model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == (DP - 1)*2)
+                else:
+                    model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
             elif topology[0] == BasicTopology.FC.value:
                 model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == 1)
             elif topology[0] == BasicTopology.SW.value:
-                model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
+                if dse.execution.separate_rs_ag_for_ar:
+                    model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == (DP - 1)*2)
+                else:
+                    model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
             else:
                 raise Exception('Wrong!')
             
@@ -928,11 +934,17 @@ elif dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.Whic
             bbb = model.addVar(vtype=gp.GRB.CONTINUOUS)
             model.addConstr(bbb == DP * Link_BW_DP)
             if topology[1] == BasicTopology.R.value:
-                model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
+                if dse.execution.separate_rs_ag_for_ar:
+                    model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == (DP - 1)*2)
+                else:
+                    model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
             elif topology[1] == BasicTopology.FC.value:
                 model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == 1)
             elif topology[1] == BasicTopology.SW.value:
-                model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
+                if dse.execution.separate_rs_ag_for_ar:
+                    model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == (DP - 1)*2)
+                else:
+                    model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
             else:
                 raise Exception('Wrong!')
             
@@ -953,11 +965,17 @@ elif dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.Whic
             bbb = model.addVar(vtype=gp.GRB.CONTINUOUS)
             model.addConstr(bbb == DP * Link_BW_DP)
             if topology[1] == BasicTopology.R.value:
-                model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
+                if dse.execution.separate_rs_ag_for_ar:
+                    model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == (DP - 1)*2)
+                else:
+                    model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
             elif topology[1] == BasicTopology.FC.value:
                 model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == 1)
             elif topology[1] == BasicTopology.SW.value:
-                model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
+                if dse.execution.separate_rs_ag_for_ar:
+                    model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == (DP - 1)*2)
+                else:
+                    model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
             else:
                 raise Exception('Wrong!')
                 
@@ -1044,11 +1062,17 @@ elif dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.Whic
                 bbb = model.addVar(vtype=gp.GRB.CONTINUOUS)
                 model.addConstr(bbb == DP * Link_BW_DP)
                 if topology[2] == BasicTopology.R.value:
-                    model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
+                    if dse.execution.separate_rs_ag_for_ar:
+                        model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == (DP - 1)*2)
+                    else:
+                        model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
                 elif topology[2] == BasicTopology.FC.value:
                     model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == 1)
                 elif topology[2] == BasicTopology.SW.value:
-                    model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
+                    if dse.execution.separate_rs_ag_for_ar:
+                        model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == (DP - 1)*2)
+                    else:
+                        model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
                 else:
                     raise Exception('Wrong!')
                 

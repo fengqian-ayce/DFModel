@@ -219,13 +219,12 @@ execution {
 	  num_copy: 1
   }
   execution_style: DATAFLOW
-  num_config: 1
-  perfect_overlap: false
+  num_config: 2
+  overlap: PERFECT_OVERLAP
   #compute_util: 0.9
   word: 2
 }
 gurobi {
-  thread: 144
   gap: 0.001
-  time: 3600
+  time: 180
 }
