@@ -8,10 +8,10 @@ kernels {
     outer: 2
     M: 16
     K: 32
-    N: 131072
-    input_tensor_size: 8388608.0
+    N: 1048576
+    input_tensor_size: 67108864.0
     weight_tensor_size: 2048.0
-    output_tensor_size: 8388608.0
+    output_tensor_size: 67108864.0
     tiling: N_TILING
   }
 }
@@ -25,10 +25,10 @@ kernels {
     outer: 2
     M: 16
     K: 32
-    N: 131072
-    input_tensor_size: 8388608.0
+    N: 1048576
+    input_tensor_size: 67108864.0
     weight_tensor_size: 2048.0
-    output_tensor_size: 8388608.0
+    output_tensor_size: 67108864.0
     tiling: N_TILING
   }
 }
@@ -42,10 +42,10 @@ kernels {
     outer: 2
     M: 16
     K: 32
-    N: 131072
-    input_tensor_size: 8388608.0
+    N: 1048576
+    input_tensor_size: 67108864.0
     weight_tensor_size: 2048.0
-    output_tensor_size: 8388608.0
+    output_tensor_size: 67108864.0
     tiling: N_TILING
   }
 }
@@ -57,12 +57,12 @@ kernels {
   type: SYSTOLIC
   gemm_input1_input2 {
     outer: 2
-    M: 131072
+    M: 1048576
     K: 16
-    N: 131072
-    input_tensor_1_size: 8388608.0
-    input_tensor_2_size: 8388608.0
-    output_tensor_size: 68719480000.0
+    N: 1048576
+    input_tensor_1_size: 67108864.0
+    input_tensor_2_size: 67108864.0
+    output_tensor_size: 4398046500000.0
     tiling: N_TILING
   }
 }
@@ -74,10 +74,10 @@ kernels {
   type: SIMD
   elementwise_input1 {
     outer: 2
-    M: 131072
-    N: 131072
-    input_tensor_size: 68719480000.0
-    output_tensor_size: 68719480000.0
+    M: 1048576
+    N: 1048576
+    input_tensor_size: 4398046500000.0
+    output_tensor_size: 4398046500000.0
     tiling: N_TILING
   }
 }
@@ -90,11 +90,11 @@ kernels {
   gemm_input1_input2 {
     outer: 2
     M: 16
-    K: 131072
-    N: 131072
-    input_tensor_1_size: 8388608.0
-    input_tensor_2_size: 68719480000.0
-    output_tensor_size: 8388608.0
+    K: 1048576
+    N: 1048576
+    input_tensor_1_size: 67108864.0
+    input_tensor_2_size: 4398046500000.0
+    output_tensor_size: 67108864.0
     tiling: K_TILING
   }
 }
@@ -108,10 +108,10 @@ kernels {
     outer: 1
     M: 128
     K: 32
-    N: 131072
-    input_tensor_size: 8388608.0
+    N: 1048576
+    input_tensor_size: 67108864.0
     weight_tensor_size: 8192.0
-    output_tensor_size: 33554432.0
+    output_tensor_size: 268435460.0
     tiling: N_TILING
   }
 }
@@ -125,10 +125,10 @@ kernels {
     outer: 1
     M: 32
     K: 128
-    N: 131072
-    input_tensor_size: 33554432.0
+    N: 1048576
+    input_tensor_size: 268435460.0
     weight_tensor_size: 8192.0
-    output_tensor_size: 8388608.0
+    output_tensor_size: 67108864.0
     tiling: N_TILING
   }
 }

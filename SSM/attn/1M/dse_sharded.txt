@@ -236,7 +236,7 @@ system {
     par_x: "DP"
   }
   memory {
-    dram_bw: 1638.4
+    dram_bw: 8192.0
     dram_cap: 68719480000.0
   }
 }

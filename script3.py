@@ -1,18 +1,13 @@
 import os
 import multiprocessing
 
-params = ['10240', '12288', '16384', '20480', '25600']
-  
-def run(a): 
-    os.system('./run.sh LLM/Compare_w_existing/GPU/Megatron_LM/'+a+'/ > LLM/Compare_w_existing/GPU/Megatron_LM/'+a+'/log.txt')
 
-programs = []
-for x in params:
-    p = multiprocessing.Process(target=run, args=(x,))
-    programs.append(p)
-    p.start()
-    
-for program in programs:
-    program.join()
-    
-    
+os.system('./run.sh SSM/Hyena/sweep_SRAM/2TB_dram/regular_fft/600MB_sram_3TB_dram/ > SSM/Hyena/sweep_SRAM/2TB_dram/regular_fft/600MB_sram_3TB_dram/log.txt')
+os.system('./run.sh SSM/Hyena/sweep_SRAM/2TB_dram/regular_fft/1200MB_sram_3TB_dram/ > SSM/Hyena/sweep_SRAM/2TB_dram/regular_fft/1200MB_sram_3TB_dram/log.txt')
+
+os.system('./run.sh SSM/Hyena/sweep_SRAM/2TB_dram/gemm_fft/600MB_sram_3TB_dram/ > SSM/Hyena/sweep_SRAM/2TB_dram/gemm_fft/600MB_sram_3TB_dram/log.txt')
+os.system('./run.sh SSM/Hyena/sweep_SRAM/2TB_dram/gemm_fft/1200MB_sram_3TB_dram/ > SSM/Hyena/sweep_SRAM/2TB_dram/gemm_fft/1200MB_sram_3TB_dram/log.txt')
+
+os.system('./run.sh SSM/Hyena/sweep_SRAM/2TB_dram/vector_fft/600MB_sram_3TB_dram/ > SSM/Hyena/sweep_SRAM/2TB_dram/vector_fft/600MB_sram_3TB_dram/log.txt')
+os.system('./run.sh SSM/Hyena/sweep_SRAM/2TB_dram/vector_fft/1200MB_sram_3TB_dram/ > SSM/Hyena/sweep_SRAM/2TB_dram/vector_fft/1200MB_sram_3TB_dram/log.txt')
+

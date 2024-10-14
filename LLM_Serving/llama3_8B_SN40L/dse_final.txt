@@ -41,8 +41,8 @@ dataflow_graph {
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
-      outer: 128
-      M: 32
+      outer: 32
+      M: 128
       K: 4096
       N: 1
       input_tensor_size: 8192.0
@@ -63,8 +63,8 @@ dataflow_graph {
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
-      outer: 128
-      M: 32
+      outer: 32
+      M: 128
       K: 4096
       N: 1
       input_tensor_size: 8192.0
@@ -85,8 +85,8 @@ dataflow_graph {
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
-      outer: 128
-      M: 32
+      outer: 32
+      M: 128
       K: 4096
       N: 1
       input_tensor_size: 8192.0
@@ -107,8 +107,8 @@ dataflow_graph {
     fwd_bwd: FWD
     type: SYSTOLIC
     elementwise_input1 {
-      outer: 128
-      M: 32
+      outer: 32
+      M: 128
       N: 4097
       input_tensor_size: 8192.0
       output_tensor_size: 33562624.0
@@ -117,6 +117,8 @@ dataflow_graph {
       shard_N: 4097
       tiling: N_TILING
       memory_size: 2097152.0
+      sram_extra: 2097152.0
+      dram_extra: 2097152.0
     }
   }
   kernels {
@@ -126,8 +128,8 @@ dataflow_graph {
     fwd_bwd: FWD
     type: SYSTOLIC
     elementwise_input1 {
-      outer: 128
-      M: 32
+      outer: 32
+      M: 128
       N: 4097
       input_tensor_size: 8192.0
       output_tensor_size: 33562624.0
@@ -136,6 +138,8 @@ dataflow_graph {
       shard_N: 4097
       tiling: N_TILING
       memory_size: 2097152.0
+      sram_extra: 2097152.0
+      dram_extra: 2097152.0
     }
   }
   kernels {
@@ -145,16 +149,16 @@ dataflow_graph {
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_input2 {
-      outer: 128
+      outer: 32
       M: 1
-      K: 32
+      K: 128
       N: 4097
       input_tensor_1_size: 8192.0
       input_tensor_2_size: 33562624.0
-      output_tensor_size: 1048832.0
+      output_tensor_size: 262208.0
       sharding: OUTER_SHARDING
-      shard_outer_M: 8
-      shard_K: 32
+      shard_outer_M: 2
+      shard_K: 128
       shard_N: 4097
       tiling: N_TILING
     }
@@ -166,13 +170,13 @@ dataflow_graph {
     fwd_bwd: FWD
     type: SIMD
     elementwise_input1 {
-      outer: 128
+      outer: 32
       M: 1
       N: 4097
-      input_tensor_size: 1048832.0
-      output_tensor_size: 1048832.0
+      input_tensor_size: 262208.0
+      output_tensor_size: 262208.0
       sharding: OUTER_SHARDING
-      shard_outer_M: 8
+      shard_outer_M: 2
       shard_N: 4097
       tiling: N_TILING
     }
@@ -184,13 +188,13 @@ dataflow_graph {
     fwd_bwd: FWD
     type: SIMD
     elementwise_input1 {
-      outer: 128
+      outer: 32
       M: 1
       N: 4097
-      input_tensor_size: 1048832.0
-      output_tensor_size: 1048832.0
+      input_tensor_size: 262208.0
+      output_tensor_size: 262208.0
       sharding: OUTER_SHARDING
-      shard_outer_M: 8
+      shard_outer_M: 2
       shard_N: 4097
       tiling: N_TILING
     }
@@ -202,12 +206,12 @@ dataflow_graph {
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_input2 {
-      outer: 128
-      M: 32
+      outer: 32
+      M: 128
       K: 4097
       N: 1
       input_tensor_1_size: 33562624.0
-      input_tensor_2_size: 1048832.0
+      input_tensor_2_size: 262208.0
       output_tensor_size: 8192.0
       sharding: OUTER_SHARDING
       shard_outer_M: 256
@@ -479,18 +483,18 @@ dataflow_graph {
     endIdx: 8
     buffer_depth: 2
     tensor_size: 33562624.0
-    shard_tensor_size: 2097664.0
     id: 8
     startName: "K_cache"
     endName: "MHA_GEMM_1"
     lane_stage_type: LANE
+    zero_out: true
   }
   connections {
     startIdx: 8
     endIdx: 9
     buffer_depth: 2
-    tensor_size: 1048832.0
-    shard_tensor_size: 65552.0
+    tensor_size: 262208.0
+    shard_tensor_size: 16388.0
     id: 9
     startName: "MHA_GEMM_1"
     endName: "SOFTMAX"
@@ -500,8 +504,8 @@ dataflow_graph {
     startIdx: 9
     endIdx: 10
     buffer_depth: 2
-    tensor_size: 1048832.0
-    shard_tensor_size: 65552.0
+    tensor_size: 262208.0
+    shard_tensor_size: 16388.0
     id: 10
     startName: "SOFTMAX"
     endName: "DropOut_1"
@@ -511,8 +515,8 @@ dataflow_graph {
     startIdx: 10
     endIdx: 11
     buffer_depth: 2
-    tensor_size: 1048832.0
-    shard_tensor_size: 65552.0
+    tensor_size: 262208.0
+    shard_tensor_size: 16388.0
     id: 11
     startName: "DropOut_1"
     endName: "MHA_GEMM_2"
@@ -523,11 +527,11 @@ dataflow_graph {
     endIdx: 11
     buffer_depth: 5
     tensor_size: 33562624.0
-    shard_tensor_size: 2097664.0
     id: 12
     startName: "V_cache"
     endName: "MHA_GEMM_2"
     lane_stage_type: LANE
+    zero_out: true
   }
   connections {
     startIdx: 11

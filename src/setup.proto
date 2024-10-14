@@ -78,6 +78,10 @@ message GEMM_Input1_Weight {
 	bool use_effective_stage = 1001;
 
 	int64 num_input = 2000;
+
+
+	float sram_extra = 10000;
+	float dram_extra = 10001;
 }
 
 message GEMM_Input1_Input2 {
@@ -125,6 +129,10 @@ message GEMM_Input1_Input2 {
 	}
 
 	int64 num_input = 2000;
+
+
+	float sram_extra = 10000;
+	float dram_extra = 10001;
 }
 
 message ElementWise_Input1 {
@@ -176,6 +184,10 @@ message ElementWise_Input1 {
 	}
 
 	int64 num_input = 2000;
+
+
+	float sram_extra = 10000;
+	float dram_extra = 10001;
 }
 
 message ElementWise_Input1_Input2 {
@@ -228,6 +240,10 @@ message ElementWise_Input1_Input2 {
 	}
 
 	int64 num_input = 2000;
+
+
+	float sram_extra = 10000;
+	float dram_extra = 10001;
 }
 
 message Connection {
@@ -467,9 +483,6 @@ message Execution
 		DLRM dlrm = 8;
 		HPL hpl = 9;
 		FFT fft = 10;
-		GEMM_FFT_LLM gemm_fft_llm = 11;
-		VECTOR_FFT_LLM vector_fft_llm = 12;
-		REGULAR_FFT_LLM regular_fft_llm = 13;
 		MAMBA mamba = 21;
 	}
 
@@ -478,6 +491,7 @@ message Execution
 	Overlap_Style overlap = 16;
 	bool separate_rs_ag_for_ar = 100;
 	bool skip_inter_chip_optimization = 1000;
+	int64 effective_stage = 20;
 	float compute_util = 17;
 	int64 word = 18;
 }
@@ -515,25 +529,6 @@ message HPL {
 message FFT {
 	int64 length = 1;
 	int64 num_copy = 2;
-}
-
-
-
-
-message REGULAR_FFT_LLM {
-	int64 hidden = 1;
-	int64 seq_len = 2;
-}
-
-message GEMM_FFT_LLM {
-	int64 hidden = 1;
-	int64 seq_len = 2;
-}
-
-message VECTOR_FFT_LLM {
-	int64 hidden = 1;
-	int64 seq_len = 2;
-	int64 effective_stage = 3; 
 }
 
 message MAMBA {

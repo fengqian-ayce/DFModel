@@ -1,6 +1,61 @@
 dataflow_graph {
   kernels {
+    name: "Q"
+    config: -1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 2
+      M: 16
+      K: 32
+      N: 1048576
+      input_tensor_size: 67108864.0
+      weight_tensor_size: 2048.0
+      output_tensor_size: 67108864.0
+      sharding: NO_SHARDING
+      tiling: N_TILING
+    }
+  }
+  kernels {
+    name: "K"
+    id: 1
+    config: -1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 2
+      M: 16
+      K: 32
+      N: 1048576
+      input_tensor_size: 67108864.0
+      weight_tensor_size: 2048.0
+      output_tensor_size: 67108864.0
+      sharding: NO_SHARDING
+      tiling: N_TILING
+    }
+  }
+  kernels {
+    name: "V"
+    id: 2
+    config: -1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 2
+      M: 16
+      K: 32
+      N: 1048576
+      input_tensor_size: 67108864.0
+      weight_tensor_size: 2048.0
+      output_tensor_size: 67108864.0
+      sharding: NO_SHARDING
+      tiling: N_TILING
+    }
+  }
+  kernels {
     name: "Q_stage0"
+    id: 3
+    topological_number: 1
     config: -1
     fwd_bwd: FWD
     type: SYSTOLIC
@@ -14,13 +69,15 @@ dataflow_graph {
       sharding: NO_SHARDING
       tiling: NO_TILING
       skip_weight: true
-      num_input: 1
+      num_input: 32
+      sram_extra: 67108864.0
+      dram_extra: 67108864.0
     }
   }
   kernels {
     name: "Q_stage1"
-    id: 1
-    topological_number: 1
+    id: 4
+    topological_number: 2
     config: -1
     fwd_bwd: FWD
     type: SYSTOLIC
@@ -34,32 +91,14 @@ dataflow_graph {
       sharding: NO_SHARDING
       tiling: NO_TILING
       skip_weight: true
-      num_input: 1
+      num_input: 32
+      sram_extra: 67108864.0
+      dram_extra: 67108864.0
     }
   }
   kernels {
     name: "Q_stage2"
-    id: 2
-    topological_number: 2
-    config: -1
-    fwd_bwd: FWD
-    type: SYSTOLIC
-    gemm_input1_weight {
-      outer: 1
-      M: 32
-      K: 32
-      N: 65536
-      input_tensor_size: 4194304.0
-      output_tensor_size: 4194304.0
-      sharding: NO_SHARDING
-      tiling: NO_TILING
-      skip_weight: true
-      num_input: 1
-    }
-  }
-  kernels {
-    name: "Q_stage3"
-    id: 3
+    id: 5
     topological_number: 3
     config: -1
     fwd_bwd: FWD
@@ -74,12 +113,14 @@ dataflow_graph {
       sharding: NO_SHARDING
       tiling: NO_TILING
       skip_weight: true
-      num_input: 1
+      num_input: 32
+      sram_extra: 67108864.0
+      dram_extra: 67108864.0
     }
   }
   kernels {
-    name: "Q_stage4"
-    id: 4
+    name: "Q_stage3"
+    id: 6
     topological_number: 4
     config: -1
     fwd_bwd: FWD
@@ -94,12 +135,15 @@ dataflow_graph {
       sharding: NO_SHARDING
       tiling: NO_TILING
       skip_weight: true
-      num_input: 1
+      num_input: 32
+      sram_extra: 67108864.0
+      dram_extra: 67108864.0
     }
   }
   kernels {
-    name: "K_stage0"
-    id: 5
+    name: "Q_stage4"
+    id: 7
+    topological_number: 5
     config: -1
     fwd_bwd: FWD
     type: SYSTOLIC
@@ -113,12 +157,14 @@ dataflow_graph {
       sharding: NO_SHARDING
       tiling: NO_TILING
       skip_weight: true
-      num_input: 1
+      num_input: 32
+      sram_extra: 67108864.0
+      dram_extra: 67108864.0
     }
   }
   kernels {
-    name: "K_stage1"
-    id: 6
+    name: "K_stage0"
+    id: 8
     topological_number: 1
     config: -1
     fwd_bwd: FWD
@@ -133,12 +179,14 @@ dataflow_graph {
       sharding: NO_SHARDING
       tiling: NO_TILING
       skip_weight: true
-      num_input: 1
+      num_input: 32
+      sram_extra: 67108864.0
+      dram_extra: 67108864.0
     }
   }
   kernels {
-    name: "K_stage2"
-    id: 7
+    name: "K_stage1"
+    id: 9
     topological_number: 2
     config: -1
     fwd_bwd: FWD
@@ -153,12 +201,14 @@ dataflow_graph {
       sharding: NO_SHARDING
       tiling: NO_TILING
       skip_weight: true
-      num_input: 1
+      num_input: 32
+      sram_extra: 67108864.0
+      dram_extra: 67108864.0
     }
   }
   kernels {
-    name: "K_stage3"
-    id: 8
+    name: "K_stage2"
+    id: 10
     topological_number: 3
     config: -1
     fwd_bwd: FWD
@@ -173,12 +223,14 @@ dataflow_graph {
       sharding: NO_SHARDING
       tiling: NO_TILING
       skip_weight: true
-      num_input: 1
+      num_input: 32
+      sram_extra: 67108864.0
+      dram_extra: 67108864.0
     }
   }
   kernels {
-    name: "K_stage4"
-    id: 9
+    name: "K_stage3"
+    id: 11
     topological_number: 4
     config: -1
     fwd_bwd: FWD
@@ -193,13 +245,15 @@ dataflow_graph {
       sharding: NO_SHARDING
       tiling: NO_TILING
       skip_weight: true
-      num_input: 1
+      num_input: 32
+      sram_extra: 67108864.0
+      dram_extra: 67108864.0
     }
   }
   kernels {
-    name: "QKi_stage0"
-    id: 10
-    topological_number: 6
+    name: "K_stage4"
+    id: 12
+    topological_number: 5
     config: -1
     fwd_bwd: FWD
     type: SYSTOLIC
@@ -213,12 +267,14 @@ dataflow_graph {
       sharding: NO_SHARDING
       tiling: NO_TILING
       skip_weight: true
-      num_input: 1
+      num_input: 32
+      sram_extra: 67108864.0
+      dram_extra: 67108864.0
     }
   }
   kernels {
-    name: "QKi_stage1"
-    id: 11
+    name: "QKi_stage0"
+    id: 13
     topological_number: 7
     config: -1
     fwd_bwd: FWD
@@ -233,12 +289,14 @@ dataflow_graph {
       sharding: NO_SHARDING
       tiling: NO_TILING
       skip_weight: true
-      num_input: 1
+      num_input: 32
+      sram_extra: 67108864.0
+      dram_extra: 67108864.0
     }
   }
   kernels {
-    name: "QKi_stage2"
-    id: 12
+    name: "QKi_stage1"
+    id: 14
     topological_number: 8
     config: -1
     fwd_bwd: FWD
@@ -253,12 +311,14 @@ dataflow_graph {
       sharding: NO_SHARDING
       tiling: NO_TILING
       skip_weight: true
-      num_input: 1
+      num_input: 32
+      sram_extra: 67108864.0
+      dram_extra: 67108864.0
     }
   }
   kernels {
-    name: "QKi_stage3"
-    id: 13
+    name: "QKi_stage2"
+    id: 15
     topological_number: 9
     config: -1
     fwd_bwd: FWD
@@ -273,12 +333,14 @@ dataflow_graph {
       sharding: NO_SHARDING
       tiling: NO_TILING
       skip_weight: true
-      num_input: 1
+      num_input: 32
+      sram_extra: 67108864.0
+      dram_extra: 67108864.0
     }
   }
   kernels {
-    name: "QKi_stage4"
-    id: 14
+    name: "QKi_stage3"
+    id: 16
     topological_number: 10
     config: -1
     fwd_bwd: FWD
@@ -293,13 +355,15 @@ dataflow_graph {
       sharding: NO_SHARDING
       tiling: NO_TILING
       skip_weight: true
-      num_input: 1
+      num_input: 32
+      sram_extra: 67108864.0
+      dram_extra: 67108864.0
     }
   }
   kernels {
-    name: "inter_stage0"
-    id: 15
-    topological_number: 12
+    name: "QKi_stage4"
+    id: 17
+    topological_number: 11
     config: -1
     fwd_bwd: FWD
     type: SYSTOLIC
@@ -313,12 +377,14 @@ dataflow_graph {
       sharding: NO_SHARDING
       tiling: NO_TILING
       skip_weight: true
-      num_input: 1
+      num_input: 32
+      sram_extra: 67108864.0
+      dram_extra: 67108864.0
     }
   }
   kernels {
-    name: "inter_stage1"
-    id: 16
+    name: "inter_stage0"
+    id: 18
     topological_number: 13
     config: -1
     fwd_bwd: FWD
@@ -333,12 +399,14 @@ dataflow_graph {
       sharding: NO_SHARDING
       tiling: NO_TILING
       skip_weight: true
-      num_input: 1
+      num_input: 32
+      sram_extra: 67108864.0
+      dram_extra: 67108864.0
     }
   }
   kernels {
-    name: "inter_stage2"
-    id: 17
+    name: "inter_stage1"
+    id: 19
     topological_number: 14
     config: -1
     fwd_bwd: FWD
@@ -353,12 +421,14 @@ dataflow_graph {
       sharding: NO_SHARDING
       tiling: NO_TILING
       skip_weight: true
-      num_input: 1
+      num_input: 32
+      sram_extra: 67108864.0
+      dram_extra: 67108864.0
     }
   }
   kernels {
-    name: "inter_stage3"
-    id: 18
+    name: "inter_stage2"
+    id: 20
     topological_number: 15
     config: -1
     fwd_bwd: FWD
@@ -373,12 +443,14 @@ dataflow_graph {
       sharding: NO_SHARDING
       tiling: NO_TILING
       skip_weight: true
-      num_input: 1
+      num_input: 32
+      sram_extra: 67108864.0
+      dram_extra: 67108864.0
     }
   }
   kernels {
-    name: "inter_stage4"
-    id: 19
+    name: "inter_stage3"
+    id: 21
     topological_number: 16
     config: -1
     fwd_bwd: FWD
@@ -393,12 +465,15 @@ dataflow_graph {
       sharding: NO_SHARDING
       tiling: NO_TILING
       skip_weight: true
-      num_input: 1
+      num_input: 32
+      sram_extra: 67108864.0
+      dram_extra: 67108864.0
     }
   }
   kernels {
-    name: "V_stage0"
-    id: 20
+    name: "inter_stage4"
+    id: 22
+    topological_number: 17
     config: -1
     fwd_bwd: FWD
     type: SYSTOLIC
@@ -412,12 +487,14 @@ dataflow_graph {
       sharding: NO_SHARDING
       tiling: NO_TILING
       skip_weight: true
-      num_input: 1
+      num_input: 32
+      sram_extra: 67108864.0
+      dram_extra: 67108864.0
     }
   }
   kernels {
-    name: "V_stage1"
-    id: 21
+    name: "V_stage0"
+    id: 23
     topological_number: 1
     config: -1
     fwd_bwd: FWD
@@ -432,12 +509,14 @@ dataflow_graph {
       sharding: NO_SHARDING
       tiling: NO_TILING
       skip_weight: true
-      num_input: 1
+      num_input: 32
+      sram_extra: 67108864.0
+      dram_extra: 67108864.0
     }
   }
   kernels {
-    name: "V_stage2"
-    id: 22
+    name: "V_stage1"
+    id: 24
     topological_number: 2
     config: -1
     fwd_bwd: FWD
@@ -452,12 +531,14 @@ dataflow_graph {
       sharding: NO_SHARDING
       tiling: NO_TILING
       skip_weight: true
-      num_input: 1
+      num_input: 32
+      sram_extra: 67108864.0
+      dram_extra: 67108864.0
     }
   }
   kernels {
-    name: "V_stage3"
-    id: 23
+    name: "V_stage2"
+    id: 25
     topological_number: 3
     config: -1
     fwd_bwd: FWD
@@ -472,12 +553,14 @@ dataflow_graph {
       sharding: NO_SHARDING
       tiling: NO_TILING
       skip_weight: true
-      num_input: 1
+      num_input: 32
+      sram_extra: 67108864.0
+      dram_extra: 67108864.0
     }
   }
   kernels {
-    name: "V_stage4"
-    id: 24
+    name: "V_stage3"
+    id: 26
     topological_number: 4
     config: -1
     fwd_bwd: FWD
@@ -492,13 +575,15 @@ dataflow_graph {
       sharding: NO_SHARDING
       tiling: NO_TILING
       skip_weight: true
-      num_input: 1
+      num_input: 32
+      sram_extra: 67108864.0
+      dram_extra: 67108864.0
     }
   }
   kernels {
-    name: "interVi_stage0"
-    id: 25
-    topological_number: 18
+    name: "V_stage4"
+    id: 27
+    topological_number: 5
     config: -1
     fwd_bwd: FWD
     type: SYSTOLIC
@@ -512,12 +597,14 @@ dataflow_graph {
       sharding: NO_SHARDING
       tiling: NO_TILING
       skip_weight: true
-      num_input: 1
+      num_input: 32
+      sram_extra: 67108864.0
+      dram_extra: 67108864.0
     }
   }
   kernels {
-    name: "interVi_stage1"
-    id: 26
+    name: "interVi_stage0"
+    id: 28
     topological_number: 19
     config: -1
     fwd_bwd: FWD
@@ -532,12 +619,14 @@ dataflow_graph {
       sharding: NO_SHARDING
       tiling: NO_TILING
       skip_weight: true
-      num_input: 1
+      num_input: 32
+      sram_extra: 67108864.0
+      dram_extra: 67108864.0
     }
   }
   kernels {
-    name: "interVi_stage2"
-    id: 27
+    name: "interVi_stage1"
+    id: 29
     topological_number: 20
     config: -1
     fwd_bwd: FWD
@@ -552,12 +641,14 @@ dataflow_graph {
       sharding: NO_SHARDING
       tiling: NO_TILING
       skip_weight: true
-      num_input: 1
+      num_input: 32
+      sram_extra: 67108864.0
+      dram_extra: 67108864.0
     }
   }
   kernels {
-    name: "interVi_stage3"
-    id: 28
+    name: "interVi_stage2"
+    id: 30
     topological_number: 21
     config: -1
     fwd_bwd: FWD
@@ -572,12 +663,14 @@ dataflow_graph {
       sharding: NO_SHARDING
       tiling: NO_TILING
       skip_weight: true
-      num_input: 1
+      num_input: 32
+      sram_extra: 67108864.0
+      dram_extra: 67108864.0
     }
   }
   kernels {
-    name: "interVi_stage4"
-    id: 29
+    name: "interVi_stage3"
+    id: 31
     topological_number: 22
     config: -1
     fwd_bwd: FWD
@@ -592,13 +685,37 @@ dataflow_graph {
       sharding: NO_SHARDING
       tiling: NO_TILING
       skip_weight: true
-      num_input: 1
+      num_input: 32
+      sram_extra: 67108864.0
+      dram_extra: 67108864.0
+    }
+  }
+  kernels {
+    name: "interVi_stage4"
+    id: 32
+    topological_number: 23
+    config: -1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 32
+      K: 32
+      N: 65536
+      input_tensor_size: 4194304.0
+      output_tensor_size: 4194304.0
+      sharding: NO_SHARDING
+      tiling: NO_TILING
+      skip_weight: true
+      num_input: 32
+      sram_extra: 67108864.0
+      dram_extra: 67108864.0
     }
   }
   kernels {
     name: "QKmultiply"
-    id: 30
-    topological_number: 5
+    id: 33
+    topological_number: 6
     config: -1
     fwd_bwd: FWD
     type: SIMD
@@ -611,13 +728,13 @@ dataflow_graph {
       sharding: NO_SHARDING
       tiling: NO_TILING
       input_tensor_2_size: 4194304.0
-      num_input: 1
+      num_input: 32
     }
   }
   kernels {
     name: "softmax"
-    id: 31
-    topological_number: 11
+    id: 34
+    topological_number: 12
     config: -1
     fwd_bwd: FWD
     type: SIMD
@@ -630,13 +747,13 @@ dataflow_graph {
       sharding: NO_SHARDING
       tiling: NO_TILING
       input_tensor_2_size: 4194304.0
-      num_input: 1
+      num_input: 32
     }
   }
   kernels {
     name: "interVmultiply"
-    id: 32
-    topological_number: 17
+    id: 35
+    topological_number: 18
     config: -1
     fwd_bwd: FWD
     type: SIMD
@@ -649,36 +766,46 @@ dataflow_graph {
       sharding: NO_SHARDING
       tiling: NO_TILING
       input_tensor_2_size: 4194304.0
-      num_input: 1
+      num_input: 32
     }
   }
-  connections {
-    endIdx: 1
-    buffer_depth: 2
-    tensor_size: 4194304.0
-    startName: "Q_stage0"
-    endName: "Q_stage1"
-    lane_stage_type: LANE
+  kernels {
+    name: "FFN0"
+    id: 36
+    topological_number: 24
+    config: -1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 128
+      K: 32
+      N: 1048576
+      input_tensor_size: 67108864.0
+      weight_tensor_size: 8192.0
+      output_tensor_size: 268435460.0
+      sharding: NO_SHARDING
+      tiling: N_TILING
+    }
   }
-  connections {
-    startIdx: 1
-    endIdx: 2
-    buffer_depth: 2
-    tensor_size: 4194304.0
-    id: 1
-    startName: "Q_stage1"
-    endName: "Q_stage2"
-    lane_stage_type: LANE
-  }
-  connections {
-    startIdx: 2
-    endIdx: 3
-    buffer_depth: 2
-    tensor_size: 4194304.0
-    id: 2
-    startName: "Q_stage2"
-    endName: "Q_stage3"
-    lane_stage_type: LANE
+  kernels {
+    name: "FFN1"
+    id: 37
+    topological_number: 25
+    config: -1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 32
+      K: 128
+      N: 1048576
+      input_tensor_size: 268435460.0
+      weight_tensor_size: 8192.0
+      output_tensor_size: 67108864.0
+      sharding: NO_SHARDING
+      tiling: N_TILING
+    }
   }
   connections {
     startIdx: 3
@@ -686,8 +813,18 @@ dataflow_graph {
     buffer_depth: 2
     tensor_size: 4194304.0
     id: 3
-    startName: "Q_stage3"
-    endName: "Q_stage4"
+    startName: "Q_stage0"
+    endName: "Q_stage1"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 4
+    endIdx: 5
+    buffer_depth: 2
+    tensor_size: 4194304.0
+    id: 4
+    startName: "Q_stage1"
+    endName: "Q_stage2"
     lane_stage_type: LANE
   }
   connections {
@@ -696,8 +833,8 @@ dataflow_graph {
     buffer_depth: 2
     tensor_size: 4194304.0
     id: 5
-    startName: "K_stage0"
-    endName: "K_stage1"
+    startName: "Q_stage2"
+    endName: "Q_stage3"
     lane_stage_type: LANE
   }
   connections {
@@ -706,18 +843,8 @@ dataflow_graph {
     buffer_depth: 2
     tensor_size: 4194304.0
     id: 6
-    startName: "K_stage1"
-    endName: "K_stage2"
-    lane_stage_type: LANE
-  }
-  connections {
-    startIdx: 7
-    endIdx: 8
-    buffer_depth: 2
-    tensor_size: 4194304.0
-    id: 7
-    startName: "K_stage2"
-    endName: "K_stage3"
+    startName: "Q_stage3"
+    endName: "Q_stage4"
     lane_stage_type: LANE
   }
   connections {
@@ -726,8 +853,18 @@ dataflow_graph {
     buffer_depth: 2
     tensor_size: 4194304.0
     id: 8
-    startName: "K_stage3"
-    endName: "K_stage4"
+    startName: "K_stage0"
+    endName: "K_stage1"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 9
+    endIdx: 10
+    buffer_depth: 2
+    tensor_size: 4194304.0
+    id: 9
+    startName: "K_stage1"
+    endName: "K_stage2"
     lane_stage_type: LANE
   }
   connections {
@@ -736,8 +873,8 @@ dataflow_graph {
     buffer_depth: 2
     tensor_size: 4194304.0
     id: 10
-    startName: "QKi_stage0"
-    endName: "QKi_stage1"
+    startName: "K_stage2"
+    endName: "K_stage3"
     lane_stage_type: LANE
   }
   connections {
@@ -746,18 +883,8 @@ dataflow_graph {
     buffer_depth: 2
     tensor_size: 4194304.0
     id: 11
-    startName: "QKi_stage1"
-    endName: "QKi_stage2"
-    lane_stage_type: LANE
-  }
-  connections {
-    startIdx: 12
-    endIdx: 13
-    buffer_depth: 2
-    tensor_size: 4194304.0
-    id: 12
-    startName: "QKi_stage2"
-    endName: "QKi_stage3"
+    startName: "K_stage3"
+    endName: "K_stage4"
     lane_stage_type: LANE
   }
   connections {
@@ -766,8 +893,18 @@ dataflow_graph {
     buffer_depth: 2
     tensor_size: 4194304.0
     id: 13
-    startName: "QKi_stage3"
-    endName: "QKi_stage4"
+    startName: "QKi_stage0"
+    endName: "QKi_stage1"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 14
+    endIdx: 15
+    buffer_depth: 2
+    tensor_size: 4194304.0
+    id: 14
+    startName: "QKi_stage1"
+    endName: "QKi_stage2"
     lane_stage_type: LANE
   }
   connections {
@@ -776,8 +913,8 @@ dataflow_graph {
     buffer_depth: 2
     tensor_size: 4194304.0
     id: 15
-    startName: "inter_stage0"
-    endName: "inter_stage1"
+    startName: "QKi_stage2"
+    endName: "QKi_stage3"
     lane_stage_type: LANE
   }
   connections {
@@ -786,18 +923,8 @@ dataflow_graph {
     buffer_depth: 2
     tensor_size: 4194304.0
     id: 16
-    startName: "inter_stage1"
-    endName: "inter_stage2"
-    lane_stage_type: LANE
-  }
-  connections {
-    startIdx: 17
-    endIdx: 18
-    buffer_depth: 2
-    tensor_size: 4194304.0
-    id: 17
-    startName: "inter_stage2"
-    endName: "inter_stage3"
+    startName: "QKi_stage3"
+    endName: "QKi_stage4"
     lane_stage_type: LANE
   }
   connections {
@@ -806,8 +933,18 @@ dataflow_graph {
     buffer_depth: 2
     tensor_size: 4194304.0
     id: 18
-    startName: "inter_stage3"
-    endName: "inter_stage4"
+    startName: "inter_stage0"
+    endName: "inter_stage1"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 19
+    endIdx: 20
+    buffer_depth: 2
+    tensor_size: 4194304.0
+    id: 19
+    startName: "inter_stage1"
+    endName: "inter_stage2"
     lane_stage_type: LANE
   }
   connections {
@@ -816,8 +953,8 @@ dataflow_graph {
     buffer_depth: 2
     tensor_size: 4194304.0
     id: 20
-    startName: "V_stage0"
-    endName: "V_stage1"
+    startName: "inter_stage2"
+    endName: "inter_stage3"
     lane_stage_type: LANE
   }
   connections {
@@ -826,18 +963,8 @@ dataflow_graph {
     buffer_depth: 2
     tensor_size: 4194304.0
     id: 21
-    startName: "V_stage1"
-    endName: "V_stage2"
-    lane_stage_type: LANE
-  }
-  connections {
-    startIdx: 22
-    endIdx: 23
-    buffer_depth: 2
-    tensor_size: 4194304.0
-    id: 22
-    startName: "V_stage2"
-    endName: "V_stage3"
+    startName: "inter_stage3"
+    endName: "inter_stage4"
     lane_stage_type: LANE
   }
   connections {
@@ -846,8 +973,18 @@ dataflow_graph {
     buffer_depth: 2
     tensor_size: 4194304.0
     id: 23
-    startName: "V_stage3"
-    endName: "V_stage4"
+    startName: "V_stage0"
+    endName: "V_stage1"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 24
+    endIdx: 25
+    buffer_depth: 2
+    tensor_size: 4194304.0
+    id: 24
+    startName: "V_stage1"
+    endName: "V_stage2"
     lane_stage_type: LANE
   }
   connections {
@@ -856,8 +993,8 @@ dataflow_graph {
     buffer_depth: 2
     tensor_size: 4194304.0
     id: 25
-    startName: "interVi_stage0"
-    endName: "interVi_stage1"
+    startName: "V_stage2"
+    endName: "V_stage3"
     lane_stage_type: LANE
   }
   connections {
@@ -866,18 +1003,8 @@ dataflow_graph {
     buffer_depth: 2
     tensor_size: 4194304.0
     id: 26
-    startName: "interVi_stage1"
-    endName: "interVi_stage2"
-    lane_stage_type: LANE
-  }
-  connections {
-    startIdx: 27
-    endIdx: 28
-    buffer_depth: 2
-    tensor_size: 4194304.0
-    id: 27
-    startName: "interVi_stage2"
-    endName: "interVi_stage3"
+    startName: "V_stage3"
+    endName: "V_stage4"
     lane_stage_type: LANE
   }
   connections {
@@ -886,13 +1013,43 @@ dataflow_graph {
     buffer_depth: 2
     tensor_size: 4194304.0
     id: 28
+    startName: "interVi_stage0"
+    endName: "interVi_stage1"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 29
+    endIdx: 30
+    buffer_depth: 2
+    tensor_size: 4194304.0
+    id: 29
+    startName: "interVi_stage1"
+    endName: "interVi_stage2"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 30
+    endIdx: 31
+    buffer_depth: 2
+    tensor_size: 4194304.0
+    id: 30
+    startName: "interVi_stage2"
+    endName: "interVi_stage3"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 31
+    endIdx: 32
+    buffer_depth: 2
+    tensor_size: 4194304.0
+    id: 31
     startName: "interVi_stage3"
     endName: "interVi_stage4"
     lane_stage_type: LANE
   }
   connections {
-    startIdx: 4
-    endIdx: 30
+    startIdx: 7
+    endIdx: 33
     buffer_depth: 2
     tensor_size: 4194304.0
     id: 50
@@ -901,8 +1058,8 @@ dataflow_graph {
     lane_stage_type: LANE
   }
   connections {
-    startIdx: 9
-    endIdx: 30
+    startIdx: 12
+    endIdx: 33
     buffer_depth: 2
     tensor_size: 4194304.0
     id: 51
@@ -911,8 +1068,8 @@ dataflow_graph {
     lane_stage_type: LANE
   }
   connections {
-    startIdx: 30
-    endIdx: 10
+    startIdx: 33
+    endIdx: 13
     buffer_depth: 2
     tensor_size: 4194304.0
     id: 52
@@ -921,8 +1078,8 @@ dataflow_graph {
     lane_stage_type: LANE
   }
   connections {
-    startIdx: 14
-    endIdx: 31
+    startIdx: 17
+    endIdx: 34
     buffer_depth: 2
     tensor_size: 4194304.0
     id: 53
@@ -931,8 +1088,8 @@ dataflow_graph {
     lane_stage_type: LANE
   }
   connections {
-    startIdx: 31
-    endIdx: 15
+    startIdx: 34
+    endIdx: 18
     buffer_depth: 2
     tensor_size: 4194304.0
     id: 54
@@ -941,8 +1098,8 @@ dataflow_graph {
     lane_stage_type: LANE
   }
   connections {
-    startIdx: 19
-    endIdx: 32
+    startIdx: 22
+    endIdx: 35
     buffer_depth: 2
     tensor_size: 4194304.0
     id: 55
@@ -951,8 +1108,8 @@ dataflow_graph {
     lane_stage_type: LANE
   }
   connections {
-    startIdx: 24
-    endIdx: 32
+    startIdx: 27
+    endIdx: 35
     buffer_depth: 14
     tensor_size: 4194304.0
     id: 56
@@ -961,13 +1118,62 @@ dataflow_graph {
     lane_stage_type: LANE
   }
   connections {
-    startIdx: 32
-    endIdx: 25
+    startIdx: 35
+    endIdx: 28
     buffer_depth: 2
     tensor_size: 4194304.0
     id: 57
     startName: "interVmultiply"
     endName: "interVi_stage0"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 32
+    endIdx: 36
+    buffer_depth: 2
+    tensor_size: 4194304.0
+    id: 58
+    startName: "interVi_stage4"
+    endName: "FFN0"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 36
+    endIdx: 37
+    buffer_depth: 2
+    tensor_size: 268435460.0
+    id: 59
+    startName: "FFN0"
+    endName: "FFN1"
+    lane_stage_type: LANE
+  }
+  connections {
+    endIdx: 3
+    buffer_depth: 2
+    tensor_size: 67108864.0
+    id: 60
+    startName: "Q"
+    endName: "Q_stage0"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 1
+    endIdx: 8
+    buffer_depth: 2
+    tensor_size: 67108864.0
+    id: 61
+    startName: "K"
+    endName: "K_stage0"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 2
+    endIdx: 23
+    buffer_depth: 2
+    tensor_size: 67108864.0
+    id: 62
+    startName: "V"
+    endName: "V_stage0"
     lane_stage_type: LANE
   }
 }
@@ -977,23 +1183,17 @@ system {
     core: 520
     systolic_width: 32
     systolic_height: 12
-    sram_cap: 545259500.0
+    sram_cap: 100000000000.0
     freq: 1.6
   }
-  r_r_r {
+  r {
     x: 1
-    y: 1
-    z: 1
-    link_bw_x: 50.0
-    link_bw_y: 50.0
-    link_bw_z: 50.0
-    par_x: "TP"
-    par_y: "PP"
-    par_z: "DP"
+    link_bw_x: 10.0
+    par_x: "DP"
   }
   memory {
-    dram_bw: 3072.0
-    dram_cap: 103079215000.0
+    dram_bw: 8192.0
+    dram_cap: 68719480000.0
   }
 }
 cost {
@@ -1008,17 +1208,23 @@ cost {
   accelerator_power: 444.7062
 }
 execution {
-  gemm_fft_llm {
-    hidden: 1
+  llm {
+    hidden_dim: 32
+    head_dim: 16
+    num_head: 2
     seq_len: 1048576
+    num_layer: 1
+    global_batch_size: 1
+    micro_batch_size: 1
+    num_layer_in_graph: 1
   }
   execution_style: DATAFLOW
-  num_config: 1
-  perfect_overlap: true
+  num_config: 3
+  overlap: PERFECT_OVERLAP
   word: 2
+  skip_inter_chip_optimization: true
 }
 gurobi {
-  thread: 144
   gap: 0.001
-  time: 36000
+  time: 180
 }

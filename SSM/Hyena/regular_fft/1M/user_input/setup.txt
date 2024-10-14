@@ -1,59 +1,56 @@
 dataflow_graph {
 kernels {
-  name: "Q_stage0"
+  name: "Q"
   config: -1
   fwd_bwd: FWD
   type: SYSTOLIC
   gemm_input1_weight {
-    outer: 1
-    M: 2097152
-    K: 2
-    N: 1
-    input_tensor_size: 4194304.0
-    output_tensor_size: 4194304.0
-    tiling: NO_TILING
-    skip_weight: true
-    num_input: 1
+    outer: 2
+    M: 16
+    K: 32
+    N: 1048576
+    input_tensor_size: 67108864.0
+    weight_tensor_size: 2048.0
+    output_tensor_size: 67108864.0
+    tiling: N_TILING
   }
 }
 kernels {
-  name: "Q_stage1"
+  name: "K"
   id: 1
   config: -1
   fwd_bwd: FWD
   type: SYSTOLIC
   gemm_input1_weight {
-    outer: 1
-    M: 2097152
-    K: 2
-    N: 1
-    input_tensor_size: 4194304.0
-    output_tensor_size: 4194304.0
-    tiling: NO_TILING
-    skip_weight: true
-    num_input: 1
+    outer: 2
+    M: 16
+    K: 32
+    N: 1048576
+    input_tensor_size: 67108864.0
+    weight_tensor_size: 2048.0
+    output_tensor_size: 67108864.0
+    tiling: N_TILING
   }
 }
 kernels {
-  name: "Q_stage2"
+  name: "V"
   id: 2
   config: -1
   fwd_bwd: FWD
   type: SYSTOLIC
   gemm_input1_weight {
-    outer: 1
-    M: 2097152
-    K: 2
-    N: 1
-    input_tensor_size: 4194304.0
-    output_tensor_size: 4194304.0
-    tiling: NO_TILING
-    skip_weight: true
-    num_input: 1
+    outer: 2
+    M: 16
+    K: 32
+    N: 1048576
+    input_tensor_size: 67108864.0
+    weight_tensor_size: 2048.0
+    output_tensor_size: 67108864.0
+    tiling: N_TILING
   }
 }
 kernels {
-  name: "Q_stage3"
+  name: "Q_stage0"
   id: 3
   config: -1
   fwd_bwd: FWD
@@ -67,11 +64,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "Q_stage4"
+  name: "Q_stage1"
   id: 4
   config: -1
   fwd_bwd: FWD
@@ -85,11 +84,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "Q_stage5"
+  name: "Q_stage2"
   id: 5
   config: -1
   fwd_bwd: FWD
@@ -103,11 +104,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "Q_stage6"
+  name: "Q_stage3"
   id: 6
   config: -1
   fwd_bwd: FWD
@@ -121,11 +124,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "Q_stage7"
+  name: "Q_stage4"
   id: 7
   config: -1
   fwd_bwd: FWD
@@ -139,11 +144,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "Q_stage8"
+  name: "Q_stage5"
   id: 8
   config: -1
   fwd_bwd: FWD
@@ -157,11 +164,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "Q_stage9"
+  name: "Q_stage6"
   id: 9
   config: -1
   fwd_bwd: FWD
@@ -175,11 +184,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "Q_stage10"
+  name: "Q_stage7"
   id: 10
   config: -1
   fwd_bwd: FWD
@@ -193,11 +204,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "Q_stage11"
+  name: "Q_stage8"
   id: 11
   config: -1
   fwd_bwd: FWD
@@ -211,11 +224,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "Q_stage12"
+  name: "Q_stage9"
   id: 12
   config: -1
   fwd_bwd: FWD
@@ -229,11 +244,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "Q_stage13"
+  name: "Q_stage10"
   id: 13
   config: -1
   fwd_bwd: FWD
@@ -247,11 +264,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "Q_stage14"
+  name: "Q_stage11"
   id: 14
   config: -1
   fwd_bwd: FWD
@@ -265,11 +284,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "Q_stage15"
+  name: "Q_stage12"
   id: 15
   config: -1
   fwd_bwd: FWD
@@ -283,11 +304,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "Q_stage16"
+  name: "Q_stage13"
   id: 16
   config: -1
   fwd_bwd: FWD
@@ -301,11 +324,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "Q_stage17"
+  name: "Q_stage14"
   id: 17
   config: -1
   fwd_bwd: FWD
@@ -319,11 +344,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "Q_stage18"
+  name: "Q_stage15"
   id: 18
   config: -1
   fwd_bwd: FWD
@@ -337,11 +364,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "Q_stage19"
+  name: "Q_stage16"
   id: 19
   config: -1
   fwd_bwd: FWD
@@ -355,11 +384,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "K_stage0"
+  name: "Q_stage17"
   id: 20
   config: -1
   fwd_bwd: FWD
@@ -373,11 +404,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "K_stage1"
+  name: "Q_stage18"
   id: 21
   config: -1
   fwd_bwd: FWD
@@ -391,11 +424,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "K_stage2"
+  name: "Q_stage19"
   id: 22
   config: -1
   fwd_bwd: FWD
@@ -409,11 +444,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "K_stage3"
+  name: "K_stage0"
   id: 23
   config: -1
   fwd_bwd: FWD
@@ -427,11 +464,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "K_stage4"
+  name: "K_stage1"
   id: 24
   config: -1
   fwd_bwd: FWD
@@ -445,11 +484,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "K_stage5"
+  name: "K_stage2"
   id: 25
   config: -1
   fwd_bwd: FWD
@@ -463,11 +504,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "K_stage6"
+  name: "K_stage3"
   id: 26
   config: -1
   fwd_bwd: FWD
@@ -481,11 +524,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "K_stage7"
+  name: "K_stage4"
   id: 27
   config: -1
   fwd_bwd: FWD
@@ -499,11 +544,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "K_stage8"
+  name: "K_stage5"
   id: 28
   config: -1
   fwd_bwd: FWD
@@ -517,11 +564,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "K_stage9"
+  name: "K_stage6"
   id: 29
   config: -1
   fwd_bwd: FWD
@@ -535,11 +584,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "K_stage10"
+  name: "K_stage7"
   id: 30
   config: -1
   fwd_bwd: FWD
@@ -553,11 +604,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "K_stage11"
+  name: "K_stage8"
   id: 31
   config: -1
   fwd_bwd: FWD
@@ -571,11 +624,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "K_stage12"
+  name: "K_stage9"
   id: 32
   config: -1
   fwd_bwd: FWD
@@ -589,11 +644,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "K_stage13"
+  name: "K_stage10"
   id: 33
   config: -1
   fwd_bwd: FWD
@@ -607,11 +664,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "K_stage14"
+  name: "K_stage11"
   id: 34
   config: -1
   fwd_bwd: FWD
@@ -625,11 +684,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "K_stage15"
+  name: "K_stage12"
   id: 35
   config: -1
   fwd_bwd: FWD
@@ -643,11 +704,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "K_stage16"
+  name: "K_stage13"
   id: 36
   config: -1
   fwd_bwd: FWD
@@ -661,11 +724,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "K_stage17"
+  name: "K_stage14"
   id: 37
   config: -1
   fwd_bwd: FWD
@@ -679,11 +744,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "K_stage18"
+  name: "K_stage15"
   id: 38
   config: -1
   fwd_bwd: FWD
@@ -697,11 +764,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "K_stage19"
+  name: "K_stage16"
   id: 39
   config: -1
   fwd_bwd: FWD
@@ -715,11 +784,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "QKi_stage0"
+  name: "K_stage17"
   id: 40
   config: -1
   fwd_bwd: FWD
@@ -733,11 +804,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "QKi_stage1"
+  name: "K_stage18"
   id: 41
   config: -1
   fwd_bwd: FWD
@@ -751,11 +824,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "QKi_stage2"
+  name: "K_stage19"
   id: 42
   config: -1
   fwd_bwd: FWD
@@ -769,11 +844,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "QKi_stage3"
+  name: "QKi_stage0"
   id: 43
   config: -1
   fwd_bwd: FWD
@@ -787,11 +864,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "QKi_stage4"
+  name: "QKi_stage1"
   id: 44
   config: -1
   fwd_bwd: FWD
@@ -805,11 +884,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "QKi_stage5"
+  name: "QKi_stage2"
   id: 45
   config: -1
   fwd_bwd: FWD
@@ -823,11 +904,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "QKi_stage6"
+  name: "QKi_stage3"
   id: 46
   config: -1
   fwd_bwd: FWD
@@ -841,11 +924,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "QKi_stage7"
+  name: "QKi_stage4"
   id: 47
   config: -1
   fwd_bwd: FWD
@@ -859,11 +944,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "QKi_stage8"
+  name: "QKi_stage5"
   id: 48
   config: -1
   fwd_bwd: FWD
@@ -877,11 +964,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "QKi_stage9"
+  name: "QKi_stage6"
   id: 49
   config: -1
   fwd_bwd: FWD
@@ -895,11 +984,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "QKi_stage10"
+  name: "QKi_stage7"
   id: 50
   config: -1
   fwd_bwd: FWD
@@ -913,11 +1004,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "QKi_stage11"
+  name: "QKi_stage8"
   id: 51
   config: -1
   fwd_bwd: FWD
@@ -931,11 +1024,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "QKi_stage12"
+  name: "QKi_stage9"
   id: 52
   config: -1
   fwd_bwd: FWD
@@ -949,11 +1044,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "QKi_stage13"
+  name: "QKi_stage10"
   id: 53
   config: -1
   fwd_bwd: FWD
@@ -967,11 +1064,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "QKi_stage14"
+  name: "QKi_stage11"
   id: 54
   config: -1
   fwd_bwd: FWD
@@ -985,11 +1084,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "QKi_stage15"
+  name: "QKi_stage12"
   id: 55
   config: -1
   fwd_bwd: FWD
@@ -1003,11 +1104,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "QKi_stage16"
+  name: "QKi_stage13"
   id: 56
   config: -1
   fwd_bwd: FWD
@@ -1021,11 +1124,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "QKi_stage17"
+  name: "QKi_stage14"
   id: 57
   config: -1
   fwd_bwd: FWD
@@ -1039,11 +1144,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "QKi_stage18"
+  name: "QKi_stage15"
   id: 58
   config: -1
   fwd_bwd: FWD
@@ -1057,11 +1164,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "QKi_stage19"
+  name: "QKi_stage16"
   id: 59
   config: -1
   fwd_bwd: FWD
@@ -1075,11 +1184,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "inter_stage0"
+  name: "QKi_stage17"
   id: 60
   config: -1
   fwd_bwd: FWD
@@ -1093,11 +1204,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "inter_stage1"
+  name: "QKi_stage18"
   id: 61
   config: -1
   fwd_bwd: FWD
@@ -1111,11 +1224,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "inter_stage2"
+  name: "QKi_stage19"
   id: 62
   config: -1
   fwd_bwd: FWD
@@ -1129,11 +1244,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "inter_stage3"
+  name: "inter_stage0"
   id: 63
   config: -1
   fwd_bwd: FWD
@@ -1147,11 +1264,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "inter_stage4"
+  name: "inter_stage1"
   id: 64
   config: -1
   fwd_bwd: FWD
@@ -1165,11 +1284,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "inter_stage5"
+  name: "inter_stage2"
   id: 65
   config: -1
   fwd_bwd: FWD
@@ -1183,11 +1304,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "inter_stage6"
+  name: "inter_stage3"
   id: 66
   config: -1
   fwd_bwd: FWD
@@ -1201,11 +1324,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "inter_stage7"
+  name: "inter_stage4"
   id: 67
   config: -1
   fwd_bwd: FWD
@@ -1219,11 +1344,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "inter_stage8"
+  name: "inter_stage5"
   id: 68
   config: -1
   fwd_bwd: FWD
@@ -1237,11 +1364,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "inter_stage9"
+  name: "inter_stage6"
   id: 69
   config: -1
   fwd_bwd: FWD
@@ -1255,11 +1384,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "inter_stage10"
+  name: "inter_stage7"
   id: 70
   config: -1
   fwd_bwd: FWD
@@ -1273,11 +1404,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "inter_stage11"
+  name: "inter_stage8"
   id: 71
   config: -1
   fwd_bwd: FWD
@@ -1291,11 +1424,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "inter_stage12"
+  name: "inter_stage9"
   id: 72
   config: -1
   fwd_bwd: FWD
@@ -1309,11 +1444,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "inter_stage13"
+  name: "inter_stage10"
   id: 73
   config: -1
   fwd_bwd: FWD
@@ -1327,11 +1464,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "inter_stage14"
+  name: "inter_stage11"
   id: 74
   config: -1
   fwd_bwd: FWD
@@ -1345,11 +1484,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "inter_stage15"
+  name: "inter_stage12"
   id: 75
   config: -1
   fwd_bwd: FWD
@@ -1363,11 +1504,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "inter_stage16"
+  name: "inter_stage13"
   id: 76
   config: -1
   fwd_bwd: FWD
@@ -1381,11 +1524,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "inter_stage17"
+  name: "inter_stage14"
   id: 77
   config: -1
   fwd_bwd: FWD
@@ -1399,11 +1544,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "inter_stage18"
+  name: "inter_stage15"
   id: 78
   config: -1
   fwd_bwd: FWD
@@ -1417,11 +1564,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "inter_stage19"
+  name: "inter_stage16"
   id: 79
   config: -1
   fwd_bwd: FWD
@@ -1435,11 +1584,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "V_stage0"
+  name: "inter_stage17"
   id: 80
   config: -1
   fwd_bwd: FWD
@@ -1453,11 +1604,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "V_stage1"
+  name: "inter_stage18"
   id: 81
   config: -1
   fwd_bwd: FWD
@@ -1471,11 +1624,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "V_stage2"
+  name: "inter_stage19"
   id: 82
   config: -1
   fwd_bwd: FWD
@@ -1489,11 +1644,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "V_stage3"
+  name: "V_stage0"
   id: 83
   config: -1
   fwd_bwd: FWD
@@ -1507,11 +1664,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "V_stage4"
+  name: "V_stage1"
   id: 84
   config: -1
   fwd_bwd: FWD
@@ -1525,11 +1684,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "V_stage5"
+  name: "V_stage2"
   id: 85
   config: -1
   fwd_bwd: FWD
@@ -1543,11 +1704,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "V_stage6"
+  name: "V_stage3"
   id: 86
   config: -1
   fwd_bwd: FWD
@@ -1561,11 +1724,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "V_stage7"
+  name: "V_stage4"
   id: 87
   config: -1
   fwd_bwd: FWD
@@ -1579,11 +1744,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "V_stage8"
+  name: "V_stage5"
   id: 88
   config: -1
   fwd_bwd: FWD
@@ -1597,11 +1764,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "V_stage9"
+  name: "V_stage6"
   id: 89
   config: -1
   fwd_bwd: FWD
@@ -1615,11 +1784,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "V_stage10"
+  name: "V_stage7"
   id: 90
   config: -1
   fwd_bwd: FWD
@@ -1633,11 +1804,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "V_stage11"
+  name: "V_stage8"
   id: 91
   config: -1
   fwd_bwd: FWD
@@ -1651,11 +1824,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "V_stage12"
+  name: "V_stage9"
   id: 92
   config: -1
   fwd_bwd: FWD
@@ -1669,11 +1844,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "V_stage13"
+  name: "V_stage10"
   id: 93
   config: -1
   fwd_bwd: FWD
@@ -1687,11 +1864,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "V_stage14"
+  name: "V_stage11"
   id: 94
   config: -1
   fwd_bwd: FWD
@@ -1705,11 +1884,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "V_stage15"
+  name: "V_stage12"
   id: 95
   config: -1
   fwd_bwd: FWD
@@ -1723,11 +1904,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "V_stage16"
+  name: "V_stage13"
   id: 96
   config: -1
   fwd_bwd: FWD
@@ -1741,11 +1924,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "V_stage17"
+  name: "V_stage14"
   id: 97
   config: -1
   fwd_bwd: FWD
@@ -1759,11 +1944,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "V_stage18"
+  name: "V_stage15"
   id: 98
   config: -1
   fwd_bwd: FWD
@@ -1777,11 +1964,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "V_stage19"
+  name: "V_stage16"
   id: 99
   config: -1
   fwd_bwd: FWD
@@ -1795,11 +1984,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "interVi_stage0"
+  name: "V_stage17"
   id: 100
   config: -1
   fwd_bwd: FWD
@@ -1813,11 +2004,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "interVi_stage1"
+  name: "V_stage18"
   id: 101
   config: -1
   fwd_bwd: FWD
@@ -1831,11 +2024,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "interVi_stage2"
+  name: "V_stage19"
   id: 102
   config: -1
   fwd_bwd: FWD
@@ -1849,11 +2044,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "interVi_stage3"
+  name: "interVi_stage0"
   id: 103
   config: -1
   fwd_bwd: FWD
@@ -1867,11 +2064,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "interVi_stage4"
+  name: "interVi_stage1"
   id: 104
   config: -1
   fwd_bwd: FWD
@@ -1885,11 +2084,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "interVi_stage5"
+  name: "interVi_stage2"
   id: 105
   config: -1
   fwd_bwd: FWD
@@ -1903,11 +2104,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "interVi_stage6"
+  name: "interVi_stage3"
   id: 106
   config: -1
   fwd_bwd: FWD
@@ -1921,11 +2124,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "interVi_stage7"
+  name: "interVi_stage4"
   id: 107
   config: -1
   fwd_bwd: FWD
@@ -1939,11 +2144,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "interVi_stage8"
+  name: "interVi_stage5"
   id: 108
   config: -1
   fwd_bwd: FWD
@@ -1957,11 +2164,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "interVi_stage9"
+  name: "interVi_stage6"
   id: 109
   config: -1
   fwd_bwd: FWD
@@ -1975,11 +2184,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "interVi_stage10"
+  name: "interVi_stage7"
   id: 110
   config: -1
   fwd_bwd: FWD
@@ -1993,11 +2204,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "interVi_stage11"
+  name: "interVi_stage8"
   id: 111
   config: -1
   fwd_bwd: FWD
@@ -2011,11 +2224,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "interVi_stage12"
+  name: "interVi_stage9"
   id: 112
   config: -1
   fwd_bwd: FWD
@@ -2029,11 +2244,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "interVi_stage13"
+  name: "interVi_stage10"
   id: 113
   config: -1
   fwd_bwd: FWD
@@ -2047,11 +2264,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "interVi_stage14"
+  name: "interVi_stage11"
   id: 114
   config: -1
   fwd_bwd: FWD
@@ -2065,11 +2284,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "interVi_stage15"
+  name: "interVi_stage12"
   id: 115
   config: -1
   fwd_bwd: FWD
@@ -2083,11 +2304,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "interVi_stage16"
+  name: "interVi_stage13"
   id: 116
   config: -1
   fwd_bwd: FWD
@@ -2101,11 +2324,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "interVi_stage17"
+  name: "interVi_stage14"
   id: 117
   config: -1
   fwd_bwd: FWD
@@ -2119,11 +2344,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "interVi_stage18"
+  name: "interVi_stage15"
   id: 118
   config: -1
   fwd_bwd: FWD
@@ -2137,11 +2364,13 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
-  name: "interVi_stage19"
+  name: "interVi_stage16"
   id: 119
   config: -1
   fwd_bwd: FWD
@@ -2155,12 +2384,74 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
+  }
+}
+kernels {
+  name: "interVi_stage17"
+  id: 120
+  config: -1
+  fwd_bwd: FWD
+  type: SYSTOLIC
+  gemm_input1_weight {
+    outer: 1
+    M: 2097152
+    K: 2
+    N: 1
+    input_tensor_size: 4194304.0
+    output_tensor_size: 4194304.0
+    tiling: NO_TILING
+    skip_weight: true
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
+  }
+}
+kernels {
+  name: "interVi_stage18"
+  id: 121
+  config: -1
+  fwd_bwd: FWD
+  type: SYSTOLIC
+  gemm_input1_weight {
+    outer: 1
+    M: 2097152
+    K: 2
+    N: 1
+    input_tensor_size: 4194304.0
+    output_tensor_size: 4194304.0
+    tiling: NO_TILING
+    skip_weight: true
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
+  }
+}
+kernels {
+  name: "interVi_stage19"
+  id: 122
+  config: -1
+  fwd_bwd: FWD
+  type: SYSTOLIC
+  gemm_input1_weight {
+    outer: 1
+    M: 2097152
+    K: 2
+    N: 1
+    input_tensor_size: 4194304.0
+    output_tensor_size: 4194304.0
+    tiling: NO_TILING
+    skip_weight: true
+    num_input: 32
+    sram_extra: 4194304.0
+    dram_extra: 4194304.0
   }
 }
 kernels {
   name: "QKmultiply"
-  id: 120
+  id: 123
   config: -1
   fwd_bwd: FWD
   type: SIMD
@@ -2172,12 +2463,12 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     input_tensor_2_size: 4194304.0
-    num_input: 1
+    num_input: 32
   }
 }
 kernels {
   name: "softmax"
-  id: 121
+  id: 124
   config: -1
   fwd_bwd: FWD
   type: SIMD
@@ -2189,12 +2480,12 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     input_tensor_2_size: 4194304.0
-    num_input: 1
+    num_input: 32
   }
 }
 kernels {
   name: "interVmultiply"
-  id: 122
+  id: 125
   config: -1
   fwd_bwd: FWD
   type: SIMD
@@ -2206,21 +2497,42 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     input_tensor_2_size: 4194304.0
-    num_input: 1
+    num_input: 32
   }
 }
-connections {
-  endIdx: 1
+kernels {
+  name: "FFN0"
+  id: 126
+  config: -1
+  fwd_bwd: FWD
+  type: SYSTOLIC
+  gemm_input1_weight {
+    outer: 1
+    M: 128
+    K: 32
+    N: 1048576
+    input_tensor_size: 67108864.0
+    weight_tensor_size: 8192.0
+    output_tensor_size: 268435460.0
+    tiling: N_TILING
+  }
 }
-connections {
-  startIdx: 1
-  endIdx: 2
-  id: 1
-}
-connections {
-  startIdx: 2
-  endIdx: 3
-  id: 2
+kernels {
+  name: "FFN1"
+  id: 127
+  config: -1
+  fwd_bwd: FWD
+  type: SYSTOLIC
+  gemm_input1_weight {
+    outer: 1
+    M: 32
+    K: 128
+    N: 1048576
+    input_tensor_size: 268435460.0
+    weight_tensor_size: 8192.0
+    output_tensor_size: 67108864.0
+    tiling: N_TILING
+  }
 }
 connections {
   startIdx: 3
@@ -2303,6 +2615,11 @@ connections {
   id: 18
 }
 connections {
+  startIdx: 19
+  endIdx: 20
+  id: 19
+}
+connections {
   startIdx: 20
   endIdx: 21
   id: 20
@@ -2311,11 +2628,6 @@ connections {
   startIdx: 21
   endIdx: 22
   id: 21
-}
-connections {
-  startIdx: 22
-  endIdx: 23
-  id: 22
 }
 connections {
   startIdx: 23
@@ -2398,6 +2710,11 @@ connections {
   id: 38
 }
 connections {
+  startIdx: 39
+  endIdx: 40
+  id: 39
+}
+connections {
   startIdx: 40
   endIdx: 41
   id: 40
@@ -2406,11 +2723,6 @@ connections {
   startIdx: 41
   endIdx: 42
   id: 41
-}
-connections {
-  startIdx: 42
-  endIdx: 43
-  id: 42
 }
 connections {
   startIdx: 43
@@ -2493,6 +2805,11 @@ connections {
   id: 58
 }
 connections {
+  startIdx: 59
+  endIdx: 60
+  id: 59
+}
+connections {
   startIdx: 60
   endIdx: 61
   id: 60
@@ -2501,11 +2818,6 @@ connections {
   startIdx: 61
   endIdx: 62
   id: 61
-}
-connections {
-  startIdx: 62
-  endIdx: 63
-  id: 62
 }
 connections {
   startIdx: 63
@@ -2588,6 +2900,11 @@ connections {
   id: 78
 }
 connections {
+  startIdx: 79
+  endIdx: 80
+  id: 79
+}
+connections {
   startIdx: 80
   endIdx: 81
   id: 80
@@ -2596,11 +2913,6 @@ connections {
   startIdx: 81
   endIdx: 82
   id: 81
-}
-connections {
-  startIdx: 82
-  endIdx: 83
-  id: 82
 }
 connections {
   startIdx: 83
@@ -2683,6 +2995,11 @@ connections {
   id: 98
 }
 connections {
+  startIdx: 99
+  endIdx: 100
+  id: 99
+}
+connections {
   startIdx: 100
   endIdx: 101
   id: 100
@@ -2691,11 +3008,6 @@ connections {
   startIdx: 101
   endIdx: 102
   id: 101
-}
-connections {
-  startIdx: 102
-  endIdx: 103
-  id: 102
 }
 connections {
   startIdx: 103
@@ -2778,44 +3090,83 @@ connections {
   id: 118
 }
 connections {
-  startIdx: 19
+  startIdx: 119
   endIdx: 120
-  id: 200
-}
-connections {
-  startIdx: 39
-  endIdx: 120
-  id: 201
+  id: 119
 }
 connections {
   startIdx: 120
-  endIdx: 40
-  id: 202
-}
-connections {
-  startIdx: 59
   endIdx: 121
-  id: 203
+  id: 120
 }
 connections {
   startIdx: 121
-  endIdx: 60
+  endIdx: 122
+  id: 121
+}
+connections {
+  startIdx: 22
+  endIdx: 123
+  id: 200
+}
+connections {
+  startIdx: 42
+  endIdx: 123
+  id: 201
+}
+connections {
+  startIdx: 123
+  endIdx: 43
+  id: 202
+}
+connections {
+  startIdx: 62
+  endIdx: 124
+  id: 203
+}
+connections {
+  startIdx: 124
+  endIdx: 63
   id: 204
 }
 connections {
-  startIdx: 79
-  endIdx: 122
+  startIdx: 82
+  endIdx: 125
   id: 205
 }
 connections {
-  startIdx: 99
-  endIdx: 122
+  startIdx: 102
+  endIdx: 125
   id: 206
 }
 connections {
-  startIdx: 122
-  endIdx: 100
+  startIdx: 125
+  endIdx: 103
   id: 207
+}
+connections {
+  startIdx: 122
+  endIdx: 126
+  id: 208
+}
+connections {
+  startIdx: 126
+  endIdx: 127
+  id: 209
+}
+connections {
+  endIdx: 3
+  id: 210
+}
+connections {
+  startIdx: 1
+  endIdx: 23
+  id: 211
+}
+connections {
+  startIdx: 2
+  endIdx: 83
+  id: 212
 }
 }
 system {
@@ -2824,7 +3175,7 @@ system {
     core: 520
     systolic_width: 32
     systolic_height: 12
-    sram_cap: 545259520.0
+    sram_cap: 2147483648.0
     freq: 1.6
   }
   r {
@@ -2833,7 +3184,7 @@ system {
     par_x: "DP"
   }
   memory {
-    dram_bw: 1638.4
+    dram_bw: 8192
     dram_cap: 68719476736.0
   }
 }
@@ -2849,13 +3200,20 @@ cost {
   accelerator_power: 444.7061955
 }
 execution {
-  regular_fft_llm {
-    hidden: 1
+  llm {
+    hidden_dim: 32
+    head_dim: 16
+    num_head: 2
     seq_len: 1048576
+    num_layer: 1
+    global_batch_size: 1
+    micro_batch_size: 1
+    num_layer_in_graph: 1
   }
   execution_style: DATAFLOW
-  num_config: 2
+  num_config: 3
   overlap: PERFECT_OVERLAP
+  skip_inter_chip_optimization: true
   #compute_util: 0.9
   word: 2
 }

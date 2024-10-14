@@ -21,7 +21,7 @@ word = args.word
 r = args.r
 
 
-stage = int(math.log2(seq) / math.log2(r))
+stage = math.ceil(math.log2(seq) / math.log2(r))
 
 dataflow_graph = setup_pb2.Dataflow_Graph()
 
@@ -42,7 +42,7 @@ kernel.gemm_input1_weight.N = seq
 kernel.gemm_input1_weight.input_tensor_size = hidden*seq*word
 kernel.gemm_input1_weight.weight_tensor_size = hidden*hidden*word
 kernel.gemm_input1_weight.output_tensor_size = hidden*seq*word
-kernel.gemm_input1_weight.tiling = 5
+kernel.gemm_input1_weight.tiling = 4
 cnt += 1
 
 
@@ -60,7 +60,7 @@ kernel.gemm_input1_weight.N = seq
 kernel.gemm_input1_weight.input_tensor_size = hidden*seq*word
 kernel.gemm_input1_weight.weight_tensor_size = hidden*hidden*word
 kernel.gemm_input1_weight.output_tensor_size = hidden*seq*word
-kernel.gemm_input1_weight.tiling = 5
+kernel.gemm_input1_weight.tiling = 4
 cnt += 1
 
 
@@ -77,7 +77,7 @@ kernel.gemm_input1_weight.K = hidden
 kernel.gemm_input1_weight.N = 1
 kernel.gemm_input1_weight.input_tensor_size = seq*word
 kernel.gemm_input1_weight.output_tensor_size = seq*word
-kernel.gemm_input1_weight.tiling = 5
+kernel.gemm_input1_weight.tiling = 2
 kernel.gemm_input1_weight.skip_weight = True
 cnt += 1
 
@@ -118,7 +118,7 @@ kernel.elementwise_input1_input2.N = hidden
 kernel.elementwise_input1_input2.input_tensor_1_size = hidden*seq*word
 kernel.elementwise_input1_input2.input_tensor_2_size = hidden*seq*word
 kernel.elementwise_input1_input2.output_tensor_size = hidden*seq*word
-kernel.elementwise_input1_input2.tiling = 5
+kernel.elementwise_input1_input2.tiling = 2
 cnt += 1
 
 
@@ -136,7 +136,7 @@ kernel.gemm_input1_weight.N = seq
 kernel.gemm_input1_weight.input_tensor_size = hidden*seq*word
 kernel.gemm_input1_weight.weight_tensor_size = hidden*hidden*word
 kernel.gemm_input1_weight.output_tensor_size = hidden*seq*word
-kernel.gemm_input1_weight.tiling = 5
+kernel.gemm_input1_weight.tiling = 4
 
 
 

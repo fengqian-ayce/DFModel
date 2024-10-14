@@ -13,7 +13,7 @@ import math
 import time
 import os
 
-large_number = 999999
+large_number = 999999999999
 
 # user pass in
 parser = argparse.ArgumentParser()
@@ -104,6 +104,8 @@ num_input_set = []
 skip_weight = []
 node_type = []
 tiling = []
+sram_extra = []
+dram_extra = []
 node_dict = {} # map kernel id to index in list
 i = 0
 for kernel in dse.dataflow_graph.kernels:
@@ -132,6 +134,10 @@ for kernel in dse.dataflow_graph.kernels:
         
         memory_size.append(kernel.gemm_input1_weight.memory_size)
         
+
+        sram_extra.append(kernel.gemm_input1_weight.sram_extra)
+        dram_extra.append(kernel.gemm_input1_weight.dram_extra)
+
         node_type.append('gemm_input1_weight')
 
         skip_weight.append(kernel.gemm_input1_weight.skip_weight)
@@ -163,6 +169,11 @@ for kernel in dse.dataflow_graph.kernels:
         
         memory_size.append(kernel.gemm_input1_input2.memory_size)
         
+
+        sram_extra.append(kernel.gemm_input1_input2.sram_extra)
+        dram_extra.append(kernel.gemm_input1_input2.dram_extra)
+
+
         node_type.append('gemm_input1_input2')
         
         skip_weight.append(False)
@@ -193,6 +204,11 @@ for kernel in dse.dataflow_graph.kernels:
         
         memory_size.append(kernel.elementwise_input1.memory_size)
         
+
+        sram_extra.append(kernel.elementwise_input1.sram_extra)
+        dram_extra.append(kernel.elementwise_input1.dram_extra)
+
+
         node_type.append('elementwise_input1')
         
         skip_weight.append(False)
@@ -224,6 +240,11 @@ for kernel in dse.dataflow_graph.kernels:
         
         memory_size.append(kernel.elementwise_input1_input2.memory_size)
         
+
+        sram_extra.append(kernel.elementwise_input1_input2.sram_extra)
+        dram_extra.append(kernel.elementwise_input1_input2.dram_extra)
+
+
         node_type.append('elementwise_input1_input2')
         
         skip_weight.append(False)
@@ -331,33 +352,6 @@ elif dse.execution.WhichOneof('workload_variant') == 'fft':
     micro_batch_size = 1
     num_layer = 1
 
-elif dse.execution.WhichOneof('workload_variant') == 'gemm_fft_llm':
-    hidden = dse.execution.gemm_fft_llm.hidden
-    seq_len = dse.execution.gemm_fft_llm.seq_len
-
-    global_batch_size = 1
-    micro_batch_size = 1
-    num_layer = 1
-
-elif dse.execution.WhichOneof('workload_variant') == 'vector_fft_llm':
-    hidden = dse.execution.vector_fft_llm.hidden
-    seq_len = dse.execution.vector_fft_llm.seq_len
-
-    global_batch_size = 1
-    micro_batch_size = 1
-    num_layer = 1
-    effective_stage = dse.execution.vector_fft_llm.effective_stage
-    if dse.execution.vector_fft_llm.effective_stage == 0:
-        raise Exception('Wrong!')
-
-elif dse.execution.WhichOneof('workload_variant') == 'regular_fft_llm':
-    hidden = dse.execution.regular_fft_llm.hidden
-    seq_len = dse.execution.regular_fft_llm.seq_len
-
-    global_batch_size = 1
-    micro_batch_size = 1
-    num_layer = 1
-
 elif dse.execution.WhichOneof('workload_variant') == 'mamba':
     hidden = dse.execution.mamba.hidden
     seq_len = dse.execution.mamba.seq_len
@@ -412,7 +406,7 @@ if dse.execution.WhichOneof('workload_variant') == 'llm':
     else: # training
         Intermediate = 2 * hidden_dim * seq_len * word
 
-elif dse.execution.WhichOneof('workload_variant') == 'dlrm' or dse.execution.WhichOneof('workload_variant') == 'hpl' or dse.execution.WhichOneof('workload_variant') == 'fft' or dse.execution.WhichOneof('workload_variant') == 'regular_fft_llm' or dse.execution.WhichOneof('workload_variant') == 'gemm_fft_llm' or dse.execution.WhichOneof('workload_variant') == 'vector_fft_llm' or dse.execution.WhichOneof('workload_variant') == 'mamba':
+elif dse.execution.WhichOneof('workload_variant') == 'dlrm' or dse.execution.WhichOneof('workload_variant') == 'hpl' or dse.execution.WhichOneof('workload_variant') == 'fft' or dse.execution.WhichOneof('workload_variant') == 'mamba':
     Intermediate = 0
     
 else:
@@ -623,9 +617,9 @@ if dse.execution.WhichOneof('workload_variant') == 'fft':
     for i in range(len(topology)):
         model.addConstr(Link_BW[i] == link_bw[i])
         
-    FFT_dram_size = model.addVar(name='FFT_dram_size', vtype=gp.GRB.CONTINUOUS, lb=0)
+    FFT_DRAM_SIZE = model.addVar(name='FFT_DRAM_SIZE', vtype=gp.GRB.CONTINUOUS, lb=0)
     side = int(length**0.5)
-    model.addConstr(FFT_dram_size * num_chips_per_copy >= length * word)
+    model.addConstr(FFT_DRAM_SIZE * num_chips_per_copy >= length * word)
     
     if len(topology) == 1:
         model.addConstr(Shape[0] == num_chips_per_copy)
@@ -660,8 +654,8 @@ elif dse.execution.WhichOneof('workload_variant') == 'hpl':
     for i in range(len(topology)):
         model.addConstr(Link_BW[i] == link_bw[i])
     
-    HPL_dram_size = model.addVar(name='HPL_dram_size', vtype=gp.GRB.CONTINUOUS, lb=0)
-    model.addConstr(HPL_dram_size * num_chips_per_copy >= n * n * word)
+    HPL_DRAM_SIZE = model.addVar(name='HPL_DRAM_SIZE', vtype=gp.GRB.CONTINUOUS, lb=0)
+    model.addConstr(HPL_DRAM_SIZE * num_chips_per_copy >= n * n * word)
     
     HPL_sharding_factor_X = model.addVar(name='HPL_sharding_factor_X', vtype=gp.GRB.INTEGER, lb=1)
     HPL_sharding_factor_Y = model.addVar(name='HPL_sharding_factor_Y', vtype=gp.GRB.INTEGER, lb=1)
@@ -738,7 +732,7 @@ elif dse.execution.WhichOneof('workload_variant') == 'dlrm':
     
     
     
-elif dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.WhichOneof('workload_variant') == 'gemm_fft_llm' or dse.execution.WhichOneof('workload_variant') == 'vector_fft_llm' or dse.execution.WhichOneof('workload_variant') == 'regular_fft_llm' or dse.execution.WhichOneof('workload_variant') == 'mamba':
+elif dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.WhichOneof('workload_variant') == 'mamba':
 
 
 
@@ -1164,7 +1158,7 @@ if dse.execution.WhichOneof('workload_variant') == 'llm':
     else:
         model.addConstr(tile_size * num_tile == seq_len)
     
-elif dse.execution.WhichOneof('workload_variant') == 'dlrm' or dse.execution.WhichOneof('workload_variant') == 'hpl' or dse.execution.WhichOneof('workload_variant') == 'fft' or dse.execution.WhichOneof('workload_variant') == 'gemm_fft_llm' or dse.execution.WhichOneof('workload_variant') == 'vector_fft_llm' or dse.execution.WhichOneof('workload_variant') == 'regular_fft_llm' or dse.execution.WhichOneof('workload_variant') == 'mamba':
+elif dse.execution.WhichOneof('workload_variant') == 'dlrm' or dse.execution.WhichOneof('workload_variant') == 'hpl' or dse.execution.WhichOneof('workload_variant') == 'fft' or dse.execution.WhichOneof('workload_variant') == 'mamba':
     model.addConstr(num_tile == 1)
     
 else:
@@ -1195,8 +1189,6 @@ elif dse.execution.WhichOneof('workload_variant') == 'fft':
     
 else:
     for i in range(num_node):
-        print(print('xxxxxxxxxxxx', i, sharding[i], tiling[i]))
-
         if sharding[i] == Dim.OUTER_DIM.value or sharding[i] == Dim.M_DIM.value:
             if tiling[i] == Dim.OUTER_DIM.value or tiling[i] == Dim.M_DIM.value:
                 raise Exception('Wrong!')
@@ -1327,7 +1319,7 @@ model.addConstr(num_micro_batch_per_pipeline * aaa == global_batch_size)
 
 
 # sharding communication
-if dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.WhichOneof('workload_variant') == 'gemm_fft_llm' or dse.execution.WhichOneof('workload_variant') == 'vector_fft_llm' or dse.execution.WhichOneof('workload_variant') == 'regular_fft_llm' or dse.execution.WhichOneof('workload_variant') == 'mamba':
+if dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.WhichOneof('workload_variant') == 'mamba':
     ALL_REDUCE_communication_size_node = model.addMVar(num_node, name='ALL_REDUCE_communication_size_node', vtype=gp.GRB.CONTINUOUS, lb=0)
     ALL_TO_ALL_communication_size_node = model.addMVar(num_node, name='ALL_TO_ALL_communication_size_node', vtype=gp.GRB.CONTINUOUS, lb=0)
     ALL_GATHER_communication_size_node = model.addMVar(num_node, name='ALL_GATHER_communication_size_node', vtype=gp.GRB.CONTINUOUS, lb=0)
@@ -1568,7 +1560,11 @@ else:
 
 
 
-# num_input_set
+flag = False
+for i in range(len(num_input_set)):
+    if num_input_set[i]:
+        flag = True
+
 for i in range(len(num_input_set)):
     for j in range(i, len(num_input_set)):
         if (num_input_set[i] == False and num_input_set[j] == True) or (num_input_set[i] == True and num_input_set[j] == False):
@@ -1579,6 +1575,39 @@ for i in range(len(num_input_set)):
 
 
 
+
+num_input_per_config = model.addMVar(C, name='num_input_per_config', vtype=gp.GRB.INTEGER)
+for i in range(C):
+    aaa = model.addMVar(num_node, vtype=gp.GRB.CONTINUOUS)
+    for j in range(num_node):
+        model.addConstr(aaa[j] == num_input[j] * A[j, i])
+    model.addConstr(num_input_per_config[i] == gp.max_(aaa[k] for k in range(num_node)))
+
+
+
+num_tile_per_config = model.addMVar(C, name='num_tile_per_config', vtype=gp.GRB.INTEGER)
+if flag:
+    tmp = np.zeros((num_node))
+    for i in range(len(num_input_set)):
+        if num_input_set[i]:
+            tmp[i] = 1
+        else:
+            tmp[i] = 0
+
+    zzzz = model.addMVar(C, name='zzzz', vtype=gp.GRB.INTEGER)
+    for i in range(C):
+        model.addConstr(zzzz[i] == tmp @ A[:, i])
+                        
+        aaa = model.addVar(vtype=gp.GRB.BINARY)
+        model.addConstr((aaa == 1) >> (zzzz[i] >= 1))
+        model.addConstr((aaa == 0) >> (zzzz[i] <= 0))
+        
+        model.addConstr((aaa == 1) >> (num_tile_per_config[i] == 1))
+        model.addConstr((aaa == 0) >> (num_tile_per_config[i] == num_tile))             
+
+else:
+    for i in range(C):
+        model.addConstr(num_tile_per_config[i] == num_tile)
 
 # compute resources
 if dse.execution.compute_util == 0:
@@ -1700,6 +1729,11 @@ for i in range(num_weight):
 
 
 
+if dse.system.accelerator.sram_cap == 0:
+    sram_cap = sys.maxsize
+else:
+    sram_cap = dse.system.accelerator.sram_cap
+
 
 
 if dse.system.accelerator.pmu == 0:
@@ -1734,12 +1768,12 @@ if dse.system.accelerator.pmu == 0:
         if skip_weight[node_idx]:
             model.addConstr(shard_initiation_buffer_size_depth_one[i] == 0)
         else:
-            model.addConstr(shard_initiation_buffer_size_depth_one[i] * tiling_factor[node_idx] >= shard_initiation_buffer_size[i] * 1)
+            model.addConstr(shard_initiation_buffer_size_depth_one[i] * tiling_factor[node_idx] == shard_initiation_buffer_size[i] * 1)
         
         if node_idx in downstream_edge_dict.keys():
             for downstream_tensor_idx in downstream_edge_dict[node_idx]:
-                model.addConstr(shard_intermediate_buffer_size_depth_original[downstream_tensor_idx] * tiling_factor[node_idx] >= shard_intermediate_buffer_size[i] * depth[i])
-                model.addConstr(shard_intermediate_buffer_size_depth_two[downstream_tensor_idx] * tiling_factor[node_idx] >= shard_intermediate_buffer_size[i] * 2)
+                model.addConstr(shard_intermediate_buffer_size_depth_original[downstream_tensor_idx] * tiling_factor[node_idx] == shard_intermediate_buffer_size[i] * depth[i])
+                model.addConstr(shard_intermediate_buffer_size_depth_two[downstream_tensor_idx] * tiling_factor[node_idx] == shard_intermediate_buffer_size[i] * 2)
                 tiled_edge_list.append(downstream_tensor_idx)
         
     for i in range(num_node):
@@ -1754,26 +1788,27 @@ if dse.system.accelerator.pmu == 0:
 
     for i in range(num_edge):
         if i not in tiled_edge_list:
-            model.addConstr(shard_intermediate_buffer_size_depth_original[i] >= shard_intermediate_buffer_size[i] * depth[i])
-            model.addConstr(shard_intermediate_buffer_size_depth_two[i] >= shard_intermediate_buffer_size[i] * 2)
+            model.addConstr(shard_intermediate_buffer_size_depth_original[i] == shard_intermediate_buffer_size[i] * depth[i])
+            model.addConstr(shard_intermediate_buffer_size_depth_two[i] == shard_intermediate_buffer_size[i] * 2)
 
 
 
 
 
-
+    SRAM_Per_Config_extra = model.addMVar(C, name='SRAM_Per_Config_extra', vtype=gp.GRB.CONTINUOUS, lb=0)
     SRAM_Per_Config_total = model.addMVar(C, name='SRAM_Per_Config_total', vtype=gp.GRB.CONTINUOUS, lb=0)
     SRAM_Per_Config_intermediate_dram = model.addMVar(C, name='SRAM_Per_Config_intermediate_dram', vtype=gp.GRB.CONTINUOUS, lb=0)
     SRAM_Per_Config_intermediate_onchip = model.addMVar(C, name='SRAM_Per_Config_intermediate_onchip', vtype=gp.GRB.CONTINUOUS, lb=0)
     SRAM_Per_Config_initiation = model.addMVar(C, name='SRAM_Per_Config_initiation', vtype=gp.GRB.CONTINUOUS, lb=0)
     for i in range(C):
+        model.addConstr(SRAM_Per_Config_extra[i] == A[:, i] @ np.array(sram_extra))
         model.addConstr(SRAM_Per_Config_intermediate_dram[i] == shard_intermediate_buffer_size_depth_two @ D[:, i])       
         model.addConstr(SRAM_Per_Config_intermediate_onchip[i] == shard_intermediate_buffer_size_depth_original @ B[:, i])
         model.addConstr(SRAM_Per_Config_initiation[i] == shard_initiation_buffer_size_depth_one @ F[:, i])
-        model.addConstr(SRAM_Per_Config_total[i] == SRAM_Per_Config_intermediate_dram[i] + SRAM_Per_Config_intermediate_onchip[i] + SRAM_Per_Config_initiation[i])
+        model.addConstr(SRAM_Per_Config_total[i] == SRAM_Per_Config_extra[i] + SRAM_Per_Config_intermediate_dram[i] + SRAM_Per_Config_intermediate_onchip[i] + SRAM_Per_Config_initiation[i])
         
-        if dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.WhichOneof('workload_variant') == 'dlrm':
-            model.addConstr(SRAM_Per_Config_total[i] <= dse.system.accelerator.sram_cap)
+        if dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.WhichOneof('workload_variant') == 'mamba':
+            model.addConstr(SRAM_Per_Config_total[i] <= sram_cap)
 
 else:
     p_and_r_flag = True
@@ -1862,12 +1897,12 @@ else:
         node_idx = node_dict[weight_dict[i]]
         tiled_kernel_list.append(node_idx)
         
-        model.addConstr(shard_initiation_buffer_size_depth_one[i] * tiling_factor[node_idx] >= shard_initiation_buffer_size[i] * 1)
+        model.addConstr(shard_initiation_buffer_size_depth_one[i] * tiling_factor[node_idx] == shard_initiation_buffer_size[i] * 1)
         
         if node_idx in downstream_edge_dict.keys():
             for downstream_tensor_idx in downstream_edge_dict[node_idx]:
-                model.addConstr(shard_intermediate_buffer_size_depth_original[downstream_tensor_idx] * tiling_factor[node_idx] >= shard_intermediate_buffer_size[i] * depth[i])
-                model.addConstr(shard_intermediate_buffer_size_depth_two[downstream_tensor_idx] * tiling_factor[node_idx] >= shard_intermediate_buffer_size[i] * 2)
+                model.addConstr(shard_intermediate_buffer_size_depth_original[downstream_tensor_idx] * tiling_factor[node_idx] == shard_intermediate_buffer_size[i] * depth[i])
+                model.addConstr(shard_intermediate_buffer_size_depth_two[downstream_tensor_idx] * tiling_factor[node_idx] == shard_intermediate_buffer_size[i] * 2)
                 tiled_edge_list.append(downstream_tensor_idx)
         
     for i in range(num_node):
@@ -1882,8 +1917,8 @@ else:
 
     for i in range(num_edge):
         if i not in tiled_edge_list:
-            model.addConstr(shard_intermediate_buffer_size_depth_original[i] >= shard_intermediate_buffer_size[i] * depth[i])
-            model.addConstr(shard_intermediate_buffer_size_depth_two[i] >= shard_intermediate_buffer_size[i] * 2)
+            model.addConstr(shard_intermediate_buffer_size_depth_original[i] == shard_intermediate_buffer_size[i] * depth[i])
+            model.addConstr(shard_intermediate_buffer_size_depth_two[i] == shard_intermediate_buffer_size[i] * 2)
 
 
 
@@ -1962,8 +1997,17 @@ for i in range(C):
     aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
     # model.addConstr(aaa == (shard_intermediate_buffer_size @ D[:, i]))
     model.addConstr(aaa == (shard_intermediate_buffer_size @ E[:, i]))
-    model.addConstr(dram_bytes_per_config_intermediate[i] == aaa * num_tile)
+    model.addConstr(dram_bytes_per_config_intermediate[i] == aaa * num_tile_per_config[i])
     model.addConstr(dram_bytes_per_config_initiation[i] == shard_initiation_buffer_size @ F[:, i])
+
+
+
+
+
+
+
+dram_bytes_extra = model.addVar(name='dram_bytes_extra', vtype=gp.GRB.CONTINUOUS, lb=0)
+model.addConstr(dram_bytes_extra == sum(dram_extra) * layer_per_stage)
 
 
 dram_bytes_initiation = model.addVar(name='dram_bytes_initiation', vtype=gp.GRB.CONTINUOUS, lb=0)
@@ -1972,19 +2016,19 @@ model.addConstr(dram_bytes_initiation == np.ones((C)) @ dram_bytes_per_config_in
 model.addConstr(dram_bytes_intermediate == gp.max_(dram_bytes_per_config_intermediate[j] for j in range(C)))
 dram_bytes_total = model.addVar(name='dram_bytes_total', vtype=gp.GRB.CONTINUOUS, lb=0)
 
-if dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.WhichOneof('workload_variant') == 'gemm_fft_llm' or dse.execution.WhichOneof('workload_variant') == 'vector_fft_llm' or dse.execution.WhichOneof('workload_variant') == 'regular_fft_llm' or dse.execution.WhichOneof('workload_variant') == 'mamba':
+if dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.WhichOneof('workload_variant') == 'mamba':
     weight = model.addVar(name='weight', vtype=gp.GRB.CONTINUOUS, lb=0)
     activation = model.addVar(name='activation', vtype=gp.GRB.CONTINUOUS, lb=0)
     
     model.addConstr(weight == dram_bytes_initiation * layer_per_stage)
     model.addConstr(activation == dram_bytes_intermediate * Micro_Batch_Size)
-    model.addConstr(dram_bytes_total == weight + activation)
+    model.addConstr(dram_bytes_total == weight + activation + dram_bytes_extra)
 
 elif dse.execution.WhichOneof('workload_variant') == 'hpl':
-    model.addConstr(dram_bytes_total == HPL_dram_size)
+    model.addConstr(dram_bytes_total == HPL_DRAM_SIZE + dram_bytes_extra)
 
 elif dse.execution.WhichOneof('workload_variant') == 'fft':
-    model.addConstr(dram_bytes_total == FFT_dram_size)
+    model.addConstr(dram_bytes_total == FFT_DRAM_SIZE + dram_bytes_extra)
 
 elif dse.execution.WhichOneof('workload_variant') == 'dlrm':
     weight = model.addVar(name='weight', vtype=gp.GRB.CONTINUOUS, lb=0)
@@ -1992,7 +2036,7 @@ elif dse.execution.WhichOneof('workload_variant') == 'dlrm':
 
     model.addConstr(weight == dram_bytes_initiation * layer_per_stage)
     model.addConstr(activation == dram_bytes_intermediate * Micro_Batch_Size)
-    model.addConstr(dram_bytes_total == weight + activation + sharded_table_size)
+    model.addConstr(dram_bytes_total == weight + activation + sharded_table_size + dram_bytes_extra)
 
 else:
     raise Exception('Wrong!')
@@ -2009,7 +2053,6 @@ model.addConstr(DRAM_BW == dse.system.memory.dram_bw)
 # compute cycle
 if dse.execution.compute_util == 0:
     Cycle = model.addMVar(num_node, name='Cycle', vtype=gp.GRB.INTEGER, lb=0)
-    Cycle_w_streaming = model.addMVar(num_node, name='Cycle_w_streaming', vtype=gp.GRB.INTEGER, lb=0)
     m_factor = model.addMVar(num_node, name='m_factor', vtype=gp.GRB.INTEGER, lb=1)
     n_factor = model.addMVar(num_node, name='n_factor', vtype=gp.GRB.INTEGER, lb=1)
     
@@ -2021,8 +2064,6 @@ if dse.execution.compute_util == 0:
 
 else:
     FLOP_per_kernel = model.addMVar(num_node, name='FLOP_per_kernel', vtype=gp.GRB.INTEGER, lb=0)
-    FLOP_per_kernel_w_streaming = model.addMVar(num_node, name='FLOP_per_kernel_w_streaming', vtype=gp.GRB.INTEGER, lb=0)
-
 
 
 for i in range(num_node):
@@ -2037,23 +2078,19 @@ for i in range(num_node):
             model.addConstr(NNN[i] == shard_N[i])
             
             SIMD_or_Systolic.append('SIMD')
-            model.addConstr(Cycle_w_streaming[i] == Cycle[i] * num_input[i])
 
         else:
             model.addConstr(FLOP_per_kernel[i] == shard_M[i] * shard_N[i])
-            model.addConstr(FLOP_per_kernel_w_streaming[i] == FLOP_per_kernel[i] * num_input[i])
         
     elif kernel_type[i] == KernelType.SYSTOLIC.value:
         if dse.execution.compute_util == 0:
             if use_effective_stage[i]:
                 model.addConstr(m_factor[i] * Par_lane[i] * LaneWidth >= shard_M[i])
-                model.addConstr(n_factor[i] * Par_stage[i] * effective_stage >= shard_K[i])
+                model.addConstr(n_factor[i] * Par_stage[i] * dse.execution.effective_stage >= shard_K[i])
 
                 tmp = model.addVar(vtype=gp.GRB.INTEGER, lb=0)
                 model.addConstr(tmp == m_factor[i] * n_factor[i])
                 model.addConstr(Cycle[i] == tmp * shard_N[i])
-
-                model.addConstr(Cycle_w_streaming[i] == Cycle[i] * num_input[i])
             
             else:
                 model.addConstr(m_factor[i] * Par_lane[i] * LaneWidth >= shard_M[i])
@@ -2062,8 +2099,6 @@ for i in range(num_node):
                 tmp = model.addVar(vtype=gp.GRB.INTEGER, lb=0)
                 model.addConstr(tmp == m_factor[i] * n_factor[i])
                 model.addConstr(Cycle[i] == tmp * shard_K[i])
-
-                model.addConstr(Cycle_w_streaming[i] == Cycle[i] * num_input[i])
             
             model.addConstr(MMM[i] == m_factor[i])
             model.addConstr(KKK[i] == shard_K[i])
@@ -2075,7 +2110,6 @@ for i in range(num_node):
             aaa = model.addVar(vtype=gp.GRB.INTEGER, lb=0)
             model.addConstr(aaa == 2 * shard_M[i] * shard_N[i])
             model.addConstr(FLOP_per_kernel[i] == aaa * shard_K[i])
-            model.addConstr(FLOP_per_kernel_w_streaming[i] == FLOP_per_kernel[i] * num_input[i])
             
     else:
         raise Exception('Wrong!')
@@ -2087,20 +2121,20 @@ for i in range(C):
         t1 = model.addMVar(num_node, vtype=gp.GRB.INTEGER, lb=0)
         t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
         for j in range(num_node):
-            model.addConstr(t1[j] == Cycle_w_streaming[j] * A[j, i])
+            model.addConstr(t1[j] == Cycle[j] * A[j, i])
         model.addConstr(t2 == gp.max_(t1[j] for j in range(num_node)))
 
-        model.addConstr(Compute_Latency[i] == t2 * num_tile / Freq)
+        model.addConstr(Compute_Latency[i] == t2 * num_tile_per_config[i] / Freq)
         
     else:
         t3 = model.addMVar(num_node, vtype=gp.GRB.INTEGER, lb=0)
         t4 = model.addVar(vtype=gp.GRB.CONTINUOUS)
         for j in range(num_node):
-            model.addConstr(t3[j] == FLOP_per_kernel_w_streaming[j] * A[j, i])
+            model.addConstr(t3[j] == FLOP_per_kernel[j] * A[j, i])
         model.addConstr(t4 == t3 @ np.ones((num_node)))
         
         tmp = 1 / dse.execution.compute_util
-        model.addConstr(Compute_Latency[i] == t4 * num_tile * tmp / GFLOPS)
+        model.addConstr(Compute_Latency[i] == t4 * num_tile_per_config[i] * tmp / GFLOPS)
 
 
 
@@ -2113,7 +2147,7 @@ for i in range(C):
     t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
     model.addConstr(t1 == shard_intermediate_buffer_size @ D[:, i])
 
-    model.addConstr(memory_latency[i] * DRAM_BW == t1 * num_tile)
+    model.addConstr(memory_latency[i] * DRAM_BW == t1 * num_tile_per_config[i])
     model.addConstr(explicit_memory_latency[i] * DRAM_BW == memory_size @ A[:, i])
 
     model.addConstr(Memory_Latency[i] == memory_latency[i] + explicit_memory_latency[i])
@@ -2145,7 +2179,7 @@ for i in range(C):
 Network_Latency = model.addMVar(C, name='Network_Latency', vtype=gp.GRB.CONTINUOUS, lb=0)
 p2p_latency = model.addVar(name='p2p_latency', vtype=gp.GRB.CONTINUOUS)
 
-if dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.WhichOneof('workload_variant') == 'gemm_fft_llm' or dse.execution.WhichOneof('workload_variant') == 'vector_fft_llm' or dse.execution.WhichOneof('workload_variant') == 'regular_fft_llm' or dse.execution.WhichOneof('workload_variant') == 'mamba':
+if dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.WhichOneof('workload_variant') == 'mamba':
 
     Network_Latency_ALL_REDUCE_node = model.addMVar(C, name='Network_Latency_ALL_REDUCE_node', vtype=gp.GRB.CONTINUOUS, lb=0)
     if is_TP_hierarchical == True:
@@ -2154,8 +2188,8 @@ if dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.WhichO
             t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
             t3 = model.addVar(vtype=gp.GRB.CONTINUOUS)
             model.addConstr(t1 == A[:, i] @ ALL_REDUCE_communication_size_node)
-            model.addConstr(t2 == ALL_REDUCE_ratio_fast * num_tile)
-            model.addConstr(t3 == ALL_REDUCE_ratio_slow * num_tile)
+            model.addConstr(t2 == ALL_REDUCE_ratio_fast * num_tile_per_config[i])
+            model.addConstr(t3 == ALL_REDUCE_ratio_slow * num_tile_per_config[i])
             model.addConstr(Network_Latency_ALL_REDUCE_node[i] == t1*t2 + t1*t3) # reduce-scatter/all-gather
         
     else:  
@@ -2167,7 +2201,7 @@ if dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.WhichO
             t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
 
             model.addConstr(t1 == A[:, i] @ ALL_REDUCE_communication_size_node)
-            model.addConstr(t2 == ALL_REDUCE_ratio * num_tile)
+            model.addConstr(t2 == ALL_REDUCE_ratio * num_tile_per_config[i])
             
             for j in range(num_node):
                 model.addConstr(t3[j, i] == A[j, i] * ALL_REDUCE_communication_size_node[j])
@@ -2191,7 +2225,7 @@ if dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.WhichO
         t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
         t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
         model.addConstr(t1 == A[:, i] @ ALL_TO_ALL_communication_size_node)
-        model.addConstr(t2 == ALL_TO_ALL_ratio * num_tile)
+        model.addConstr(t2 == ALL_TO_ALL_ratio * num_tile_per_config[i])
         model.addConstr(Network_Latency_ALL_TO_ALL_node[i] == t1*t2)
 
 
@@ -2200,7 +2234,7 @@ if dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.WhichO
         t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
         t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
         model.addConstr(t1 == A[:, i] @ ALL_GATHER_communication_size_node)
-        model.addConstr(t2 == ALL_GATHER_ratio * num_tile)
+        model.addConstr(t2 == ALL_GATHER_ratio * num_tile_per_config[i])
         model.addConstr(Network_Latency_ALL_GATHER_node[i] == t1*t2)
 
 
@@ -2241,7 +2275,7 @@ if dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.WhichO
         t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
         
         model.addConstr(t1 == H[:, i] @ ALL_REDUCE_communication_size_edge)
-        model.addConstr(t2 == ALL_REDUCE_ratio * num_tile)
+        model.addConstr(t2 == ALL_REDUCE_ratio * num_tile_per_config[i])
 
         for j in range(num_edge):
             model.addConstr(t3[j, i] == H[j, i] * ALL_REDUCE_communication_size_edge[j])
@@ -2268,7 +2302,7 @@ if dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.WhichO
         t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
         t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
         model.addConstr(t1 == H[:, i] @ ALL_TO_ALL_communication_size_edge)
-        model.addConstr(t2 == ALL_TO_ALL_ratio * num_tile)
+        model.addConstr(t2 == ALL_TO_ALL_ratio * num_tile_per_config[i])
         model.addConstr(Network_Latency_ALL_TO_ALL_edge[i] == t1*t2)
 
     Network_Latency_ALL_GATHER_edge = model.addMVar(C, name='Network_Latency_ALL_GATHER_edge', vtype=gp.GRB.CONTINUOUS, lb=0)
@@ -2276,7 +2310,7 @@ if dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.WhichO
         t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
         t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
         model.addConstr(t1 == H[:, i] @ ALL_GATHER_communication_size_edge)
-        model.addConstr(t2 == ALL_GATHER_ratio * num_tile)
+        model.addConstr(t2 == ALL_GATHER_ratio * num_tile_per_config[i])
         model.addConstr(Network_Latency_ALL_GATHER_edge[i] == t1*t2)
 
     for i in range(C):
@@ -2391,15 +2425,21 @@ Compute_Memory_Latency = model.addMVar(C, name='Compute_Memory_Latency', vtype=g
 Per_Config_II = model.addMVar(C, name='Per_Config_II', vtype=gp.GRB.CONTINUOUS, lb=0)
 for i in range(C):
     if dse.execution.overlap == Overlap_Style.PERFECT_OVERLAP.value:
-        model.addConstr(Per_Config_II[i] == gp.max_(Compute_Latency[i], Memory_Latency[i], Network_Latency[i]))
+        tmp = model.addVar(vtype=gp.GRB.CONTINUOUS)
+        model.addConstr(tmp == gp.max_(Compute_Latency[i], Memory_Latency[i], Network_Latency[i]))
+        model.addConstr(Per_Config_II[i] == tmp * num_input_per_config[i])
 
     elif dse.execution.overlap == Overlap_Style.OVERLAP_COMPUTE_MEMORY.value:
+        tmp = model.addVar(vtype=gp.GRB.CONTINUOUS)
         model.addConstr(Compute_Memory_Latency[i] == gp.max_(Compute_Latency[i], Memory_Latency[i]))
-        model.addConstr(Per_Config_II[i] == Compute_Memory_Latency[i] + Network_Latency[i])
-    
+        model.addConstr(tmp == Compute_Memory_Latency[i] + Network_Latency[i])
+        model.addConstr(Per_Config_II[i] == tmp * num_input_per_config[i])
+
     elif dse.execution.overlap == Overlap_Style.NO_OVERLAP.value:
-        model.addConstr(Per_Config_II[i] == Compute_Latency[i] + Memory_Latency[i] + Network_Latency[i])
-    
+        tmp = model.addVar(vtype=gp.GRB.CONTINUOUS)
+        model.addConstr(tmp == Compute_Latency[i] + Memory_Latency[i] + Network_Latency[i])
+        model.addConstr(Per_Config_II[i] == tmp * num_input_per_config[i])
+
     else:
         raise Exception("Wrong!")
     
@@ -2407,7 +2447,7 @@ for i in range(C):
 hhhh = model.addVar(vtype=gp.GRB.CONTINUOUS, lb=0)
 ns_per_batch = model.addVar(name='ns_per_batch', vtype=gp.GRB.CONTINUOUS, lb=0)
 
-if dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.WhichOneof('workload_variant') == 'dlrm' or dse.execution.WhichOneof('workload_variant') == 'gemm_fft_llm' or dse.execution.WhichOneof('workload_variant') == 'vector_fft_llm' or dse.execution.WhichOneof('workload_variant') == 'regular_fft_llm' or dse.execution.WhichOneof('workload_variant') == 'mamba':
+if dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.WhichOneof('workload_variant') == 'dlrm' or dse.execution.WhichOneof('workload_variant') == 'mamba':
     all_config_II = model.addVar(name='all_config_II', vtype=gp.GRB.CONTINUOUS, lb=0)
     tmp2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
     tmp3 = model.addVar(vtype=gp.GRB.CONTINUOUS)
@@ -2922,11 +2962,16 @@ for element in memory_size:
 
 
 print('kernel_name', kernel_name)
-print('startIdx', startIdx)
-print('endIdx', endIdx)
+
+for i in range(num_edge):
+    print(kernel_name[node_dict[startIdx[i]]], kernel_name[node_dict[endIdx[i]]])
+
+print('depth')
+for i in range(num_edge):
+    print(depth[i])
 
 
-            
+
 FLOP *= layers * global_batch_size
 final_s = final_ns/1e9
 util = FLOP/final_s/num_chip/GFLOPS/1e9

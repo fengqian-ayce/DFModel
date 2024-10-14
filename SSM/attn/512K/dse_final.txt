@@ -15,7 +15,7 @@ dataflow_graph {
       sharding: OUTER_SHARDING
       shard_outer_M: 32
       shard_K: 32
-      shard_N: 12
+      shard_N: 21
       tiling: N_TILING
     }
   }
@@ -35,7 +35,7 @@ dataflow_graph {
       sharding: OUTER_SHARDING
       shard_outer_M: 32
       shard_K: 32
-      shard_N: 12
+      shard_N: 21
       tiling: N_TILING
     }
   }
@@ -55,7 +55,7 @@ dataflow_graph {
       sharding: OUTER_SHARDING
       shard_outer_M: 32
       shard_K: 32
-      shard_N: 12
+      shard_N: 21
       tiling: N_TILING
     }
   }
@@ -159,7 +159,7 @@ dataflow_graph {
       communication_size: 33554432.0
       shard_outer_M: 32
       shard_K: 128
-      shard_N: 12
+      shard_N: 21
       tiling: N_TILING
     }
   }
@@ -168,7 +168,7 @@ dataflow_graph {
     endIdx: 4
     buffer_depth: 2
     tensor_size: 33554432.0
-    shard_tensor_size: 768.0
+    shard_tensor_size: 1344.0
     id: 1
     startName: "Q"
     endName: "MHA_GEMM_1"
@@ -179,7 +179,7 @@ dataflow_graph {
     endIdx: 4
     buffer_depth: 2
     tensor_size: 33554432.0
-    shard_tensor_size: 768.0
+    shard_tensor_size: 1344.0
     id: 2
     startName: "K"
     endName: "MHA_GEMM_1"
@@ -212,7 +212,7 @@ dataflow_graph {
     endIdx: 6
     buffer_depth: 4
     tensor_size: 33554432.0
-    shard_tensor_size: 768.0
+    shard_tensor_size: 1344.0
     id: 5
     startName: "V"
     endName: "MHA_GEMM_2"
@@ -258,7 +258,7 @@ system {
     par_x: "DP"
   }
   memory {
-    dram_bw: 1638.4
+    dram_bw: 8192.0
     dram_cap: 68719480000.0
   }
 }

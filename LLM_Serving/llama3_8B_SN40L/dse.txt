@@ -36,8 +36,8 @@ dataflow_graph {
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
-      outer: 128
-      M: 32
+      outer: 32
+      M: 128
       K: 4096
       N: 1
       input_tensor_size: 8192.0
@@ -54,8 +54,8 @@ dataflow_graph {
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
-      outer: 128
-      M: 32
+      outer: 32
+      M: 128
       K: 4096
       N: 1
       input_tensor_size: 8192.0
@@ -72,8 +72,8 @@ dataflow_graph {
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_weight {
-      outer: 128
-      M: 32
+      outer: 32
+      M: 128
       K: 4096
       N: 1
       input_tensor_size: 8192.0
@@ -90,13 +90,15 @@ dataflow_graph {
     fwd_bwd: FWD
     type: SYSTOLIC
     elementwise_input1 {
-      outer: 128
-      M: 32
+      outer: 32
+      M: 128
       N: 4097
       input_tensor_size: 8192.0
       output_tensor_size: 33562624.0
       tiling: N_TILING
       memory_size: 2097152.0
+      sram_extra: 2097152.0
+      dram_extra: 2097152.0
     }
   }
   kernels {
@@ -106,13 +108,15 @@ dataflow_graph {
     fwd_bwd: FWD
     type: SYSTOLIC
     elementwise_input1 {
-      outer: 128
-      M: 32
+      outer: 32
+      M: 128
       N: 4097
       input_tensor_size: 8192.0
       output_tensor_size: 33562624.0
       tiling: N_TILING
       memory_size: 2097152.0
+      sram_extra: 2097152.0
+      dram_extra: 2097152.0
     }
   }
   kernels {
@@ -122,13 +126,13 @@ dataflow_graph {
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_input2 {
-      outer: 128
+      outer: 32
       M: 1
-      K: 32
+      K: 128
       N: 4097
       input_tensor_1_size: 8192.0
       input_tensor_2_size: 33562624.0
-      output_tensor_size: 1048832.0
+      output_tensor_size: 262208.0
       tiling: N_TILING
     }
   }
@@ -139,11 +143,11 @@ dataflow_graph {
     fwd_bwd: FWD
     type: SIMD
     elementwise_input1 {
-      outer: 128
+      outer: 32
       M: 1
       N: 4097
-      input_tensor_size: 1048832.0
-      output_tensor_size: 1048832.0
+      input_tensor_size: 262208.0
+      output_tensor_size: 262208.0
       tiling: N_TILING
     }
   }
@@ -154,11 +158,11 @@ dataflow_graph {
     fwd_bwd: FWD
     type: SIMD
     elementwise_input1 {
-      outer: 128
+      outer: 32
       M: 1
       N: 4097
-      input_tensor_size: 1048832.0
-      output_tensor_size: 1048832.0
+      input_tensor_size: 262208.0
+      output_tensor_size: 262208.0
       tiling: N_TILING
     }
   }
@@ -169,12 +173,12 @@ dataflow_graph {
     fwd_bwd: FWD
     type: SYSTOLIC
     gemm_input1_input2 {
-      outer: 128
-      M: 32
+      outer: 32
+      M: 128
       K: 4097
       N: 1
       input_tensor_1_size: 33562624.0
-      input_tensor_2_size: 1048832.0
+      input_tensor_2_size: 262208.0
       output_tensor_size: 8192.0
       tiling: N_TILING
     }
@@ -372,6 +376,7 @@ dataflow_graph {
     endIdx: 8
     id: 8
     lane_stage_type: LANE
+    zero_out: true
   }
   connections {
     startIdx: 8
@@ -396,6 +401,7 @@ dataflow_graph {
     endIdx: 11
     id: 12
     lane_stage_type: LANE
+    zero_out: true
   }
   connections {
     startIdx: 11

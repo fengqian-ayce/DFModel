@@ -6,17 +6,17 @@ dataflow_graph {
     type: SYSTOLIC
     gemm_input1_weight {
       outer: 1
-      M: 128
-      K: 128
+      M: 32
+      K: 32
       N: 1048576
-      input_tensor_size: 268435460.0
-      weight_tensor_size: 32768.0
-      output_tensor_size: 268435460.0
+      input_tensor_size: 67108864.0
+      weight_tensor_size: 2048.0
+      output_tensor_size: 67108864.0
       sharding: NO_SHARDING
-      shard_outer_M: 128
-      shard_K: 128
-      shard_N: 1048576
-      tiling: NO_TILING
+      shard_outer_M: 32
+      shard_K: 32
+      shard_N: 131072
+      tiling: N_TILING
     }
   }
   kernels {
@@ -27,17 +27,17 @@ dataflow_graph {
     type: SYSTOLIC
     gemm_input1_weight {
       outer: 1
-      M: 128
-      K: 128
+      M: 32
+      K: 32
       N: 1048576
-      input_tensor_size: 268435460.0
-      weight_tensor_size: 32768.0
-      output_tensor_size: 268435460.0
+      input_tensor_size: 67108864.0
+      weight_tensor_size: 2048.0
+      output_tensor_size: 67108864.0
       sharding: NO_SHARDING
-      shard_outer_M: 128
-      shard_K: 128
-      shard_N: 1048576
-      tiling: NO_TILING
+      shard_outer_M: 32
+      shard_K: 32
+      shard_N: 131072
+      tiling: N_TILING
     }
   }
   kernels {
@@ -49,15 +49,15 @@ dataflow_graph {
     gemm_input1_weight {
       outer: 1
       M: 1048576
-      K: 128
+      K: 32
       N: 1
       input_tensor_size: 2097152.0
       output_tensor_size: 2097152.0
       sharding: NO_SHARDING
-      shard_outer_M: 1048576
-      shard_K: 128
+      shard_outer_M: 131072
+      shard_K: 32
       shard_N: 1
-      tiling: NO_TILING
+      tiling: M_TILING
       skip_weight: true
     }
   }
@@ -81,8 +81,7 @@ dataflow_graph {
       shard_N: 1
       tiling: NO_TILING
       skip_weight: true
-      use_effective_stage: true
-      num_input: 128
+      num_input: 32
     }
   }
   kernels {
@@ -105,8 +104,7 @@ dataflow_graph {
       shard_N: 1
       tiling: NO_TILING
       skip_weight: true
-      use_effective_stage: true
-      num_input: 128
+      num_input: 32
     }
   }
   kernels {
@@ -129,8 +127,7 @@ dataflow_graph {
       shard_N: 1
       tiling: NO_TILING
       skip_weight: true
-      use_effective_stage: true
-      num_input: 128
+      num_input: 32
     }
   }
   kernels {
@@ -153,8 +150,7 @@ dataflow_graph {
       shard_N: 1
       tiling: NO_TILING
       skip_weight: true
-      use_effective_stage: true
-      num_input: 128
+      num_input: 32
     }
   }
   kernels {
@@ -177,8 +173,7 @@ dataflow_graph {
       shard_N: 1
       tiling: NO_TILING
       skip_weight: true
-      use_effective_stage: true
-      num_input: 128
+      num_input: 32
     }
   }
   kernels {
@@ -201,8 +196,7 @@ dataflow_graph {
       shard_N: 1
       tiling: NO_TILING
       skip_weight: true
-      use_effective_stage: true
-      num_input: 128
+      num_input: 32
     }
   }
   kernels {
@@ -225,8 +219,7 @@ dataflow_graph {
       shard_N: 1
       tiling: NO_TILING
       skip_weight: true
-      use_effective_stage: true
-      num_input: 128
+      num_input: 32
     }
   }
   kernels {
@@ -249,8 +242,7 @@ dataflow_graph {
       shard_N: 1
       tiling: NO_TILING
       skip_weight: true
-      use_effective_stage: true
-      num_input: 128
+      num_input: 32
     }
   }
   kernels {
@@ -273,8 +265,7 @@ dataflow_graph {
       shard_N: 1
       tiling: NO_TILING
       skip_weight: true
-      use_effective_stage: true
-      num_input: 128
+      num_input: 32
     }
   }
   kernels {
@@ -297,8 +288,7 @@ dataflow_graph {
       shard_N: 1
       tiling: NO_TILING
       skip_weight: true
-      use_effective_stage: true
-      num_input: 128
+      num_input: 32
     }
   }
   kernels {
@@ -321,8 +311,7 @@ dataflow_graph {
       shard_N: 1
       tiling: NO_TILING
       skip_weight: true
-      use_effective_stage: true
-      num_input: 128
+      num_input: 32
     }
   }
   kernels {
@@ -345,8 +334,7 @@ dataflow_graph {
       shard_N: 1
       tiling: NO_TILING
       skip_weight: true
-      use_effective_stage: true
-      num_input: 128
+      num_input: 32
     }
   }
   kernels {
@@ -369,8 +357,7 @@ dataflow_graph {
       shard_N: 1
       tiling: NO_TILING
       skip_weight: true
-      use_effective_stage: true
-      num_input: 128
+      num_input: 32
     }
   }
   kernels {
@@ -393,8 +380,7 @@ dataflow_graph {
       shard_N: 1
       tiling: NO_TILING
       skip_weight: true
-      use_effective_stage: true
-      num_input: 128
+      num_input: 32
     }
   }
   kernels {
@@ -417,8 +403,7 @@ dataflow_graph {
       shard_N: 1
       tiling: NO_TILING
       skip_weight: true
-      use_effective_stage: true
-      num_input: 128
+      num_input: 32
     }
   }
   kernels {
@@ -441,8 +426,7 @@ dataflow_graph {
       shard_N: 1
       tiling: NO_TILING
       skip_weight: true
-      use_effective_stage: true
-      num_input: 128
+      num_input: 32
     }
   }
   kernels {
@@ -465,8 +449,7 @@ dataflow_graph {
       shard_N: 1
       tiling: NO_TILING
       skip_weight: true
-      use_effective_stage: true
-      num_input: 128
+      num_input: 32
     }
   }
   kernels {
@@ -489,8 +472,7 @@ dataflow_graph {
       shard_N: 1
       tiling: NO_TILING
       skip_weight: true
-      use_effective_stage: true
-      num_input: 128
+      num_input: 32
     }
   }
   kernels {
@@ -513,8 +495,7 @@ dataflow_graph {
       shard_N: 1
       tiling: NO_TILING
       skip_weight: true
-      use_effective_stage: true
-      num_input: 128
+      num_input: 32
     }
   }
   kernels {
@@ -534,11 +515,10 @@ dataflow_graph {
       sharding: NO_SHARDING
       shard_outer_M: 1048576
       shard_K: 1
-      shard_N: 1
+      shard_N: 2
       tiling: NO_TILING
       skip_weight: true
-      use_effective_stage: true
-      num_input: 128
+      num_input: 32
     }
   }
   kernels {
@@ -551,14 +531,14 @@ dataflow_graph {
     elementwise_input1_input2 {
       outer: 1
       M: 1048576
-      N: 128
-      input_tensor_1_size: 268435460.0
-      output_tensor_size: 268435460.0
+      N: 32
+      input_tensor_1_size: 67108864.0
+      output_tensor_size: 67108864.0
       sharding: NO_SHARDING
-      shard_outer_M: 1048576
-      shard_N: 128
-      tiling: NO_TILING
-      input_tensor_2_size: 268435460.0
+      shard_outer_M: 131072
+      shard_N: 32
+      tiling: M_TILING
+      input_tensor_2_size: 67108864.0
     }
   }
   kernels {
@@ -570,25 +550,25 @@ dataflow_graph {
     type: SYSTOLIC
     gemm_input1_weight {
       outer: 1
-      M: 128
-      K: 128
+      M: 32
+      K: 32
       N: 1048576
-      input_tensor_size: 268435460.0
-      weight_tensor_size: 32768.0
-      output_tensor_size: 268435460.0
+      input_tensor_size: 67108864.0
+      weight_tensor_size: 2048.0
+      output_tensor_size: 67108864.0
       sharding: NO_SHARDING
-      shard_outer_M: 128
-      shard_K: 128
-      shard_N: 1048576
-      tiling: NO_TILING
+      shard_outer_M: 32
+      shard_K: 32
+      shard_N: 131072
+      tiling: N_TILING
     }
   }
   connections {
     startIdx: 1
     endIdx: 3
     buffer_depth: 2
-    tensor_size: 268435460.0
-    shard_tensor_size: 268435460.0
+    tensor_size: 67108864.0
+    shard_tensor_size: 8388608.0
     startName: "Proj1"
     endName: "Conv"
     lane_stage_type: LANE
@@ -598,7 +578,7 @@ dataflow_graph {
     endIdx: 4
     buffer_depth: 2
     tensor_size: 2097152.0
-    shard_tensor_size: 2097152.0
+    shard_tensor_size: 262144.0
     id: 1
     startName: "Conv"
     endName: "Scan_stage_0"
@@ -818,7 +798,7 @@ dataflow_graph {
     endIdx: 24
     buffer_depth: 2
     tensor_size: 2097152.0
-    shard_tensor_size: 2097152.0
+    shard_tensor_size: 4194304.0
     id: 21
     startName: "Scan_stage_19"
     endName: "Multiply"
@@ -828,8 +808,8 @@ dataflow_graph {
     startIdx: 2
     endIdx: 24
     buffer_depth: 23
-    tensor_size: 268435460.0
-    shard_tensor_size: 268435460.0
+    tensor_size: 67108864.0
+    shard_tensor_size: 8388608.0
     id: 22
     startName: "Proj2"
     endName: "Multiply"
@@ -839,8 +819,8 @@ dataflow_graph {
     startIdx: 24
     endIdx: 25
     buffer_depth: 2
-    tensor_size: 268435460.0
-    shard_tensor_size: 268435460.0
+    tensor_size: 67108864.0
+    shard_tensor_size: 8388608.0
     id: 23
     startName: "Multiply"
     endName: "Proj3"
@@ -862,7 +842,7 @@ system {
     par_x: "TP"
   }
   memory {
-    dram_bw: 1638.4
+    dram_bw: 8192.0
     dram_cap: 68719480000.0
   }
 }
@@ -877,18 +857,23 @@ cost {
   accelerator_power: 444.7062
 }
 execution {
+  llm {
+    hidden_dim: 32
+    head_dim: 16
+    num_head: 2
+    seq_len: 1048576
+    num_layer: 1
+    global_batch_size: 1
+    micro_batch_size: 1
+    num_layer_in_graph: 1
+  }
   execution_style: DATAFLOW
   num_config: 3
-  perfect_overlap: true
+  overlap: PERFECT_OVERLAP
   word: 2
-  mamba {
-    hidden: 128
-    seq_len: 1048576
-    effective_stage: 1
-  }
+  skip_inter_chip_optimization: true
 }
 gurobi {
-  thread: 144
   gap: 0.001
-  time: 36000
+  time: 180
 }

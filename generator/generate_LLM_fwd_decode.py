@@ -118,6 +118,8 @@ for i in range(1, 21):
         kernel.type = 1
         kernel.config = -1
         kernel.elementwise_input1.memory_size = word*hidden*seq_window/tp
+        kernel.elementwise_input1.sram_extra = word*hidden*seq_window/tp
+        kernel.elementwise_input1.dram_extra = word*hidden*seq_window/tp
         kernel.elementwise_input1.outer = num_head
         kernel.elementwise_input1.M = head_dim
         kernel.elementwise_input1.N = seq_window+1
@@ -132,6 +134,8 @@ for i in range(1, 21):
         kernel.type = 1
         kernel.config = -1
         kernel.elementwise_input1.memory_size = word*hidden*seq_window/tp
+        kernel.elementwise_input1.sram_extra = word*hidden*seq_window/tp
+        kernel.elementwise_input1.dram_extra = word*hidden*seq_window/tp
         kernel.elementwise_input1.outer = num_head
         kernel.elementwise_input1.M = head_dim
         kernel.elementwise_input1.N = seq_window+1

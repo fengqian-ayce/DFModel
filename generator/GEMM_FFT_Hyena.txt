@@ -1,270 +1,291 @@
 kernels {
-  name: "Q_stage0"
+  name: "Q"
   config: -1
   fwd_bwd: FWD
   type: SYSTOLIC
   gemm_input1_weight {
-    outer: 1
-    M: 32
+    outer: 2
+    M: 16
     K: 32
-    N: 65536
-    input_tensor_size: 4194304.0
-    output_tensor_size: 4194304.0
-    tiling: NO_TILING
-    skip_weight: true
-    num_input: 1
+    N: 1048576
+    input_tensor_size: 67108864.0
+    weight_tensor_size: 2048.0
+    output_tensor_size: 67108864.0
+    tiling: N_TILING
   }
 }
 kernels {
-  name: "Q_stage1"
+  name: "K"
   id: 1
   config: -1
   fwd_bwd: FWD
   type: SYSTOLIC
   gemm_input1_weight {
-    outer: 1
-    M: 32
+    outer: 2
+    M: 16
     K: 32
-    N: 65536
-    input_tensor_size: 4194304.0
-    output_tensor_size: 4194304.0
-    tiling: NO_TILING
-    skip_weight: true
-    num_input: 1
+    N: 1048576
+    input_tensor_size: 67108864.0
+    weight_tensor_size: 2048.0
+    output_tensor_size: 67108864.0
+    tiling: N_TILING
   }
 }
 kernels {
-  name: "Q_stage2"
+  name: "V"
   id: 2
   config: -1
   fwd_bwd: FWD
   type: SYSTOLIC
   gemm_input1_weight {
-    outer: 1
-    M: 32
+    outer: 2
+    M: 16
     K: 32
-    N: 65536
-    input_tensor_size: 4194304.0
-    output_tensor_size: 4194304.0
-    tiling: NO_TILING
-    skip_weight: true
-    num_input: 1
+    N: 1048576
+    input_tensor_size: 67108864.0
+    weight_tensor_size: 2048.0
+    output_tensor_size: 67108864.0
+    tiling: N_TILING
   }
 }
 kernels {
-  name: "Q_stage3"
+  name: "Q_stage0"
   id: 3
   config: -1
   fwd_bwd: FWD
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 32
-    K: 32
-    N: 65536
+    M: 64
+    K: 64
+    N: 32768
     input_tensor_size: 4194304.0
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 134217730.0
+    dram_extra: 134217730.0
   }
 }
 kernels {
-  name: "Q_stage4"
+  name: "Q_stage1"
   id: 4
   config: -1
   fwd_bwd: FWD
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 32
-    K: 32
-    N: 65536
+    M: 64
+    K: 64
+    N: 32768
     input_tensor_size: 4194304.0
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 134217730.0
+    dram_extra: 134217730.0
   }
 }
 kernels {
-  name: "K_stage0"
+  name: "Q_stage2"
   id: 5
   config: -1
   fwd_bwd: FWD
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 32
-    K: 32
-    N: 65536
+    M: 64
+    K: 64
+    N: 32768
     input_tensor_size: 4194304.0
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 134217730.0
+    dram_extra: 134217730.0
   }
 }
 kernels {
-  name: "K_stage1"
+  name: "Q_stage3"
   id: 6
   config: -1
   fwd_bwd: FWD
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 32
-    K: 32
-    N: 65536
+    M: 64
+    K: 64
+    N: 32768
     input_tensor_size: 4194304.0
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 134217730.0
+    dram_extra: 134217730.0
   }
 }
 kernels {
-  name: "K_stage2"
+  name: "K_stage0"
   id: 7
   config: -1
   fwd_bwd: FWD
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 32
-    K: 32
-    N: 65536
+    M: 64
+    K: 64
+    N: 32768
     input_tensor_size: 4194304.0
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 134217730.0
+    dram_extra: 134217730.0
   }
 }
 kernels {
-  name: "K_stage3"
+  name: "K_stage1"
   id: 8
   config: -1
   fwd_bwd: FWD
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 32
-    K: 32
-    N: 65536
+    M: 64
+    K: 64
+    N: 32768
     input_tensor_size: 4194304.0
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 134217730.0
+    dram_extra: 134217730.0
   }
 }
 kernels {
-  name: "K_stage4"
+  name: "K_stage2"
   id: 9
   config: -1
   fwd_bwd: FWD
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 32
-    K: 32
-    N: 65536
+    M: 64
+    K: 64
+    N: 32768
     input_tensor_size: 4194304.0
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 134217730.0
+    dram_extra: 134217730.0
   }
 }
 kernels {
-  name: "QKi_stage0"
+  name: "K_stage3"
   id: 10
   config: -1
   fwd_bwd: FWD
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 32
-    K: 32
-    N: 65536
+    M: 64
+    K: 64
+    N: 32768
     input_tensor_size: 4194304.0
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 134217730.0
+    dram_extra: 134217730.0
   }
 }
 kernels {
-  name: "QKi_stage1"
+  name: "QKi_stage0"
   id: 11
   config: -1
   fwd_bwd: FWD
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 32
-    K: 32
-    N: 65536
+    M: 64
+    K: 64
+    N: 32768
     input_tensor_size: 4194304.0
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 134217730.0
+    dram_extra: 134217730.0
   }
 }
 kernels {
-  name: "QKi_stage2"
+  name: "QKi_stage1"
   id: 12
   config: -1
   fwd_bwd: FWD
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 32
-    K: 32
-    N: 65536
+    M: 64
+    K: 64
+    N: 32768
     input_tensor_size: 4194304.0
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 134217730.0
+    dram_extra: 134217730.0
   }
 }
 kernels {
-  name: "QKi_stage3"
+  name: "QKi_stage2"
   id: 13
   config: -1
   fwd_bwd: FWD
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 32
-    K: 32
-    N: 65536
+    M: 64
+    K: 64
+    N: 32768
     input_tensor_size: 4194304.0
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 134217730.0
+    dram_extra: 134217730.0
   }
 }
 kernels {
-  name: "QKi_stage4"
+  name: "QKi_stage3"
   id: 14
   config: -1
   fwd_bwd: FWD
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 32
-    K: 32
-    N: 65536
+    M: 64
+    K: 64
+    N: 32768
     input_tensor_size: 4194304.0
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 134217730.0
+    dram_extra: 134217730.0
   }
 }
 kernels {
@@ -275,14 +296,16 @@ kernels {
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 32
-    K: 32
-    N: 65536
+    M: 64
+    K: 64
+    N: 32768
     input_tensor_size: 4194304.0
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 134217730.0
+    dram_extra: 134217730.0
   }
 }
 kernels {
@@ -293,14 +316,16 @@ kernels {
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 32
-    K: 32
-    N: 65536
+    M: 64
+    K: 64
+    N: 32768
     input_tensor_size: 4194304.0
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 134217730.0
+    dram_extra: 134217730.0
   }
 }
 kernels {
@@ -311,14 +336,16 @@ kernels {
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 32
-    K: 32
-    N: 65536
+    M: 64
+    K: 64
+    N: 32768
     input_tensor_size: 4194304.0
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 134217730.0
+    dram_extra: 134217730.0
   }
 }
 kernels {
@@ -329,217 +356,181 @@ kernels {
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 32
-    K: 32
-    N: 65536
+    M: 64
+    K: 64
+    N: 32768
     input_tensor_size: 4194304.0
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 134217730.0
+    dram_extra: 134217730.0
   }
 }
 kernels {
-  name: "inter_stage4"
+  name: "V_stage0"
   id: 19
   config: -1
   fwd_bwd: FWD
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 32
-    K: 32
-    N: 65536
+    M: 64
+    K: 64
+    N: 32768
     input_tensor_size: 4194304.0
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 134217730.0
+    dram_extra: 134217730.0
   }
 }
 kernels {
-  name: "V_stage0"
+  name: "V_stage1"
   id: 20
   config: -1
   fwd_bwd: FWD
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 32
-    K: 32
-    N: 65536
+    M: 64
+    K: 64
+    N: 32768
     input_tensor_size: 4194304.0
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 134217730.0
+    dram_extra: 134217730.0
   }
 }
 kernels {
-  name: "V_stage1"
+  name: "V_stage2"
   id: 21
   config: -1
   fwd_bwd: FWD
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 32
-    K: 32
-    N: 65536
+    M: 64
+    K: 64
+    N: 32768
     input_tensor_size: 4194304.0
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 134217730.0
+    dram_extra: 134217730.0
   }
 }
 kernels {
-  name: "V_stage2"
+  name: "V_stage3"
   id: 22
   config: -1
   fwd_bwd: FWD
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 32
-    K: 32
-    N: 65536
+    M: 64
+    K: 64
+    N: 32768
     input_tensor_size: 4194304.0
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 134217730.0
+    dram_extra: 134217730.0
   }
 }
 kernels {
-  name: "V_stage3"
+  name: "interVi_stage0"
   id: 23
   config: -1
   fwd_bwd: FWD
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 32
-    K: 32
-    N: 65536
+    M: 64
+    K: 64
+    N: 32768
     input_tensor_size: 4194304.0
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 134217730.0
+    dram_extra: 134217730.0
   }
 }
 kernels {
-  name: "V_stage4"
+  name: "interVi_stage1"
   id: 24
   config: -1
   fwd_bwd: FWD
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 32
-    K: 32
-    N: 65536
+    M: 64
+    K: 64
+    N: 32768
     input_tensor_size: 4194304.0
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 134217730.0
+    dram_extra: 134217730.0
   }
 }
 kernels {
-  name: "interVi_stage0"
+  name: "interVi_stage2"
   id: 25
   config: -1
   fwd_bwd: FWD
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 32
-    K: 32
-    N: 65536
+    M: 64
+    K: 64
+    N: 32768
     input_tensor_size: 4194304.0
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 134217730.0
+    dram_extra: 134217730.0
   }
 }
 kernels {
-  name: "interVi_stage1"
+  name: "interVi_stage3"
   id: 26
   config: -1
   fwd_bwd: FWD
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 32
-    K: 32
-    N: 65536
+    M: 64
+    K: 64
+    N: 32768
     input_tensor_size: 4194304.0
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     skip_weight: true
-    num_input: 1
-  }
-}
-kernels {
-  name: "interVi_stage2"
-  id: 27
-  config: -1
-  fwd_bwd: FWD
-  type: SYSTOLIC
-  gemm_input1_weight {
-    outer: 1
-    M: 32
-    K: 32
-    N: 65536
-    input_tensor_size: 4194304.0
-    output_tensor_size: 4194304.0
-    tiling: NO_TILING
-    skip_weight: true
-    num_input: 1
-  }
-}
-kernels {
-  name: "interVi_stage3"
-  id: 28
-  config: -1
-  fwd_bwd: FWD
-  type: SYSTOLIC
-  gemm_input1_weight {
-    outer: 1
-    M: 32
-    K: 32
-    N: 65536
-    input_tensor_size: 4194304.0
-    output_tensor_size: 4194304.0
-    tiling: NO_TILING
-    skip_weight: true
-    num_input: 1
-  }
-}
-kernels {
-  name: "interVi_stage4"
-  id: 29
-  config: -1
-  fwd_bwd: FWD
-  type: SYSTOLIC
-  gemm_input1_weight {
-    outer: 1
-    M: 32
-    K: 32
-    N: 65536
-    input_tensor_size: 4194304.0
-    output_tensor_size: 4194304.0
-    tiling: NO_TILING
-    skip_weight: true
-    num_input: 1
+    num_input: 32
+    sram_extra: 134217730.0
+    dram_extra: 134217730.0
   }
 }
 kernels {
   name: "QKmultiply"
-  id: 30
+  id: 27
   config: -1
   fwd_bwd: FWD
   type: SIMD
@@ -551,12 +542,12 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     input_tensor_2_size: 4194304.0
-    num_input: 1
+    num_input: 32
   }
 }
 kernels {
   name: "softmax"
-  id: 31
+  id: 28
   config: -1
   fwd_bwd: FWD
   type: SIMD
@@ -568,12 +559,12 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     input_tensor_2_size: 4194304.0
-    num_input: 1
+    num_input: 32
   }
 }
 kernels {
   name: "interVmultiply"
-  id: 32
+  id: 29
   config: -1
   fwd_bwd: FWD
   type: SIMD
@@ -585,21 +576,42 @@ kernels {
     output_tensor_size: 4194304.0
     tiling: NO_TILING
     input_tensor_2_size: 4194304.0
-    num_input: 1
+    num_input: 32
   }
 }
-connections {
-  endIdx: 1
+kernels {
+  name: "FFN0"
+  id: 30
+  config: -1
+  fwd_bwd: FWD
+  type: SYSTOLIC
+  gemm_input1_weight {
+    outer: 1
+    M: 128
+    K: 32
+    N: 1048576
+    input_tensor_size: 67108864.0
+    weight_tensor_size: 8192.0
+    output_tensor_size: 268435460.0
+    tiling: N_TILING
+  }
 }
-connections {
-  startIdx: 1
-  endIdx: 2
-  id: 1
-}
-connections {
-  startIdx: 2
-  endIdx: 3
-  id: 2
+kernels {
+  name: "FFN1"
+  id: 31
+  config: -1
+  fwd_bwd: FWD
+  type: SYSTOLIC
+  gemm_input1_weight {
+    outer: 1
+    M: 32
+    K: 128
+    N: 1048576
+    input_tensor_size: 268435460.0
+    weight_tensor_size: 8192.0
+    output_tensor_size: 67108864.0
+    tiling: N_TILING
+  }
 }
 connections {
   startIdx: 3
@@ -607,14 +619,14 @@ connections {
   id: 3
 }
 connections {
+  startIdx: 4
+  endIdx: 5
+  id: 4
+}
+connections {
   startIdx: 5
   endIdx: 6
   id: 5
-}
-connections {
-  startIdx: 6
-  endIdx: 7
-  id: 6
 }
 connections {
   startIdx: 7
@@ -627,9 +639,9 @@ connections {
   id: 8
 }
 connections {
-  startIdx: 10
-  endIdx: 11
-  id: 10
+  startIdx: 9
+  endIdx: 10
+  id: 9
 }
 connections {
   startIdx: 11
@@ -662,9 +674,9 @@ connections {
   id: 17
 }
 connections {
-  startIdx: 18
-  endIdx: 19
-  id: 18
+  startIdx: 19
+  endIdx: 20
+  id: 19
 }
 connections {
   startIdx: 20
@@ -677,14 +689,14 @@ connections {
   id: 21
 }
 connections {
-  startIdx: 22
-  endIdx: 23
-  id: 22
-}
-connections {
   startIdx: 23
   endIdx: 24
   id: 23
+}
+connections {
+  startIdx: 24
+  endIdx: 25
+  id: 24
 }
 connections {
   startIdx: 25
@@ -692,57 +704,66 @@ connections {
   id: 25
 }
 connections {
-  startIdx: 26
+  startIdx: 6
   endIdx: 27
-  id: 26
+  id: 40
+}
+connections {
+  startIdx: 10
+  endIdx: 27
+  id: 41
 }
 connections {
   startIdx: 27
-  endIdx: 28
-  id: 27
-}
-connections {
-  startIdx: 28
-  endIdx: 29
-  id: 28
-}
-connections {
-  startIdx: 4
-  endIdx: 30
-  id: 50
-}
-connections {
-  startIdx: 9
-  endIdx: 30
-  id: 51
-}
-connections {
-  startIdx: 30
-  endIdx: 10
-  id: 52
+  endIdx: 11
+  id: 42
 }
 connections {
   startIdx: 14
-  endIdx: 31
-  id: 53
+  endIdx: 28
+  id: 43
 }
 connections {
-  startIdx: 31
+  startIdx: 28
   endIdx: 15
-  id: 54
+  id: 44
 }
 connections {
-  startIdx: 19
-  endIdx: 32
-  id: 55
+  startIdx: 18
+  endIdx: 29
+  id: 45
 }
 connections {
-  startIdx: 24
-  endIdx: 32
-  id: 56
+  startIdx: 22
+  endIdx: 29
+  id: 46
 }
 connections {
-  startIdx: 32
-  endIdx: 25
-  id: 57
+  startIdx: 29
+  endIdx: 23
+  id: 47
+}
+connections {
+  startIdx: 26
+  endIdx: 30
+  id: 48
+}
+connections {
+  startIdx: 30
+  endIdx: 31
+  id: 49
+}
+connections {
+  endIdx: 3
+  id: 50
+}
+connections {
+  startIdx: 1
+  endIdx: 7
+  id: 51
+}
+connections {
+  startIdx: 2
+  endIdx: 19
+  id: 52
 }

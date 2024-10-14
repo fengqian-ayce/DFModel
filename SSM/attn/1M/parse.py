@@ -7,8 +7,10 @@ import copy
 
 non_attn_names = ['Q', 'K', 'V', 'FFN0', 'FFN1']
 
-attn = 0
-non_attn = 0
+attn_flop = 0
+non_attn_flop = 0
+sram = 0
+final_s = 0
 
 f = open('log.txt', 'r')
 lines = f.readlines()
@@ -16,19 +18,23 @@ lines = f.readlines()
 for line in lines:
     if line.startswith('SIMD') or line.startswith('SYSTOLIC'):
         if str(line.split()[1]) in non_attn_names:
-            non_attn += float(line.split()[-1])
+            non_attn_flop += float(line.split()[-1])
         else:
-            attn += float(line.split()[-1])
+            attn_flop += float(line.split()[-1])
 
     if line.startswith('System FLOPS Utilization'):
         util = float(line.split()[-1])
+
     if line.startswith('final_s'):
-        latency = float(line.split()[-1])
+        final_s = float(line.split()[-1])
+
+    if line.startswith('SRAM_Per_Config_total[1]'):
+        sram = float(line.split()[-1])
 
 f.close()
 
-print(attn)
-print(non_attn)
-print(attn+non_attn)
 print(util)
-print(latency)
+print(final_s)
+print(non_attn_flop)
+print(attn_flop)
+
