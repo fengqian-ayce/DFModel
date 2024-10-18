@@ -952,7 +952,7 @@ system {
 		freq: 1.25
 	}
 	memory {
-		dram_bw: 400.0
+		dram_bw: 100.0
 	}
   r {
 		x: 16
@@ -965,7 +965,6 @@ cost {
   switch_unit_price: 24.0
   dram_unit_price: 1.0
   accelerator_price: 33000
-  
   link_unit_power_x: 0.0104
   link_unit_power_y: 0.052
   switch_unit_power: 0.052
@@ -983,8 +982,8 @@ execution {
 		micro_batch_size: 1
 		num_layer_in_graph: 1
 	}
-	execution_style: KERNEL_BY_KERNEL
-	#num_config: 6
+	execution_style: DATAFLOW
+	num_config: 6
 	overlap: PERFECT_OVERLAP
 	#compute_util: 0.9
 	word: 2

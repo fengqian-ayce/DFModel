@@ -47,7 +47,7 @@ message GEMM_Input1_Weight {
 	int64 shard_outer_M = 16;
 	int64 shard_K = 17;
 	int64 shard_N = 18;
-	float memory_size = 100;
+	float memory_size = 100; // extra DRAM access time
 	enum Communication_Type {
 		Communication_Type_Placeholder = 0;
 		ALL_REDUCE = 1;
@@ -73,15 +73,15 @@ message GEMM_Input1_Weight {
 		N_TILING = 4;
 		NO_TILING = 5;
 	}
-	bool skip_weight = 1000;
+	bool skip_weight = 1000; // skip weight tensors
 
 	bool use_effective_stage = 1001;
 
 	int64 num_input = 2000;
 
 
-	float sram_extra = 10000;
-	float dram_extra = 10001;
+	float sram_extra = 10000; // extra SRAM capacity
+	float dram_extra = 10001; // extra DRAM capacity
 }
 
 message GEMM_Input1_Input2 {
@@ -101,7 +101,7 @@ message GEMM_Input1_Input2 {
 	int64 shard_outer_M = 16;
 	int64 shard_K = 17;
 	int64 shard_N = 18;
-	float memory_size = 100;
+	float memory_size = 100; // extra DRAM access time
 	enum Communication_Type {
 		Communication_Type_Placeholder = 0;
 		ALL_REDUCE = 1;
@@ -131,8 +131,8 @@ message GEMM_Input1_Input2 {
 	int64 num_input = 2000;
 
 
-	float sram_extra = 10000;
-	float dram_extra = 10001;
+	float sram_extra = 10000; // extra SRAM capacity
+	float dram_extra = 10001; // extra DRAM capacity
 }
 
 message ElementWise_Input1 {
@@ -154,7 +154,7 @@ message ElementWise_Input1 {
 	int64 shard_outer_M = 16;
 	int64 shard_N = 18;
 	
-	float memory_size = 100;
+	float memory_size = 100; // extra DRAM access time
 
 	enum Communication_Type {
 		Communication_Type_Placeholder = 0;
@@ -186,8 +186,8 @@ message ElementWise_Input1 {
 	int64 num_input = 2000;
 
 
-	float sram_extra = 10000;
-	float dram_extra = 10001;
+	float sram_extra = 10000; // extra SRAM capacity
+	float dram_extra = 10001; // extra DRAM capacity
 }
 
 message ElementWise_Input1_Input2 {
@@ -210,7 +210,7 @@ message ElementWise_Input1_Input2 {
 	int64 shard_outer_M = 16;
 	int64 shard_N = 18;
 	
-	float memory_size = 100;
+	float memory_size = 100; // extra DRAM access time
 
 	enum Communication_Type {
 		Communication_Type_Placeholder = 0;
@@ -242,8 +242,8 @@ message ElementWise_Input1_Input2 {
 	int64 num_input = 2000;
 
 
-	float sram_extra = 10000;
-	float dram_extra = 10001;
+	float sram_extra = 10000; // extra SRAM capacity
+	float dram_extra = 10001; // extra DRAM capacity
 }
 
 message Connection {
@@ -278,7 +278,7 @@ message Connection {
 	}
 	Lane_Stage_Type lane_stage_type = 20;
 
-	bool zero_out = 9999;
+	bool zero_out = 9999; // skip intermediate tensor
 }
 
 message Dataflow_Graph {

@@ -179,7 +179,7 @@ dataflow_graph {
       sharding: OUTER_SHARDING
       shard_outer_M: 1536
       shard_K: 2048
-      shard_N: 512
+      shard_N: 514
       tiling: N_TILING
     }
   }
@@ -203,7 +203,7 @@ dataflow_graph {
       communication_size: 50331650.0
       shard_outer_M: 12288
       shard_K: 1536
-      shard_N: 511
+      shard_N: 512
       tiling: N_TILING
     }
   }
@@ -325,9 +325,9 @@ dataflow_graph {
       sharding: K_SHARDING
       communication_type: ALL_REDUCE
       communication_size: 50331650.0
-      shard_outer_M: 12289
+      shard_outer_M: 12291
       shard_K: 6144
-      shard_N: 511
+      shard_N: 512
       tiling: N_TILING
     }
   }
@@ -346,7 +346,7 @@ dataflow_graph {
       output_tensor_size: 50331650.0
       sharding: M_SHARDING
       shard_outer_M: 1536
-      shard_N: 511
+      shard_N: 512
       tiling: N_TILING
     }
   }
@@ -572,7 +572,7 @@ dataflow_graph {
       sharding: OUTER_SHARDING
       shard_outer_M: 1536
       shard_K: 2048
-      shard_N: 511
+      shard_N: 512
       tiling: N_TILING
     }
   }
@@ -985,7 +985,7 @@ dataflow_graph {
     endIdx: 10
     buffer_depth: 2
     tensor_size: 50331650.0
-    shard_tensor_size: 1572864.0
+    shard_tensor_size: 1579008.0
     id: 11
     startName: "MHA_GEMM_2"
     endName: "PROJ_GEMM"
@@ -1073,7 +1073,7 @@ dataflow_graph {
     endIdx: 17
     buffer_depth: 2
     tensor_size: 50331650.0
-    shard_tensor_size: 12583936.0
+    shard_tensor_size: 12585984.0
     id: 19
     startName: "FFN1"
     endName: "DropOut_3"
@@ -1381,7 +1381,7 @@ dataflow_graph {
     endIdx: 38
     buffer_depth: 2
     tensor_size: 50331650.0
-    shard_tensor_size: 1572864.0
+    shard_tensor_size: 1579008.0
     id: 47
     startName: "MHA_GEMM_2"
     endName: "PROJ_GEMM_bwd_weight_update"

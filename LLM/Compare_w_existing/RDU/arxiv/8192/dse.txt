@@ -1010,7 +1010,7 @@ system {
     par_x: "DP"
   }
   memory {
-    dram_bw: 400.0
+    dram_bw: 100.0
   }
 }
 cost {
@@ -1035,7 +1035,8 @@ execution {
     micro_batch_size: 1
     num_layer_in_graph: 1
   }
-  execution_style: KERNEL_BY_KERNEL
+  execution_style: DATAFLOW
+  num_config: 6
   overlap: PERFECT_OVERLAP
   word: 2
 }

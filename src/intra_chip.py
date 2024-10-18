@@ -352,15 +352,6 @@ elif dse.execution.WhichOneof('workload_variant') == 'fft':
     micro_batch_size = 1
     num_layer = 1
 
-elif dse.execution.WhichOneof('workload_variant') == 'mamba':
-    hidden = dse.execution.mamba.hidden
-    seq_len = dse.execution.mamba.seq_len
-    effective_stage = dse.execution.mamba.effective_stage
-
-    global_batch_size = 1
-    micro_batch_size = 1
-    num_layer = 1
-
 else:
     raise Exception('Wrong!')
 
@@ -406,7 +397,7 @@ if dse.execution.WhichOneof('workload_variant') == 'llm':
     else: # training
         Intermediate = 2 * hidden_dim * seq_len * word
 
-elif dse.execution.WhichOneof('workload_variant') == 'dlrm' or dse.execution.WhichOneof('workload_variant') == 'hpl' or dse.execution.WhichOneof('workload_variant') == 'fft' or dse.execution.WhichOneof('workload_variant') == 'mamba':
+elif dse.execution.WhichOneof('workload_variant') == 'dlrm' or dse.execution.WhichOneof('workload_variant') == 'hpl' or dse.execution.WhichOneof('workload_variant') == 'fft':
     Intermediate = 0
     
 else:
@@ -732,7 +723,7 @@ elif dse.execution.WhichOneof('workload_variant') == 'dlrm':
     
     
     
-elif dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.WhichOneof('workload_variant') == 'mamba':
+elif dse.execution.WhichOneof('workload_variant') == 'llm':
 
 
 
@@ -776,7 +767,10 @@ elif dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.Whic
                 model.addConstr(ALL_TO_ALL_ratio * Link_BW_TP * 8 == TP * TP)
                 model.addConstr(ALL_GATHER_ratio * aaa == TP - 1)
             elif topology[0] == BasicTopology.FC.value:
-                model.addConstr(ALL_REDUCE_ratio * aaa == 1)
+                if dse.execution.separate_rs_ag_for_ar:
+                    model.addConstr(ALL_REDUCE_ratio * aaa == 2)
+                else:
+                    model.addConstr(ALL_REDUCE_ratio * aaa == 1)
                 model.addConstr(ALL_TO_ALL_ratio * Link_BW_TP == 1)
                 model.addConstr(ALL_GATHER_ratio * aaa == 1)
             elif topology[0] == BasicTopology.SW.value:
@@ -878,7 +872,10 @@ elif dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.Whic
                 model.addConstr(ALL_TO_ALL_ratio * Link_BW_TP * 8 == TP * TP)
                 model.addConstr(ALL_GATHER_ratio * aaa == TP - 1)
             elif topology[0] == BasicTopology.FC.value:
-                model.addConstr(ALL_REDUCE_ratio * aaa == 1)
+                if dse.execution.separate_rs_ag_for_ar:
+                    model.addConstr(ALL_REDUCE_ratio * aaa == 2)
+                else:
+                    model.addConstr(ALL_REDUCE_ratio * aaa == 1)
                 model.addConstr(ALL_TO_ALL_ratio * Link_BW_TP == 1)
                 model.addConstr(ALL_GATHER_ratio * aaa == 1)
             elif topology[0] == BasicTopology.SW.value:
@@ -912,7 +909,10 @@ elif dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.Whic
                 model.addConstr(ALL_TO_ALL_ratio * Link_BW_TP * 8 == TP * TP)
                 model.addConstr(ALL_GATHER_ratio * aaa == TP - 1)
             elif topology[0] == BasicTopology.FC.value:
-                model.addConstr(ALL_REDUCE_ratio * aaa == 1)
+                if dse.execution.separate_rs_ag_for_ar:
+                    model.addConstr(ALL_REDUCE_ratio * aaa == 2)
+                else:
+                    model.addConstr(ALL_REDUCE_ratio * aaa == 1)
                 model.addConstr(ALL_TO_ALL_ratio * Link_BW_TP == 1)
                 model.addConstr(ALL_GATHER_ratio * aaa == 1)
             elif topology[0] == BasicTopology.SW.value:
@@ -1044,7 +1044,10 @@ elif dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.Whic
                     else:
                         model.addConstr(ALL_REDUCE_ratio * aaa == TP - 1)
                 elif topology[0] == BasicTopology.FC.value:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == 1)
+                    if dse.execution.separate_rs_ag_for_ar:
+                        model.addConstr(ALL_REDUCE_ratio * aaa == 2)
+                    else:
+                        model.addConstr(ALL_REDUCE_ratio * aaa == 1)
                 elif topology[0] == BasicTopology.SW.value:
                     if dse.execution.separate_rs_ag_for_ar:
                         model.addConstr(ALL_REDUCE_ratio * aaa == (TP - 1)*2)
@@ -1153,12 +1156,9 @@ if dse.execution.WhichOneof('workload_variant') == 'llm':
     else:
         model.addConstr(tile_size == dse.execution.llm.tile_size)
     
-    if seq_len >= 32*1024:
-        model.addConstr(tile_size * num_tile >= seq_len)
-    else:
-        model.addConstr(tile_size * num_tile == seq_len)
+    model.addConstr(tile_size * num_tile >= seq_len)
     
-elif dse.execution.WhichOneof('workload_variant') == 'dlrm' or dse.execution.WhichOneof('workload_variant') == 'hpl' or dse.execution.WhichOneof('workload_variant') == 'fft' or dse.execution.WhichOneof('workload_variant') == 'mamba':
+elif dse.execution.WhichOneof('workload_variant') == 'dlrm' or dse.execution.WhichOneof('workload_variant') == 'hpl' or dse.execution.WhichOneof('workload_variant') == 'fft':
     model.addConstr(num_tile == 1)
     
 else:
@@ -1319,7 +1319,7 @@ model.addConstr(num_micro_batch_per_pipeline * aaa == global_batch_size)
 
 
 # sharding communication
-if dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.WhichOneof('workload_variant') == 'mamba':
+if dse.execution.WhichOneof('workload_variant') == 'llm':
     ALL_REDUCE_communication_size_node = model.addMVar(num_node, name='ALL_REDUCE_communication_size_node', vtype=gp.GRB.CONTINUOUS, lb=0)
     ALL_TO_ALL_communication_size_node = model.addMVar(num_node, name='ALL_TO_ALL_communication_size_node', vtype=gp.GRB.CONTINUOUS, lb=0)
     ALL_GATHER_communication_size_node = model.addMVar(num_node, name='ALL_GATHER_communication_size_node', vtype=gp.GRB.CONTINUOUS, lb=0)
@@ -1807,7 +1807,7 @@ if dse.system.accelerator.pmu == 0:
         model.addConstr(SRAM_Per_Config_initiation[i] == shard_initiation_buffer_size_depth_one @ F[:, i])
         model.addConstr(SRAM_Per_Config_total[i] == SRAM_Per_Config_extra[i] + SRAM_Per_Config_intermediate_dram[i] + SRAM_Per_Config_intermediate_onchip[i] + SRAM_Per_Config_initiation[i])
         
-        if dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.WhichOneof('workload_variant') == 'mamba':
+        if dse.execution.WhichOneof('workload_variant') == 'llm':
             model.addConstr(SRAM_Per_Config_total[i] <= sram_cap)
 
 else:
@@ -2016,7 +2016,7 @@ model.addConstr(dram_bytes_initiation == np.ones((C)) @ dram_bytes_per_config_in
 model.addConstr(dram_bytes_intermediate == gp.max_(dram_bytes_per_config_intermediate[j] for j in range(C)))
 dram_bytes_total = model.addVar(name='dram_bytes_total', vtype=gp.GRB.CONTINUOUS, lb=0)
 
-if dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.WhichOneof('workload_variant') == 'mamba':
+if dse.execution.WhichOneof('workload_variant') == 'llm':
     weight = model.addVar(name='weight', vtype=gp.GRB.CONTINUOUS, lb=0)
     activation = model.addVar(name='activation', vtype=gp.GRB.CONTINUOUS, lb=0)
     
@@ -2179,7 +2179,7 @@ for i in range(C):
 Network_Latency = model.addMVar(C, name='Network_Latency', vtype=gp.GRB.CONTINUOUS, lb=0)
 p2p_latency = model.addVar(name='p2p_latency', vtype=gp.GRB.CONTINUOUS)
 
-if dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.WhichOneof('workload_variant') == 'mamba':
+if dse.execution.WhichOneof('workload_variant') == 'llm':
 
     Network_Latency_ALL_REDUCE_node = model.addMVar(C, name='Network_Latency_ALL_REDUCE_node', vtype=gp.GRB.CONTINUOUS, lb=0)
     if is_TP_hierarchical == True:
@@ -2196,6 +2196,10 @@ if dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.WhichO
         t3 = model.addMVar((num_node, C), vtype=gp.GRB.CONTINUOUS)
         t4 = model.addMVar((num_node, C), vtype=gp.GRB.BINARY)
         t5 = model.addMVar(C, vtype=gp.GRB.BINARY)
+
+        link_latency_allreduce_node = model.addMVar(C, name='link_latency_allreduce_node', vtype=gp.GRB.CONTINUOUS)
+        serialization_latency_allreduce_node = model.addMVar(C, name='serialization_latency_allreduce_node', vtype=gp.GRB.CONTINUOUS)
+
         for i in range(C):
             t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
             t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
@@ -2212,13 +2216,26 @@ if dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.WhichO
                 model.addConstr((aaa == 1) >> (t4[j, i] == 1))
                 model.addConstr((aaa == 0) >> (t4[j, i] == 0))
 
-            link_latency_allreduce_node = model.addVar(vtype=gp.GRB.CONTINUOUS)
-
+            
             if 'TP' in par:
-                model.addConstr(link_latency_allreduce_node == t4[:, i].sum() * dse.system.accelerator.link_latency * 2 * (dimension[par.index('TP')]-1))
+                if dse.execution.separate_rs_ag_for_ar:
+                    tmp = 2
+                else:
+                    tmp = 1
+
+                if topology[par.index('TP')] == BasicTopology.R.value:
+                    model.addConstr(link_latency_allreduce_node[i] == t4[:, i].sum() * dse.system.accelerator.link_latency * tmp * (dimension[par.index('TP')]-1))
+                elif topology[par.index('TP')] == BasicTopology.SW.value:
+                    model.addConstr(link_latency_allreduce_node[i] == t4[:, i].sum() * dse.system.accelerator.link_latency * tmp * (dimension[par.index('TP')]-1))
+                elif topology[par.index('TP')] == BasicTopology.FC.value:
+                    model.addConstr(link_latency_allreduce_node[i] == t4[:, i].sum() * dse.system.accelerator.link_latency * tmp)
             else:
-                model.addConstr(link_latency_allreduce_node == 0)
-            model.addConstr(Network_Latency_ALL_REDUCE_node[i] == t1*t2 + link_latency_allreduce_node)
+                model.addConstr(link_latency_allreduce_node[i] == 0)
+            
+            model.addConstr(serialization_latency_allreduce_node[i] == t1*t2)
+            model.addConstr(Network_Latency_ALL_REDUCE_node[i] == serialization_latency_allreduce_node[i] + link_latency_allreduce_node[i])
+
+            
 
     Network_Latency_ALL_TO_ALL_node = model.addMVar(C, name='Network_Latency_ALL_TO_ALL_node', vtype=gp.GRB.CONTINUOUS, lb=0)
     for i in range(C):
@@ -2270,6 +2287,10 @@ if dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.WhichO
     t3 = model.addMVar((num_edge, C), vtype=gp.GRB.CONTINUOUS)
     t4 = model.addMVar((num_edge, C), vtype=gp.GRB.BINARY)
     t5 = model.addMVar(C, vtype=gp.GRB.BINARY)
+
+    link_latency_allreduce_edge = model.addMVar(C, name='link_latency_allreduce_edge', vtype=gp.GRB.CONTINUOUS)
+    serialization_latency_allreduce_edge = model.addMVar(C, name='serialization_latency_allreduce_edge', vtype=gp.GRB.CONTINUOUS)
+
     for i in range(C):
         t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
         t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
@@ -2286,12 +2307,29 @@ if dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.WhichO
             model.addConstr((aaa == 1) >> (t4[j, i] == 1))
             model.addConstr((aaa == 0) >> (t4[j, i] == 0))
 
-        link_latency_allreduce_edge = model.addVar(vtype=gp.GRB.CONTINUOUS)
         if 'TP' in par:
-            model.addConstr(link_latency_allreduce_edge == t4[:, i].sum() * dse.system.accelerator.link_latency * 2 * (dimension[par.index('TP')]-1))
+            if dse.execution.separate_rs_ag_for_ar:
+                tmp = 2
+            else:
+                tmp = 1
+
+            if topology[par.index('TP')] == BasicTopology.R.value:
+                model.addConstr(link_latency_allreduce_edge[i] == t4[:, i].sum() * dse.system.accelerator.link_latency * tmp * (dimension[par.index('TP')]-1))
+            elif topology[par.index('TP')] == BasicTopology.SW.value:
+                model.addConstr(link_latency_allreduce_edge[i] == t4[:, i].sum() * dse.system.accelerator.link_latency * tmp * (dimension[par.index('TP')]-1))
+            elif topology[par.index('TP')] == BasicTopology.FC.value:
+                model.addConstr(link_latency_allreduce_edge[i] == t4[:, i].sum() * dse.system.accelerator.link_latency * tmp)
         else:
-            model.addConstr(link_latency_allreduce_edge == 0)
-        model.addConstr(Network_Latency_ALL_REDUCE_edge[i] == t1*t2 + link_latency_allreduce_edge)
+            model.addConstr(link_latency_allreduce_edge[i] == 0)
+
+
+
+
+
+        
+
+        model.addConstr(serialization_latency_allreduce_edge[i] == t1*t2)
+        model.addConstr(Network_Latency_ALL_REDUCE_edge[i] == serialization_latency_allreduce_edge[i] + link_latency_allreduce_edge[i])
         
 
 
@@ -2447,7 +2485,7 @@ for i in range(C):
 hhhh = model.addVar(vtype=gp.GRB.CONTINUOUS, lb=0)
 ns_per_batch = model.addVar(name='ns_per_batch', vtype=gp.GRB.CONTINUOUS, lb=0)
 
-if dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.WhichOneof('workload_variant') == 'dlrm' or dse.execution.WhichOneof('workload_variant') == 'mamba':
+if dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.WhichOneof('workload_variant') == 'dlrm':
     all_config_II = model.addVar(name='all_config_II', vtype=gp.GRB.CONTINUOUS, lb=0)
     tmp2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
     tmp3 = model.addVar(vtype=gp.GRB.CONTINUOUS)

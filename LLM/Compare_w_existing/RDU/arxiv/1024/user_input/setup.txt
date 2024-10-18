@@ -952,7 +952,7 @@ system {
 		freq: 1.25
 	}
 	memory {
-		dram_bw: 400.0
+		dram_bw: 100.0
 	}
   r {
 		x: 16
@@ -982,8 +982,8 @@ execution {
 		micro_batch_size: 1
     num_layer_in_graph: 1
 	}
-	execution_style: KERNEL_BY_KERNEL
-	#num_config: 6
+	execution_style: DATAFLOW
+	num_config: 6
 	overlap: PERFECT_OVERLAP
 	#compute_util: 0.9
 	word: 2

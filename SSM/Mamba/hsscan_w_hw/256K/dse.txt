@@ -1,0 +1,259 @@
+dataflow_graph {
+  kernels {
+    name: "Proj1"
+    id: 1
+    config: -1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 32
+      K: 32
+      N: 262144
+      input_tensor_size: 16777216.0
+      weight_tensor_size: 2048.0
+      output_tensor_size: 16777216.0
+      tiling: N_TILING
+    }
+  }
+  kernels {
+    name: "Proj2"
+    id: 2
+    config: -1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 32
+      K: 32
+      N: 262144
+      input_tensor_size: 16777216.0
+      weight_tensor_size: 2048.0
+      output_tensor_size: 16777216.0
+      tiling: N_TILING
+    }
+  }
+  kernels {
+    name: "Conv"
+    id: 3
+    config: -1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 262144
+      K: 32
+      N: 1
+      input_tensor_size: 524288.0
+      output_tensor_size: 524288.0
+      tiling: M_TILING
+      skip_weight: true
+    }
+  }
+  kernels {
+    name: "Scan_stage_0"
+    id: 4
+    config: -1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 262144
+      K: 5
+      N: 1
+      input_tensor_size: 524288.0
+      output_tensor_size: 524288.0
+      tiling: NO_TILING
+      skip_weight: true
+      use_effective_stage: true
+      num_input: 32
+    }
+  }
+  kernels {
+    name: "Scan_stage_1"
+    id: 5
+    config: -1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 262144
+      K: 5
+      N: 1
+      input_tensor_size: 524288.0
+      output_tensor_size: 524288.0
+      tiling: NO_TILING
+      skip_weight: true
+      use_effective_stage: true
+      num_input: 32
+    }
+  }
+  kernels {
+    name: "Scan_stage_2"
+    id: 6
+    config: -1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 262144
+      K: 5
+      N: 1
+      input_tensor_size: 524288.0
+      output_tensor_size: 524288.0
+      tiling: NO_TILING
+      skip_weight: true
+      use_effective_stage: true
+      num_input: 32
+    }
+  }
+  kernels {
+    name: "Scan_stage_3"
+    id: 7
+    config: -1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 262144
+      K: 5
+      N: 1
+      input_tensor_size: 524288.0
+      output_tensor_size: 524288.0
+      tiling: NO_TILING
+      skip_weight: true
+      use_effective_stage: true
+      num_input: 32
+    }
+  }
+  kernels {
+    name: "Multiply"
+    id: 8
+    config: -1
+    fwd_bwd: FWD
+    type: SIMD
+    elementwise_input1_input2 {
+      outer: 1
+      M: 262144
+      N: 32
+      input_tensor_1_size: 16777216.0
+      output_tensor_size: 16777216.0
+      tiling: M_TILING
+      input_tensor_2_size: 16777216.0
+    }
+  }
+  kernels {
+    name: "Proj3"
+    id: 9
+    config: -1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 32
+      K: 32
+      N: 262144
+      input_tensor_size: 16777216.0
+      weight_tensor_size: 2048.0
+      output_tensor_size: 16777216.0
+      tiling: N_TILING
+    }
+  }
+  connections {
+    startIdx: 1
+    endIdx: 3
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 3
+    endIdx: 4
+    id: 1
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 4
+    endIdx: 5
+    id: 2
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 5
+    endIdx: 6
+    id: 3
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 6
+    endIdx: 7
+    id: 4
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 7
+    endIdx: 8
+    id: 5
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 2
+    endIdx: 8
+    id: 6
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 8
+    endIdx: 9
+    id: 7
+    lane_stage_type: LANE
+  }
+}
+system {
+  num_chip: 1
+  accelerator {
+    core: 520
+    systolic_width: 32
+    systolic_height: 12
+    freq: 1.6
+  }
+  r {
+    x: 1
+    link_bw_x: 10.0
+    par_x: "TP"
+  }
+  memory {
+    dram_bw: 8192.0
+    dram_cap: 68719480000.0
+  }
+}
+cost {
+  link_unit_price: 2.0
+  switch_unit_price: 24.0
+  dram_unit_price: 1.0
+  accelerator_price: 16522.25
+  link_unit_power_x: 0.052
+  switch_unit_power: 0.052
+  dram_unit_power: 0.16248
+  accelerator_power: 444.7062
+}
+execution {
+  llm {
+    hidden_dim: 32
+    head_dim: 16
+    num_head: 2
+    seq_len: 262144
+    num_layer: 1
+    global_batch_size: 1
+    micro_batch_size: 1
+    num_layer_in_graph: 1
+  }
+  execution_style: DATAFLOW
+  num_config: 3
+  overlap: PERFECT_OVERLAP
+  word: 2
+  effective_stage: 5
+  skip_inter_chip_optimization: true
+}
+gurobi {
+  gap: 0.001
+  time: 180
+}
