@@ -1,4 +1,10 @@
+[64.0, 64.0] [64.0, 16384.0] zzzzzzzzzzzzzzzzzzzzzzz
 Set parameter Username
+
+--------------------------------------------
+Warning: your license will expire in 14 days
+--------------------------------------------
+
 Academic license - for non-commercial use only - expires 2024-11-05
 Set parameter NonConvex to value 2
 Set parameter Threads to value 144
@@ -9,11 +15,11 @@ Gurobi Optimizer version 10.0.3 build v10.0.3rc0 (linux64)
 CPU model: Intel(R) Xeon(R) CPU E7-8890 v3 @ 2.50GHz, instruction set [SSE2|AVX|AVX2]
 Thread count: 72 physical cores, 144 logical processors, using up to 144 threads
 
-Optimize a model with 75 rows, 203 columns and 140 nonzeros
-Model fingerprint: 0xe7f55376
-Model has 85 quadratic constraints
-Model has 75 general constraints
-Variable types: 89 continuous, 114 integer (55 binary)
+Optimize a model with 80 rows, 214 columns and 150 nonzeros
+Model fingerprint: 0x93efa4c6
+Model has 87 quadratic constraints
+Model has 77 general constraints
+Variable types: 98 continuous, 116 integer (55 binary)
 Coefficient statistics:
   Matrix range     [1e+00, 3e+02]
   QMatrix range    [5e-02, 2e+02]
@@ -35,37 +41,37 @@ Multi-objectives: starting optimization with 2 objectives ...
 Multi-objectives: applying initial presolve ...
 ---------------------------------------------------------------------------
 
-Presolve removed 51 rows and 143 columns
+Presolve removed 58 rows and 152 columns
 Presolve time: 0.00s
-Presolved: 48 rows and 61 columns
+Presolved: 58 rows and 63 columns
 ---------------------------------------------------------------------------
 
 Multi-objectives: optimize objective 1 () ...
 ---------------------------------------------------------------------------
 
-Presolve removed 22 rows and 36 columns
+Presolve removed 30 rows and 38 columns
 Presolve time: 0.00s
-Presolved: 50 rows, 26 columns, 126 nonzeros
+Presolved: 64 rows, 26 columns, 148 nonzeros
 Presolved model has 2 SOS constraint(s)
-Presolved model has 4 quadratic constraint(s)
-Presolved model has 8 bilinear constraint(s)
+Presolved model has 2 quadratic constraint(s)
+Presolved model has 10 bilinear constraint(s)
 Variable types: 1 continuous, 25 integer (2 binary)
 
-Root relaxation: objective 2.663861e+02, 4 iterations, 0.00 seconds (0.00 work units)
+Root relaxation: objective 2.647864e+02, 4 iterations, 0.00 seconds (0.00 work units)
 
     Nodes    |    Current Node    |     Objective Bounds      |     Work
  Expl Unexpl |  Obj  Depth IntInf | Incumbent    BestBd   Gap | It/Node Time
 
-     0     0  266.38608    0    2          -  266.38608      -     -    0s
-H    0     0                     266.3860804  266.38608  0.00%     -    0s
+     0     0  264.78642    0    6          -  264.78642      -     -    0s
+H    0     0                     264.7864222  264.78642  0.00%     -    0s
 
 Explored 1 nodes (4 simplex iterations) in 0.02 seconds (0.00 work units)
 Thread count was 144 (of 144 available processors)
 
-Solution count 1: 266.386 
+Solution count 1: 264.786 
 
 Optimal solution found (tolerance 1.00e-03)
-Best objective 2.663860804201e+02, best bound 2.663860804201e+02, gap 0.0000%
+Best objective 2.647864222170e+02, best bound 2.647864222170e+02, gap 0.0000%
 ---------------------------------------------------------------------------
 
 Multi-objectives: optimize objective 2 () ...
@@ -74,14 +80,13 @@ Multi-objectives: optimize objective 2 () ...
 
 Loaded user MIP start with objective 2092
 
-Presolve removed 29 rows and 42 columns
+Presolve removed 40 rows and 46 columns
 Presolve time: 0.00s
-Presolved: 28 rows, 19 columns, 74 nonzeros
+Presolved: 43 rows, 18 columns, 88 nonzeros
 Presolved model has 2 SOS constraint(s)
-Presolved model has 4 quadratic constraint(s)
-Presolved model has 2 bilinear constraint(s)
-Variable types: 0 continuous, 19 integer (2 binary)
+Presolved model has 6 bilinear constraint(s)
 Found heuristic solution: objective 26.0000000
+Variable types: 1 continuous, 17 integer (2 binary)
 
 Explored 0 nodes (0 simplex iterations) in 0.03 seconds (0.00 work units)
 Thread count was 144 (of 144 available processors)
@@ -103,7 +108,7 @@ Shape[0] 16.0
 Shape[1] 16.0
 Link_BW[0] 10.0
 Link_BW[1] 10.0
-FFT_dram_size 256.0
+FFT_DRAM_SIZE 256.0
 layer_per_stage 1.0
 layers 1.0
 tile_size 1.0
@@ -145,52 +150,60 @@ F[0,0] 1.0
 F[0,1] 0.0
 F[1,0] 0.0
 F[1,1] 1.0
+num_input_per_config[0] 1.0
+num_input_per_config[1] 1.0
+C53 1.0
+C54 0.0
+C55 0.0
+C56 1.0
+num_tile_per_config[0] 1.0
+num_tile_per_config[1] 1.0
 Par_lane[0] 6.0
 Par_lane[1] 6.0
 Par_stage[0] 1.0
 Par_stage[1] 1.0
 Par_total[0] 6.0
 Par_total[1] 6.0
-C57 0.0
-C58 1.0
-C59 1.0
-C60 1.0
-C61 1.0
-C62 0.0
-C63 1.0
-C64 1.0
-C65 1.0
-C66 0.0
+C65 0.0
+C66 1.0
 C67 1.0
 C68 1.0
-C69 0.0
+C69 1.0
 C70 0.0
-C71 0.0
+C71 1.0
 C72 1.0
 C73 1.0
-C74 1.0
-C75 0.0
-C76 0.0
-C77 1.0
-C78 1.0
-C79 1.0
-C80 0.0
+C74 0.0
+C75 1.0
+C76 1.0
+C77 0.0
+C78 0.0
+C79 0.0
+C80 1.0
 C81 1.0
 C82 1.0
-C83 1.0
+C83 0.0
 C84 0.0
-C85 0.0
+C85 1.0
 C86 1.0
 C87 1.0
-C88 1.0
+C88 0.0
+C89 1.0
+C90 1.0
+C91 1.0
+C92 0.0
+C93 0.0
+C94 1.0
+C95 1.0
+C96 1.0
 shard_intermediate_buffer_size_depth_original[0] 724.0
 shard_intermediate_buffer_size_depth_two[0] 724.0
 shard_initiation_buffer_size_depth_one[0] 69142.0
 shard_initiation_buffer_size_depth_one[1] 69142.0
 tiling_factor[0] 1.0
 tiling_factor[1] 1.0
-C95 0.0
-C96 0.0
+C103 0.0
+C104 0.0
 SRAM_Per_Config_total[0] 0.0
 SRAM_Per_Config_total[1] 0.0
 SRAM_Per_Config_intermediate_dram[0] 0.0
@@ -208,16 +221,15 @@ dram_bytes_per_config_intermediate[0] 362.0
 dram_bytes_per_config_intermediate[1] 362.0
 dram_bytes_per_config_initiation[0] 69142.0
 dram_bytes_per_config_initiation[1] 69142.0
-C114 362.0
-C115 362.0
+C122 362.0
+C123 362.0
+dram_bytes_extra 0.0
 dram_bytes_initiation 138284.0
 dram_bytes_intermediate 362.0
 dram_bytes_total 256.0
 DRAM_BW 1638.4000244140625
 Cycle[0] 191.0
 Cycle[1] 191.0
-Cycle_w_streaming[0] 191.0
-Cycle_w_streaming[1] 191.0
 m_factor[0] 1.0
 m_factor[1] 1.0
 n_factor[0] 1.0
@@ -228,86 +240,96 @@ KKK[0] 191.0
 KKK[1] 191.0
 NNN[0] 1.0
 NNN[1] 1.0
-C134 1.0
-C135 1.0
+C141 1.0
+C142 1.0
 Compute_Latency[0] 119.3749982211739
 Compute_Latency[1] 119.3749982211739
-C138 191.0
-C139 0.0
-C140 191.0
-C141 0.0
-C142 191.0
-C143 191.0
+C145 191.0
+C146 0.0
+C147 191.0
+C148 0.0
+C149 191.0
+C150 191.0
 Memory_Latency[0] 0.22094726233262924
 Memory_Latency[1] 0.22094726233262924
 memory_latency[0] 0.22094726233262924
 memory_latency[1] 0.22094726233262924
 explicit_memory_latency[0] 0.0
 explicit_memory_latency[1] 0.0
-C150 362.0
-C151 362.0
+C157 362.0
+C158 362.0
 Network_Latency[0] 0.0
-Network_Latency[1] 27.194189453125
+Network_Latency[1] 25.59453125
 p2p_latency 0.0
 Network_Latency_ALL_TO_ALL_tmp[0,0] 0.0
 Network_Latency_ALL_TO_ALL_tmp[0,1] 0.0
-Network_Latency_ALL_TO_ALL_tmp[1,0] 27.194189453125
-Network_Latency_ALL_TO_ALL_tmp[1,1] 27.194189453125
+Network_Latency_ALL_TO_ALL_tmp[1,0] 25.59453125
+Network_Latency_ALL_TO_ALL_tmp[1,1] 25.59453125
 Network_Latency_ALL_TO_ALL[0] 0.0
-Network_Latency_ALL_TO_ALL[1] 27.194189453125
-C161 0.0
-C162 0.0
-C163 0.999786376953125
-C164 0.999786376953125
+Network_Latency_ALL_TO_ALL[1] 25.59453125
+C168 0.0
+C169 0.0
+C170 0.999786376953125
+C171 0.999786376953125
+Compute_Memory_Latency[0] 0.0
+Compute_Memory_Latency[1] 0.0
 Per_Config_II[0] 119.59594548350654
-Per_Config_II[1] 146.79013493663152
-C167 266.38608042013806
-ns_per_batch 266.38608042013806
+Per_Config_II[1] 145.19047673350653
+C176 119.59594548350654
+C177 145.19047673350653
+C178 264.78642221701307
+ns_per_batch 264.78642221701307
 LINK_cost[0] 76800.0
 LINK_cost[1] 4800.0
 SWITCH_cost[0] 0.0
 SWITCH_cost[1] 61440.0
-C173 240.0
-C174 240.0
-C175 3840.0
-C176 256.0
+C184 240.0
+C185 240.0
+C186 3840.0
+C187 256.0
 less_or_equal_one_chip 0.0
 less_or_equal_four_chip 0.0
 total_DRAM_cost 419430.40625
 total_accelerator_cost 4229696.0
 total_link_cost 81600.0
 total_switch_cost 61440.0
-C183 81600.0
-C184 61440.0
+C194 81600.0
+C195 61440.0
 total_cost 4792166.40625
 LINK_power[0] 1996.8000411987305
 LINK_power[1] 0.0
 SWITCH_power[0] 0.0
 SWITCH_power[1] 133.12000274658203
-C190 240.0
-C191 240.0
-C192 3840.0
-C193 256.0
+C201 240.0
+C202 240.0
+C203 3840.0
+C204 256.0
 total_DRAM_power 68149.05101549998
 total_accelerator_power 113844.7890625
 total_link_power 1996.8000411987305
 total_switch_power 133.12000274658203
-C198 1996.8000411987305
-C199 133.12000274658203
+C209 1996.8000411987305
+C210 133.12000274658203
 total_power 184123.7601219453
-final_ns 266.65246751321087
+final_ii_ns 265.05120965180674
 total_pcu_pmu_used 26.0
 ------------Statistics------------
 FLOP per kernel:
 SYSTOLIC Step_1 181 191 181 1 12514702
 SYSTOLIC Step_2 181 191 181 1 12514702
+memory_size 0.0
+memory_size 0.0
+kernel_name ['Step_1', 'Step_2']
+Step_1 Step_2
+depth
+2
 
 
 
 TP 1.0
 PP 1.0
 DP 1.0
-final_s 2.666524675132109e-07
+final_ii_s 2.6505120965180673e-07
 Number of Chips 256
 Per-Accelerator Throughput (GFLOPS) 638976.0095214844
 DRAM BW 1638.4000244140625
@@ -315,8 +337,8 @@ Link BW [10.0, 10.0]
 System Cost 4792166.40625
 System Power 184123.7601219453
 Workload FLOP 25029404.0
-System FLOPS Utilization 0.0005738262129354214
-Optimizer Runtime (s) 0.5928716659545898
+System FLOPS Utilization 0.0005772928778706605
+Optimizer Runtime (s) 0.5737032890319824
 
 
 

@@ -12,7 +12,7 @@ dataflow_graph {
       output_tensor_size: 16384.0
       sharding: NO_SHARDING
       shard_outer_M: 8192
-      shard_N: 1
+      shard_N: 28674
       tiling: N_TILING
     }
   }
@@ -211,7 +211,7 @@ dataflow_graph {
       output_tensor_size: 16384.0
       sharding: OUTER_SHARDING
       shard_outer_M: 8192
-      shard_K: 8193
+      shard_K: 9558
       shard_N: 1
       tiling: N_TILING
     }
@@ -402,7 +402,7 @@ dataflow_graph {
     communication_size: -0.0
     buffer_depth: 2
     tensor_size: 16384.0
-    shard_tensor_size: 16384.0
+    shard_tensor_size: 469794800.0
     id: 1
     startName: "Add_Prev_Layer"
     endName: "LayerNorm_1"
@@ -582,7 +582,7 @@ dataflow_graph {
     communication_size: -0.0
     buffer_depth: 11
     tensor_size: 16384.0
-    shard_tensor_size: 16384.0
+    shard_tensor_size: 469794800.0
     id: 17
     startName: "Add_Prev_Layer"
     endName: "Add_1"
@@ -661,7 +661,7 @@ dataflow_graph {
   }
 }
 system {
-  num_chip: 1
+  num_chip: 4
   accelerator {
     core: 900000
     systolic_width: 8
@@ -670,12 +670,13 @@ system {
     freq: 1.1
   }
   r {
-    x: 1
+    x: 4
     link_bw_x: 28101836.0
-    par_x: "DP"
+    par_x: "PP"
   }
   memory {
     dram_bw: 15833498.0
+    dram_cap: 109951160000.0
   }
 }
 cost {
@@ -695,7 +696,7 @@ execution {
     num_head: 128
     seq_len: 1
     num_layer: 80
-    global_batch_size: 1
+    global_batch_size: 12800
     micro_batch_size: 1
     num_layer_in_graph: 1
   }

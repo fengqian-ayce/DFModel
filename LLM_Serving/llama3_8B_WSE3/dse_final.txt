@@ -12,7 +12,7 @@ dataflow_graph {
       output_tensor_size: 8192.0
       sharding: NO_SHARDING
       shard_outer_M: 4096
-      shard_N: 1
+      shard_N: 14336
       tiling: N_TILING
     }
   }
@@ -234,7 +234,7 @@ dataflow_graph {
       communication_type: ALL_REDUCE
       communication_size: 8192.0
       shard_outer_M: 4096
-      shard_K: 4098
+      shard_K: 4096
       shard_N: 1
       tiling: N_TILING
       memory_size: 33554432.0
@@ -402,7 +402,7 @@ dataflow_graph {
     communication_size: -0.0
     buffer_depth: 2
     tensor_size: 8192.0
-    shard_tensor_size: 8192.0
+    shard_tensor_size: 117440510.0
     id: 1
     startName: "Add_Prev_Layer"
     endName: "LayerNorm_1"
@@ -582,7 +582,7 @@ dataflow_graph {
     communication_size: -0.0
     buffer_depth: 11
     tensor_size: 8192.0
-    shard_tensor_size: 8192.0
+    shard_tensor_size: 117440510.0
     id: 17
     startName: "Add_Prev_Layer"
     endName: "Add_1"

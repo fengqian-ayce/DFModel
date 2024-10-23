@@ -85,7 +85,8 @@ execution {
   }
   execution_style: DATAFLOW
   num_config: 1
-  perfect_overlap: false
+  overlap: NO_OVERLAP
+  separate_rs_ag_for_ar: true
   #compute_util: 0.9
   word: 2
 }

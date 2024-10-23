@@ -85,7 +85,9 @@ execution {
   }
   execution_style: DATAFLOW
   num_config: 1
+  overlap: NO_OVERLAP
   word: 2
+  separate_rs_ag_for_ar: true
 }
 gurobi {
   thread: 144

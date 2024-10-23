@@ -438,7 +438,7 @@ if dse.system.WhichOneof('topology_variant') == 'sw': # 1D SW
 
     if dse.execution.WhichOneof('workload_variant') == 'dlrm' or dse.execution.WhichOneof('workload_variant') == 'fft':
         a2a_bw_factor = [dse.system.sw.x]
-        a2a_msg_factor = [Num_Chips_Per_Copy*(Num_Chips_Per_Copy-1) / 2]
+        a2a_msg_factor = [Num_Chips_Per_Copy**2 / 4]
         
 elif dse.system.WhichOneof('topology_variant') == 'fc': # 1D FC
     topology = [BasicTopology.FC.value]
@@ -447,8 +447,8 @@ elif dse.system.WhichOneof('topology_variant') == 'fc': # 1D FC
     par = [dse.system.fc.par_x]
     
     if dse.execution.WhichOneof('workload_variant') == 'dlrm' or dse.execution.WhichOneof('workload_variant') == 'fft':
-        a2a_bw_factor = [dse.system.fc.x*(dse.system.fc.x-1) / 2]
-        a2a_msg_factor = [Num_Chips_Per_Copy*(Num_Chips_Per_Copy-1) / 2]
+        a2a_bw_factor = [dse.system.fc.x**2 / 4]
+        a2a_msg_factor = [Num_Chips_Per_Copy**2 / 4]
     
 elif dse.system.WhichOneof('topology_variant') == 'r': # 1D Ring
     topology = [BasicTopology.R.value]
@@ -458,7 +458,7 @@ elif dse.system.WhichOneof('topology_variant') == 'r': # 1D Ring
     
     if dse.execution.WhichOneof('workload_variant') == 'dlrm' or dse.execution.WhichOneof('workload_variant') == 'fft':
         a2a_bw_factor = [2]
-        a2a_msg_factor = [Num_Chips_Per_Copy*(Num_Chips_Per_Copy-1) / 2]
+        a2a_msg_factor = [Num_Chips_Per_Copy**2 / 4]
     
 elif dse.system.WhichOneof('topology_variant') == 'r_r': # 2D Torus
     topology = [BasicTopology.R.value, BasicTopology.R.value]
@@ -468,7 +468,7 @@ elif dse.system.WhichOneof('topology_variant') == 'r_r': # 2D Torus
     
     if dse.execution.WhichOneof('workload_variant') == 'dlrm' or dse.execution.WhichOneof('workload_variant') == 'fft':
         a2a_bw_factor = [2*dse.system.r_r.x, 2*dse.system.r_r.y]
-        a2a_msg_factor = [Num_Chips_Per_Copy*(Num_Chips_Per_Copy-1) / 2, Num_Chips_Per_Copy*(Num_Chips_Per_Copy-1) / 2]
+        a2a_msg_factor = [Num_Chips_Per_Copy**2 / 4, Num_Chips_Per_Copy**2 / 4]
 
 elif dse.system.WhichOneof('topology_variant') == 'fc_fc': # 2D Dragonfly
     topology = [BasicTopology.FC.value, BasicTopology.FC.value]
@@ -477,8 +477,8 @@ elif dse.system.WhichOneof('topology_variant') == 'fc_fc': # 2D Dragonfly
     par = [dse.system.fc_fc.par_x, dse.system.fc_fc.par_y]
     
     if dse.execution.WhichOneof('workload_variant') == 'dlrm' or dse.execution.WhichOneof('workload_variant') == 'fft':
-        a2a_bw_factor = [dse.system.fc_fc.x*(dse.system.fc_fc.x-1) / 2, dse.system.fc_fc.y*(dse.system.fc_fc.y-1) / 2]
-        a2a_msg_factor = [dse.system.fc_fc.x*(dse.system.fc_fc.x-1) / 2, Num_Chips_Per_Copy*(Num_Chips_Per_Copy-1) / 2]
+        a2a_bw_factor = [dse.system.fc_fc.x**2 / 4, dse.system.fc_fc.y**2 / 4]
+        a2a_msg_factor = [dse.system.fc_fc.x**2 / 4, Num_Chips_Per_Copy**2 / 4]
     
 elif dse.system.WhichOneof('topology_variant') == 'r_fc': # 2D ZionEX
     topology = [BasicTopology.R.value, BasicTopology.FC.value]
@@ -487,8 +487,8 @@ elif dse.system.WhichOneof('topology_variant') == 'r_fc': # 2D ZionEX
     par = [dse.system.r_fc.par_x, dse.system.r_fc.par_y]
     
     if dse.execution.WhichOneof('workload_variant') == 'dlrm' or dse.execution.WhichOneof('workload_variant') == 'fft':
-        a2a_bw_factor = [2, dse.system.r_fc.y*(dse.system.r_fc.y-1) / 2]
-        a2a_msg_factor = [dse.system.r_fc.x*(dse.system.r_fc.x-1) / 2, Num_Chips_Per_Copy*(Num_Chips_Per_Copy-1) / 2]
+        a2a_bw_factor = [2, dse.system.r_fc.y**2 / 4]
+        a2a_msg_factor = [dse.system.r_fc.x**2 / 4, Num_Chips_Per_Copy**2 / 4]
 
 elif dse.system.WhichOneof('topology_variant') == 'r_sw': # 2D DGX-1
     topology = [BasicTopology.R.value, BasicTopology.SW.value]
@@ -498,7 +498,7 @@ elif dse.system.WhichOneof('topology_variant') == 'r_sw': # 2D DGX-1
     
     if dse.execution.WhichOneof('workload_variant') == 'dlrm' or dse.execution.WhichOneof('workload_variant') == 'fft':
         a2a_bw_factor = [2, dse.system.r_sw.y]
-        a2a_msg_factor = [dse.system.r_sw.x*(dse.system.r_sw.x-1) / 2, Num_Chips_Per_Copy*(Num_Chips_Per_Copy-1) / 2]
+        a2a_msg_factor = [dse.system.r_sw.x**2 / 4, Num_Chips_Per_Copy**2 / 4]
     
 elif dse.system.WhichOneof('topology_variant') == 'sw_sw': # 2D DGX-2
     topology = [BasicTopology.SW.value, BasicTopology.SW.value]
@@ -508,7 +508,7 @@ elif dse.system.WhichOneof('topology_variant') == 'sw_sw': # 2D DGX-2
     
     if dse.execution.WhichOneof('workload_variant') == 'dlrm' or dse.execution.WhichOneof('workload_variant') == 'fft':
         a2a_bw_factor = [dse.system.sw_sw.x, dse.system.sw_sw.y]
-        a2a_msg_factor = [dse.system.sw_sw.x*(dse.system.sw_sw.x-1) / 2, Num_Chips_Per_Copy*(Num_Chips_Per_Copy-1) / 2]
+        a2a_msg_factor = [dse.system.sw_sw.x**2 / 4, Num_Chips_Per_Copy**2 / 4]
         
 elif dse.system.WhichOneof('topology_variant') == 'r_r_r': # 3D Torus
     topology = [BasicTopology.R.value, BasicTopology.R.value, BasicTopology.R.value]
@@ -518,7 +518,7 @@ elif dse.system.WhichOneof('topology_variant') == 'r_r_r': # 3D Torus
     
     if dse.execution.WhichOneof('workload_variant') == 'dlrm' or dse.execution.WhichOneof('workload_variant') == 'fft':
         a2a_bw_factor = [2*dse.system.r_r_r.x * dse.system.r_r_r.y, 2*dse.system.r_r_r.x * dse.system.r_r_r.z, 2*dse.system.r_r_r.y * dse.system.r_r_r.z]
-        a2a_msg_factor = [Num_Chips_Per_Copy*(Num_Chips_Per_Copy-1) / 2, Num_Chips_Per_Copy*(Num_Chips_Per_Copy-1) / 2, Num_Chips_Per_Copy*(Num_Chips_Per_Copy-1) / 2]
+        a2a_msg_factor = [Num_Chips_Per_Copy**2 / 4, Num_Chips_Per_Copy**2 / 4, Num_Chips_Per_Copy**2 / 4]
 
 elif dse.system.WhichOneof('topology_variant') == 'r_sw_sw': # 3D DGX-1
     topology = [BasicTopology.R.value, BasicTopology.SW.value, BasicTopology.SW.value]
@@ -528,7 +528,7 @@ elif dse.system.WhichOneof('topology_variant') == 'r_sw_sw': # 3D DGX-1
     
     if dse.execution.WhichOneof('workload_variant') == 'dlrm' or dse.execution.WhichOneof('workload_variant') == 'fft':
         a2a_bw_factor = [2, dse.system.r_sw_sw.y, dse.system.r_sw_sw.z]
-        a2a_msg_factor = [dse.system.r_sw_sw.x*(dse.system.r_sw_sw.x-1) / 2, (dse.system.r_sw_sw.x*dse.system.r_sw_sw.y)*(dse.system.r_sw_sw.x*dse.system.r_sw_sw.y-1) / 2, Num_Chips_Per_Copy*(Num_Chips_Per_Copy-1) / 2]
+        a2a_msg_factor = [dse.system.r_sw_sw.x**2 / 4, (dse.system.r_sw_sw.x*dse.system.r_sw_sw.y)**2 / 4, Num_Chips_Per_Copy**2 / 4]
     
 elif dse.system.WhichOneof('topology_variant') == 'sw_sw_sw': # 3D DGX-2
     topology = [BasicTopology.SW.value, BasicTopology.SW.value, BasicTopology.SW.value]
@@ -538,13 +538,10 @@ elif dse.system.WhichOneof('topology_variant') == 'sw_sw_sw': # 3D DGX-2
     
     if dse.execution.WhichOneof('workload_variant') == 'dlrm' or dse.execution.WhichOneof('workload_variant') == 'fft':
         a2a_bw_factor = [dse.system.sw_sw_sw.x, dse.system.sw_sw_sw.y, dse.system.sw_sw_sw.z]
-        a2a_msg_factor = [dse.system.sw_sw_sw.x*(dse.system.sw_sw_sw.x-1) / 2, (dse.system.sw_sw_sw.x*dse.system.sw_sw_sw.y)*(dse.system.sw_sw_sw.x*dse.system.sw_sw_sw.y-1) / 2, Num_Chips_Per_Copy*(Num_Chips_Per_Copy-1) / 2]
+        a2a_msg_factor = [dse.system.sw_sw_sw.x**2 / 4, (dse.system.sw_sw_sw.x*dse.system.sw_sw_sw.y)**2 / 4, Num_Chips_Per_Copy**2 / 4]
     
 else:
     raise Exception('Wrong!')
-
-    
-    
 
 
 DRAM_Cap = dse.system.memory.dram_cap
@@ -2044,7 +2041,6 @@ else:
 
 
     
-
 model.addConstr(dram_bytes_total <= DRAM_Cap)  
 DRAM_BW = model.addVar(name='DRAM_BW', vtype=gp.GRB.CONTINUOUS, lb=0)
 model.addConstr(DRAM_BW == dse.system.memory.dram_bw)
@@ -2511,6 +2507,25 @@ if dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.WhichO
     model.addConstr(tmp3 == tmp2 * layer_per_stage)
     model.addConstr(tmp4 * DP == tmp3 * global_batch_size)
     model.addConstr(hhhh == tmp4)
+
+    # inference
+    if first_bwd_kernel == -1 and dse.execution.WhichOneof('workload_variant') == 'llm':
+        final_latency_ns = model.addVar(name='final_latency_ns', vtype=gp.GRB.CONTINUOUS)
+        p2p_inference_size = model.addVar(name='p2p_inference_size', vtype=gp.GRB.CONTINUOUS)
+        vvv = model.addVar(name='vvv', vtype=gp.GRB.CONTINUOUS)
+        vvv1 = model.addVar(name='vvv1', vtype=gp.GRB.CONTINUOUS)
+        vvv2 = model.addVar(name='vvv2', vtype=gp.GRB.CONTINUOUS)
+        vvv3 = model.addVar(name='vvv3', vtype=gp.GRB.CONTINUOUS)
+
+        model.addConstr(p2p_inference_size * TP >= hidden_dim * seq_len * word)
+
+        model.addConstr(vvv == all_config_II * layer_per_stage)
+        model.addConstr(vvv1 == vvv * PP)
+        model.addConstr(vvv2 * Link_BW_PP >= (PP-1) * p2p_inference_size)
+        model.addConstr(vvv3 == (PP-1) * dse.system.accelerator.link_latency)
+        
+        model.addConstr(final_latency_ns == vvv1 + vvv2 + vvv3)
+
 else:
     model.addConstr(hhhh == np.ones((C)) @ Per_Config_II)
 
@@ -2813,22 +2828,26 @@ model.addConstr(total_power == total_DRAM_power + total_accelerator_power + tota
 
 
 # objective
-final_ns = model.addVar(name='final_ns', vtype=gp.GRB.CONTINUOUS, lb=0)
-model.addConstr(final_ns * num_copy >= ns_per_batch)
+final_ii_ns = model.addVar(name='final_ii_ns', vtype=gp.GRB.CONTINUOUS, lb=0)
+model.addConstr(final_ii_ns * num_copy >= ns_per_batch)
 
 if p_and_r_flag:
     total_pcu_pmu_used = model.addVar(name='total_pcu_pmu_used', vtype=gp.GRB.CONTINUOUS, lb=0)
     model.addConstr(total_pcu_pmu_used == PMU_used_per_config @ np.ones((C)) + Par_total @ np.ones((num_node)))
 
-    model.setObjectiveN(final_ns, index=0, priority=1)
+    model.setObjectiveN(final_ii_ns, index=0, priority=1)
     model.setObjectiveN(total_pcu_pmu_used, index=1, priority=0)
     model.ModelSense = gp.GRB.MINIMIZE
 
 else:
-    model.setObjective(final_ns, gp.GRB.MINIMIZE)
+    if first_bwd_kernel == -1 and dse.execution.WhichOneof('workload_variant') == 'llm': # inference
+        model.setObjectiveN(final_ii_ns, index=0, priority=1)
+        model.setObjectiveN(final_latency_ns, index=1, priority=0)
+        model.ModelSense = gp.GRB.MINIMIZE
+    else:
+        model.setObjective(final_ii_ns, gp.GRB.MINIMIZE)
 
 model.optimize()
-
 
 
 end = time.time()
@@ -2869,6 +2888,7 @@ BROADCAST_communication_size = []
 POINT_TO_POINT_communication_size = []
 ALL_TO_ALL_communication_size_node = []
 ALL_REDUCE_communication_size_node = []
+num_tile_per_config = []
 
 for v in model.getVars():
     print(v.varName, v.X)
@@ -2919,8 +2939,8 @@ for v in model.getVars():
         shard_intermediate_buffer_size.append(v.X)
     if v.varName.startswith('shard_initiation_buffer_size'):
         shard_initiation_buffer_size.append(v.X)
-    if v.varName == 'final_ns':
-        final_ns = v.X
+    if v.varName == 'final_ii_ns':
+        final_ii_ns = v.X
     # if v.varName.startswith('total_DRAM_bytes'):
         # total_DRAM_bytes = v.X
     # if v.varName.startswith('total_Network_bytes'):
@@ -2960,6 +2980,9 @@ for v in model.getVars():
     if v.varName.startswith('ALL_REDUCE_communication_size_node'):
         ALL_REDUCE_communication_size_node.append(v.X)
 
+
+    if v.varName.startswith('num_tile_per_config'):
+        num_tile_per_config.append(v.X)
 
 # log latencies to hdf5 file
 f = h5py.File(name+'/'+'log.hdf5', 'w')
@@ -3011,8 +3034,8 @@ for i in range(num_edge):
 
 
 FLOP *= layers * global_batch_size
-final_s = final_ns/1e9
-util = FLOP/final_s/num_chip/GFLOPS/1e9
+final_ii_s = final_ii_ns/1e9
+util = FLOP/final_ii_s/num_chip/GFLOPS/1e9
     
 
 print()
@@ -3022,7 +3045,7 @@ print()
 print('TP', TP)   
 print('PP', PP)   
 print('DP', DP)
-print('final_s', final_s)
+print('final_ii_s', final_ii_s)
 print('Number of Chips', num_chip)
 print('Per-Accelerator Throughput (GFLOPS)', GFLOPS)
 print('DRAM BW', DRAM_BW)
@@ -3675,7 +3698,7 @@ if p_and_r_flag == True:
                     network_bytes = 0
                     for m in range(num_node):
                         if int(Config[m]) == i:
-                            network_bytes += ALL_REDUCE_communication_size_node[m]
+                            network_bytes += ALL_REDUCE_communication_size_node[m] * num_tile_per_config[i]
 
                     network_bytes = network_bytes * (TP-1) / TP;
 
@@ -3691,7 +3714,7 @@ if p_and_r_flag == True:
                     network_bytes = 0
                     for m in range(num_node):
                         if int(Config[m]) == i:
-                            network_bytes += ALL_REDUCE_communication_size_node[m]
+                            network_bytes += ALL_REDUCE_communication_size_node[m] * num_tile_per_config[i]
 
                     network_bytes = network_bytes * 1 / TP;
 
@@ -3716,7 +3739,7 @@ if p_and_r_flag == True:
                 network_bytes = 0
                 for m in range(num_node):
                     if int(Config[m]) == i:
-                        network_bytes += BROADCAST_communication_size[m]
+                        network_bytes += BROADCAST_communication_size[m] * num_tile_per_config[i]
 
                 # broadcast traffic
                 if network_bytes != 0:
@@ -3737,7 +3760,7 @@ if p_and_r_flag == True:
                 network_bytes = 0
                 for m in range(num_node):
                     if int(Config[m]) == i:
-                        network_bytes += ALL_TO_ALL_communication_size_node[m]
+                        network_bytes += ALL_TO_ALL_communication_size_node[m] * num_tile_per_config[i]
 
 
                 # all-to-all traffic

@@ -7,12 +7,12 @@ dataflow_graph {
     type: SYSTOLIC
     gemm_input1_weight {
       outer: 1
-      M: 4000
-      K: 4000
+      M: 8000
+      K: 8000
       N: 16
-      input_tensor_size: 128000.0
-      weight_tensor_size: 32000000.0
-      output_tensor_size: 128000.0
+      input_tensor_size: 256000.0
+      weight_tensor_size: 128000000.0
+      output_tensor_size: 256000.0
       sharding: NO_SHARDING
       tiling: NO_TILING
     }
@@ -26,12 +26,12 @@ dataflow_graph {
     type: SYSTOLIC
     gemm_input1_weight {
       outer: 1
-      M: 4000
-      K: 4000
+      M: 8000
+      K: 8000
       N: 16
-      input_tensor_size: 128000.0
-      weight_tensor_size: 32000000.0
-      output_tensor_size: 128000.0
+      input_tensor_size: 256000.0
+      weight_tensor_size: 128000000.0
+      output_tensor_size: 256000.0
       sharding: NO_SHARDING
       tiling: NO_TILING
     }
@@ -45,12 +45,12 @@ dataflow_graph {
     type: SYSTOLIC
     gemm_input1_weight {
       outer: 1
-      M: 4000
-      K: 4000
+      M: 8000
+      K: 8000
       N: 16
-      input_tensor_size: 128000.0
-      weight_tensor_size: 32000000.0
-      output_tensor_size: 128000.0
+      input_tensor_size: 256000.0
+      weight_tensor_size: 128000000.0
+      output_tensor_size: 256000.0
       sharding: NO_SHARDING
       tiling: NO_TILING
     }
@@ -64,17 +64,17 @@ dataflow_graph {
     type: SYSTOLIC
     gemm_input1_weight {
       outer: 1
-      M: 4000
-      K: 4000
+      M: 8000
+      K: 8000
       N: 16
-      input_tensor_size: 128000.0
-      weight_tensor_size: 32000000.0
-      output_tensor_size: 128000.0
+      input_tensor_size: 256000.0
+      weight_tensor_size: 128000000.0
+      output_tensor_size: 256000.0
       sharding: NO_SHARDING
       communication_type: ALL_TO_ALL
-      communication_size: 10240.0
+      communication_size: 20480.0
       tiling: NO_TILING
-      memory_size: 10240.0
+      memory_size: 20480.0
     }
   }
   kernels {
@@ -86,12 +86,12 @@ dataflow_graph {
     type: SYSTOLIC
     gemm_input1_weight {
       outer: 1
-      M: 4000
-      K: 4000
+      M: 8000
+      K: 8000
       N: 16
-      input_tensor_size: 128000.0
-      weight_tensor_size: 32000000.0
-      output_tensor_size: 128000.0
+      input_tensor_size: 256000.0
+      weight_tensor_size: 128000000.0
+      output_tensor_size: 256000.0
       sharding: NO_SHARDING
       tiling: NO_TILING
     }
@@ -105,12 +105,12 @@ dataflow_graph {
     type: SYSTOLIC
     gemm_input1_weight {
       outer: 1
-      M: 4000
-      K: 4000
+      M: 8000
+      K: 8000
       N: 16
-      input_tensor_size: 128000.0
-      weight_tensor_size: 32000000.0
-      output_tensor_size: 128000.0
+      input_tensor_size: 256000.0
+      weight_tensor_size: 128000000.0
+      output_tensor_size: 256000.0
       sharding: NO_SHARDING
       tiling: NO_TILING
     }
@@ -124,12 +124,12 @@ dataflow_graph {
     type: SYSTOLIC
     gemm_input1_weight {
       outer: 1
-      M: 4000
-      K: 4000
+      M: 8000
+      K: 8000
       N: 16
-      input_tensor_size: 128000.0
-      weight_tensor_size: 32000000.0
-      output_tensor_size: 128000.0
+      input_tensor_size: 256000.0
+      weight_tensor_size: 128000000.0
+      output_tensor_size: 256000.0
       sharding: NO_SHARDING
       tiling: NO_TILING
     }
@@ -143,335 +143,13 @@ dataflow_graph {
     type: SYSTOLIC
     gemm_input1_weight {
       outer: 1
-      M: 4000
-      K: 4000
+      M: 8000
+      K: 8000
       N: 16
-      input_tensor_size: 128000.0
-      weight_tensor_size: 32000000.0
-      output_tensor_size: 128000.0
+      input_tensor_size: 256000.0
+      weight_tensor_size: 128000000.0
+      output_tensor_size: 256000.0
       sharding: NO_SHARDING
-      tiling: NO_TILING
-    }
-  }
-  kernels {
-    name: "MLP_8_bwd"
-    id: 9
-    config: -1
-    fwd_bwd: BWD
-    type: SYSTOLIC
-    gemm_input1_weight {
-      outer: 1
-      M: 4000
-      K: 4000
-      N: 16
-      input_tensor_size: 128000.0
-      weight_tensor_size: 32000000.0
-      output_tensor_size: 128000.0
-      sharding: NO_SHARDING
-      tiling: NO_TILING
-    }
-  }
-  kernels {
-    name: "MLP_7_bwd"
-    id: 10
-    topological_number: 1
-    config: -1
-    fwd_bwd: BWD
-    type: SYSTOLIC
-    gemm_input1_weight {
-      outer: 1
-      M: 4000
-      K: 4000
-      N: 16
-      input_tensor_size: 128000.0
-      weight_tensor_size: 32000000.0
-      output_tensor_size: 128000.0
-      sharding: NO_SHARDING
-      tiling: NO_TILING
-    }
-  }
-  kernels {
-    name: "MLP_6_bwd"
-    id: 11
-    topological_number: 2
-    config: -1
-    fwd_bwd: BWD
-    type: SYSTOLIC
-    gemm_input1_weight {
-      outer: 1
-      M: 4000
-      K: 4000
-      N: 16
-      input_tensor_size: 128000.0
-      weight_tensor_size: 32000000.0
-      output_tensor_size: 128000.0
-      sharding: NO_SHARDING
-      tiling: NO_TILING
-    }
-  }
-  kernels {
-    name: "MLP_5_bwd"
-    id: 12
-    topological_number: 3
-    config: -1
-    fwd_bwd: BWD
-    type: SYSTOLIC
-    gemm_input1_weight {
-      outer: 1
-      M: 4000
-      K: 4000
-      N: 16
-      input_tensor_size: 128000.0
-      weight_tensor_size: 32000000.0
-      output_tensor_size: 128000.0
-      sharding: NO_SHARDING
-      tiling: NO_TILING
-    }
-  }
-  kernels {
-    name: "MLP_4_bwd"
-    id: 13
-    topological_number: 4
-    config: -1
-    fwd_bwd: BWD
-    type: SYSTOLIC
-    gemm_input1_weight {
-      outer: 1
-      M: 4000
-      K: 4000
-      N: 16
-      input_tensor_size: 128000.0
-      weight_tensor_size: 32000000.0
-      output_tensor_size: 128000.0
-      sharding: NO_SHARDING
-      communication_type: ALL_TO_ALL
-      communication_size: 10240.0
-      tiling: NO_TILING
-      memory_size: 10240.0
-    }
-  }
-  kernels {
-    name: "MLP_3_bwd"
-    id: 14
-    topological_number: 5
-    config: -1
-    fwd_bwd: BWD
-    type: SYSTOLIC
-    gemm_input1_weight {
-      outer: 1
-      M: 4000
-      K: 4000
-      N: 16
-      input_tensor_size: 128000.0
-      weight_tensor_size: 32000000.0
-      output_tensor_size: 128000.0
-      sharding: NO_SHARDING
-      tiling: NO_TILING
-    }
-  }
-  kernels {
-    name: "MLP_2_bwd"
-    id: 15
-    topological_number: 6
-    config: -1
-    fwd_bwd: BWD
-    type: SYSTOLIC
-    gemm_input1_weight {
-      outer: 1
-      M: 4000
-      K: 4000
-      N: 16
-      input_tensor_size: 128000.0
-      weight_tensor_size: 32000000.0
-      output_tensor_size: 128000.0
-      sharding: NO_SHARDING
-      tiling: NO_TILING
-    }
-  }
-  kernels {
-    name: "MLP_1_bwd"
-    id: 16
-    topological_number: 7
-    config: -1
-    fwd_bwd: BWD
-    type: SYSTOLIC
-    gemm_input1_weight {
-      outer: 1
-      M: 4000
-      K: 4000
-      N: 16
-      input_tensor_size: 128000.0
-      weight_tensor_size: 32000000.0
-      output_tensor_size: 128000.0
-      sharding: NO_SHARDING
-      tiling: NO_TILING
-    }
-  }
-  kernels {
-    name: "MLP_8_bwd_weight_update"
-    id: 17
-    topological_number: 7
-    config: -1
-    fwd_bwd: BWD
-    type: SYSTOLIC
-    gemm_input1_input2 {
-      outer: 1
-      M: 4000
-      K: 16
-      N: 4000
-      input_tensor_1_size: 128000.0
-      input_tensor_2_size: 128000.0
-      output_tensor_size: 32000000.0
-      sharding: NO_SHARDING
-      communication_type: ALL_REDUCE_PERIODIC
-      communication_size: 32000000.0
-      tiling: NO_TILING
-    }
-  }
-  kernels {
-    name: "MLP_7_bwd_weight_update"
-    id: 18
-    topological_number: 6
-    config: -1
-    fwd_bwd: BWD
-    type: SYSTOLIC
-    gemm_input1_input2 {
-      outer: 1
-      M: 4000
-      K: 16
-      N: 4000
-      input_tensor_1_size: 128000.0
-      input_tensor_2_size: 128000.0
-      output_tensor_size: 32000000.0
-      sharding: NO_SHARDING
-      communication_type: ALL_REDUCE_PERIODIC
-      communication_size: 32000000.0
-      tiling: NO_TILING
-    }
-  }
-  kernels {
-    name: "MLP_6_bwd_weight_update"
-    id: 19
-    topological_number: 5
-    config: -1
-    fwd_bwd: BWD
-    type: SYSTOLIC
-    gemm_input1_input2 {
-      outer: 1
-      M: 4000
-      K: 16
-      N: 4000
-      input_tensor_1_size: 128000.0
-      input_tensor_2_size: 128000.0
-      output_tensor_size: 32000000.0
-      sharding: NO_SHARDING
-      communication_type: ALL_REDUCE_PERIODIC
-      communication_size: 32000000.0
-      tiling: NO_TILING
-    }
-  }
-  kernels {
-    name: "MLP_5_bwd_weight_update"
-    id: 20
-    topological_number: 4
-    config: -1
-    fwd_bwd: BWD
-    type: SYSTOLIC
-    gemm_input1_input2 {
-      outer: 1
-      M: 4000
-      K: 16
-      N: 4000
-      input_tensor_1_size: 128000.0
-      input_tensor_2_size: 128000.0
-      output_tensor_size: 32000000.0
-      sharding: NO_SHARDING
-      communication_type: ALL_REDUCE_PERIODIC
-      communication_size: 32000000.0
-      tiling: NO_TILING
-    }
-  }
-  kernels {
-    name: "MLP_4_bwd_weight_update"
-    id: 21
-    topological_number: 4
-    config: -1
-    fwd_bwd: BWD
-    type: SYSTOLIC
-    gemm_input1_input2 {
-      outer: 1
-      M: 4000
-      K: 16
-      N: 4000
-      input_tensor_1_size: 128000.0
-      input_tensor_2_size: 128000.0
-      output_tensor_size: 32000000.0
-      sharding: NO_SHARDING
-      communication_type: ALL_REDUCE_PERIODIC
-      communication_size: 32000000.0
-      tiling: NO_TILING
-    }
-  }
-  kernels {
-    name: "MLP_3_bwd_weight_update"
-    id: 22
-    topological_number: 5
-    config: -1
-    fwd_bwd: BWD
-    type: SYSTOLIC
-    gemm_input1_input2 {
-      outer: 1
-      M: 4000
-      K: 16
-      N: 4000
-      input_tensor_1_size: 128000.0
-      input_tensor_2_size: 128000.0
-      output_tensor_size: 32000000.0
-      sharding: NO_SHARDING
-      communication_type: ALL_REDUCE_PERIODIC
-      communication_size: 32000000.0
-      tiling: NO_TILING
-    }
-  }
-  kernels {
-    name: "MLP_2_bwd_weight_update"
-    id: 23
-    topological_number: 6
-    config: -1
-    fwd_bwd: BWD
-    type: SYSTOLIC
-    gemm_input1_input2 {
-      outer: 1
-      M: 4000
-      K: 16
-      N: 4000
-      input_tensor_1_size: 128000.0
-      input_tensor_2_size: 128000.0
-      output_tensor_size: 32000000.0
-      sharding: NO_SHARDING
-      communication_type: ALL_REDUCE_PERIODIC
-      communication_size: 32000000.0
-      tiling: NO_TILING
-    }
-  }
-  kernels {
-    name: "MLP_1_bwd_weight_update"
-    id: 24
-    topological_number: 7
-    config: -1
-    fwd_bwd: BWD
-    type: SYSTOLIC
-    gemm_input1_input2 {
-      outer: 1
-      M: 4000
-      K: 16
-      N: 4000
-      input_tensor_1_size: 128000.0
-      input_tensor_2_size: 128000.0
-      output_tensor_size: 32000000.0
-      sharding: NO_SHARDING
-      communication_type: ALL_REDUCE_PERIODIC
-      communication_size: 32000000.0
       tiling: NO_TILING
     }
   }
@@ -479,7 +157,7 @@ dataflow_graph {
     startIdx: 1
     endIdx: 2
     buffer_depth: 2
-    tensor_size: 128000.0
+    tensor_size: 256000.0
     id: 1
     startName: "MLP_1"
     endName: "MLP_2"
@@ -489,7 +167,7 @@ dataflow_graph {
     startIdx: 2
     endIdx: 3
     buffer_depth: 2
-    tensor_size: 128000.0
+    tensor_size: 256000.0
     id: 2
     startName: "MLP_2"
     endName: "MLP_3"
@@ -499,7 +177,7 @@ dataflow_graph {
     startIdx: 3
     endIdx: 4
     buffer_depth: 2
-    tensor_size: 128000.0
+    tensor_size: 256000.0
     id: 3
     startName: "MLP_3"
     endName: "MLP_4"
@@ -509,7 +187,7 @@ dataflow_graph {
     startIdx: 4
     endIdx: 5
     buffer_depth: 2
-    tensor_size: 128000.0
+    tensor_size: 256000.0
     id: 4
     startName: "MLP_4"
     endName: "MLP_5"
@@ -519,7 +197,7 @@ dataflow_graph {
     startIdx: 5
     endIdx: 6
     buffer_depth: 2
-    tensor_size: 128000.0
+    tensor_size: 256000.0
     id: 5
     startName: "MLP_5"
     endName: "MLP_6"
@@ -529,7 +207,7 @@ dataflow_graph {
     startIdx: 6
     endIdx: 7
     buffer_depth: 2
-    tensor_size: 128000.0
+    tensor_size: 256000.0
     id: 6
     startName: "MLP_6"
     endName: "MLP_7"
@@ -539,240 +217,35 @@ dataflow_graph {
     startIdx: 7
     endIdx: 8
     buffer_depth: 2
-    tensor_size: 128000.0
+    tensor_size: 256000.0
     id: 7
     startName: "MLP_7"
     endName: "MLP_8"
     lane_stage_type: LANE
   }
-  connections {
-    startIdx: 9
-    endIdx: 10
-    buffer_depth: 2
-    tensor_size: 128000.0
-    id: 8
-    startName: "MLP_8_bwd"
-    endName: "MLP_7_bwd"
-    lane_stage_type: LANE
-  }
-  connections {
-    startIdx: 10
-    endIdx: 11
-    buffer_depth: 2
-    tensor_size: 128000.0
-    id: 9
-    startName: "MLP_7_bwd"
-    endName: "MLP_6_bwd"
-    lane_stage_type: LANE
-  }
-  connections {
-    startIdx: 11
-    endIdx: 12
-    buffer_depth: 2
-    tensor_size: 128000.0
-    id: 10
-    startName: "MLP_6_bwd"
-    endName: "MLP_5_bwd"
-    lane_stage_type: LANE
-  }
-  connections {
-    startIdx: 12
-    endIdx: 13
-    buffer_depth: 2
-    tensor_size: 128000.0
-    id: 11
-    startName: "MLP_5_bwd"
-    endName: "MLP_4_bwd"
-    lane_stage_type: LANE
-  }
-  connections {
-    startIdx: 13
-    endIdx: 14
-    buffer_depth: 2
-    tensor_size: 128000.0
-    id: 12
-    startName: "MLP_4_bwd"
-    endName: "MLP_3_bwd"
-    lane_stage_type: LANE
-  }
-  connections {
-    startIdx: 14
-    endIdx: 15
-    buffer_depth: 2
-    tensor_size: 128000.0
-    id: 13
-    startName: "MLP_3_bwd"
-    endName: "MLP_2_bwd"
-    lane_stage_type: LANE
-  }
-  connections {
-    startIdx: 15
-    endIdx: 16
-    buffer_depth: 2
-    tensor_size: 128000.0
-    id: 14
-    startName: "MLP_2_bwd"
-    endName: "MLP_1_bwd"
-    lane_stage_type: LANE
-  }
-  connections {
-    startIdx: 1
-    endIdx: 23
-    buffer_depth: 7
-    tensor_size: 128000.0
-    id: 15
-    startName: "MLP_1"
-    endName: "MLP_2_bwd_weight_update"
-    lane_stage_type: LANE
-  }
-  connections {
-    startIdx: 2
-    endIdx: 22
-    buffer_depth: 5
-    tensor_size: 128000.0
-    id: 16
-    startName: "MLP_2"
-    endName: "MLP_3_bwd_weight_update"
-    lane_stage_type: LANE
-  }
-  connections {
-    startIdx: 3
-    endIdx: 21
-    buffer_depth: 3
-    tensor_size: 128000.0
-    id: 17
-    startName: "MLP_3"
-    endName: "MLP_4_bwd_weight_update"
-    lane_stage_type: LANE
-  }
-  connections {
-    startIdx: 4
-    endIdx: 20
-    buffer_depth: 2
-    tensor_size: 128000.0
-    id: 18
-    startName: "MLP_4"
-    endName: "MLP_5_bwd_weight_update"
-    lane_stage_type: LANE
-  }
-  connections {
-    startIdx: 5
-    endIdx: 19
-    buffer_depth: 2
-    tensor_size: 128000.0
-    id: 19
-    startName: "MLP_5"
-    endName: "MLP_6_bwd_weight_update"
-    lane_stage_type: LANE
-  }
-  connections {
-    startIdx: 6
-    endIdx: 18
-    buffer_depth: 2
-    tensor_size: 128000.0
-    id: 20
-    startName: "MLP_6"
-    endName: "MLP_7_bwd_weight_update"
-    lane_stage_type: LANE
-  }
-  connections {
-    startIdx: 7
-    endIdx: 17
-    buffer_depth: 2
-    tensor_size: 128000.0
-    id: 21
-    startName: "MLP_7"
-    endName: "MLP_8_bwd_weight_update"
-    lane_stage_type: LANE
-  }
-  connections {
-    startIdx: 9
-    endIdx: 18
-    buffer_depth: 7
-    tensor_size: 128000.0
-    id: 22
-    startName: "MLP_8_bwd"
-    endName: "MLP_7_bwd_weight_update"
-    lane_stage_type: LANE
-  }
-  connections {
-    startIdx: 10
-    endIdx: 19
-    buffer_depth: 5
-    tensor_size: 128000.0
-    id: 23
-    startName: "MLP_7_bwd"
-    endName: "MLP_6_bwd_weight_update"
-    lane_stage_type: LANE
-  }
-  connections {
-    startIdx: 11
-    endIdx: 20
-    buffer_depth: 3
-    tensor_size: 128000.0
-    id: 24
-    startName: "MLP_6_bwd"
-    endName: "MLP_5_bwd_weight_update"
-    lane_stage_type: LANE
-  }
-  connections {
-    startIdx: 12
-    endIdx: 21
-    buffer_depth: 2
-    tensor_size: 128000.0
-    id: 25
-    startName: "MLP_5_bwd"
-    endName: "MLP_4_bwd_weight_update"
-    lane_stage_type: LANE
-  }
-  connections {
-    startIdx: 13
-    endIdx: 22
-    buffer_depth: 2
-    tensor_size: 128000.0
-    id: 26
-    startName: "MLP_4_bwd"
-    endName: "MLP_3_bwd_weight_update"
-    lane_stage_type: LANE
-  }
-  connections {
-    startIdx: 14
-    endIdx: 23
-    buffer_depth: 2
-    tensor_size: 128000.0
-    id: 27
-    startName: "MLP_3_bwd"
-    endName: "MLP_2_bwd_weight_update"
-    lane_stage_type: LANE
-  }
-  connections {
-    startIdx: 15
-    endIdx: 24
-    buffer_depth: 2
-    tensor_size: 128000.0
-    id: 28
-    startName: "MLP_2_bwd"
-    endName: "MLP_1_bwd_weight_update"
-    lane_stage_type: LANE
-  }
 }
 system {
-  num_chip: 128
+  num_chip: 256
   accelerator {
-    core: 432
-    systolic_width: 16
-    systolic_height: 16
-    sram_cap: 88080380.0
-    freq: 1.41
+    core: 1040
+    systolic_width: 32
+    systolic_height: 6
+    sram_cap: 545259500.0
+    pmu: 1040
+    pmu_cap: 524288.0
+    x: 40
+    y: 52
+    freq: 1.6
+    placement: "rowwise"
   }
-  r_fc {
-    x: 8
+  fc_fc {
+    x: 16
     y: 16
-    link_bw_x: 600.0
-    link_bw_y: 25.0
+    link_bw_x: 10.0
+    link_bw_y: 10.0
   }
   memory {
-    dram_bw: 1555.0
+    dram_bw: 1638.0
   }
 }
 cost {
@@ -787,17 +260,18 @@ cost {
 }
 execution {
   dlrm {
-    num_table: 32
+    num_table: 64
     emb_dim: 10
     row: 1000000000
     global_batch_size: 4096
     num_copy: 1
   }
-  execution_style: KERNEL_BY_KERNEL
-  overlap: PERFECT_OVERLAP
+  execution_style: DATAFLOW
+  num_config: 2
+  overlap: NO_OVERLAP
   word: 2
 }
 gurobi {
   gap: 0.001
-  time: 180
+  time: 3600
 }

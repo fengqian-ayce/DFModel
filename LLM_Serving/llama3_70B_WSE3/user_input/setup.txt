@@ -442,7 +442,7 @@ connections {
 }
 }
 system {
-  num_chip: 1
+  num_chip: 4
   accelerator {
     core: 900000
     systolic_width: 8
@@ -451,12 +451,13 @@ system {
     freq: 1.1
   }
   r {
-    x: 1
+    x: 4
     link_bw_x: 28101836.8
-    par_x: "DP"
+    par_x: "PP"
   }
   memory {
     dram_bw: 15833497.6
+    dram_cap: 109951160000
   }
 }
 cost {
@@ -476,7 +477,7 @@ execution {
     num_head: 128
     seq_len: 1
     num_layer: 80
-	  global_batch_size: 1
+	  global_batch_size: 12800
 	  micro_batch_size: 1
     num_layer_in_graph: 1
   }

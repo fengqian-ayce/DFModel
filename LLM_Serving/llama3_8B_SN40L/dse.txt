@@ -478,14 +478,15 @@ system {
     systolic_height: 6
     sram_cap: 545259500.0
     freq: 1.6
+    link_latency: 150.0
   }
-  fc {
+  r {
     x: 16
-    link_bw_x: 10.0
+    link_bw_x: 50.0
     par_x: "TP"
   }
   memory {
-    dram_bw: 1310.72
+    dram_bw: 1638.4
     dram_cap: 68719480000.0
   }
 }
@@ -502,18 +503,20 @@ cost {
 execution {
   llm {
     hidden_dim: 4096
-    head_dim: 32
-    num_head: 128
+    head_dim: 128
+    num_head: 32
     seq_len: 1
     num_layer: 32
-    global_batch_size: 1
+    global_batch_size: 16384
     micro_batch_size: 1
     num_layer_in_graph: 1
   }
   execution_style: DATAFLOW
   num_config: 1
   overlap: NO_OVERLAP
+  compute_util: 0.9
   word: 2
+  separate_rs_ag_for_ar: true
 }
 gurobi {
   gap: 0.001

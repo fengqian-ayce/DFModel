@@ -444,8 +444,9 @@ execution {
     tile_size: 32
   }
   execution_style: DATAFLOW
-  num_config: 2
-  perfect_overlap: false
+  num_config: 1
+  overlap: NO_OVERLAP
+  separate_rs_ag_for_ar: true
   #compute_util: 0.9
   word: 2
 }
