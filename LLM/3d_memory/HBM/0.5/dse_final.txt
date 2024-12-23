@@ -1,0 +1,663 @@
+dataflow_graph {
+  kernels {
+    name: "Add_Prev_Layer"
+    id: 1
+    fwd_bwd: FWD
+    type: SIMD
+    elementwise_input1 {
+      outer: 1
+      M: 256000
+      N: 2048
+      input_tensor_size: 1048576000.0
+      output_tensor_size: 1048576000.0
+      sharding: NO_SHARDING
+      shard_outer_M: 256014
+      shard_N: 25
+      tiling: N_TILING
+    }
+  }
+  kernels {
+    name: "LayerNorm_1"
+    id: 2
+    topological_number: 1
+    config: 1
+    fwd_bwd: FWD
+    type: SIMD
+    elementwise_input1 {
+      outer: 1
+      M: 256000
+      N: 2048
+      input_tensor_size: 1048576000.0
+      output_tensor_size: 1048576000.0
+      sharding: NO_SHARDING
+      shard_outer_M: 256088
+      shard_N: 25
+      tiling: N_TILING
+    }
+  }
+  kernels {
+    name: "Q"
+    id: 3
+    topological_number: 2
+    config: 2
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 640
+      M: 400
+      K: 256000
+      N: 2048
+      input_tensor_size: 1048576000.0
+      weight_tensor_size: 131072000000.0
+      output_tensor_size: 1048576000.0
+      sharding: OUTER_SHARDING
+      shard_outer_M: 32131
+      shard_K: 256002
+      shard_N: 24
+      tiling: N_TILING
+    }
+  }
+  kernels {
+    name: "K"
+    id: 4
+    topological_number: 2
+    config: 3
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 640
+      M: 400
+      K: 256000
+      N: 2048
+      input_tensor_size: 1048576000.0
+      weight_tensor_size: 131072000000.0
+      output_tensor_size: 1048576000.0
+      sharding: OUTER_SHARDING
+      shard_outer_M: 32023
+      shard_K: 256000
+      shard_N: 24
+      tiling: N_TILING
+    }
+  }
+  kernels {
+    name: "V"
+    id: 5
+    topological_number: 2
+    config: 4
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 640
+      M: 400
+      K: 256000
+      N: 2048
+      input_tensor_size: 1048576000.0
+      weight_tensor_size: 131072000000.0
+      output_tensor_size: 1048576000.0
+      sharding: OUTER_SHARDING
+      shard_outer_M: 32000
+      shard_K: 256000
+      shard_N: 24
+      tiling: N_TILING
+    }
+  }
+  kernels {
+    name: "MHA_GEMM_1"
+    id: 6
+    topological_number: 3
+    config: 5
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_input2 {
+      outer: 640
+      M: 2048
+      K: 400
+      N: 2048
+      input_tensor_1_size: 1048576000.0
+      input_tensor_2_size: 1048576000.0
+      output_tensor_size: 5368709000.0
+      sharding: OUTER_SHARDING
+      shard_outer_M: 163840
+      shard_K: 406
+      shard_N: 24
+      tiling: N_TILING
+    }
+  }
+  kernels {
+    name: "SOFTMAX"
+    id: 7
+    topological_number: 4
+    config: 6
+    fwd_bwd: FWD
+    type: SIMD
+    elementwise_input1 {
+      outer: 640
+      M: 2048
+      N: 2048
+      input_tensor_size: 5368709000.0
+      output_tensor_size: 5368709000.0
+      sharding: OUTER_SHARDING
+      shard_outer_M: 163840
+      shard_N: 24
+      tiling: N_TILING
+    }
+  }
+  kernels {
+    name: "DropOut_1"
+    id: 8
+    topological_number: 5
+    config: 7
+    fwd_bwd: FWD
+    type: SIMD
+    elementwise_input1 {
+      outer: 640
+      M: 2048
+      N: 2048
+      input_tensor_size: 5368709000.0
+      output_tensor_size: 5368709000.0
+      sharding: OUTER_SHARDING
+      shard_outer_M: 163840
+      shard_N: 24
+      tiling: N_TILING
+    }
+  }
+  kernels {
+    name: "MHA_GEMM_2"
+    id: 9
+    topological_number: 6
+    config: 8
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_input2 {
+      outer: 640
+      M: 400
+      K: 2048
+      N: 2048
+      input_tensor_1_size: 1048576000.0
+      input_tensor_2_size: 5368709000.0
+      output_tensor_size: 1048576000.0
+      sharding: OUTER_SHARDING
+      shard_outer_M: 32000
+      shard_K: 2136
+      shard_N: 24
+      tiling: N_TILING
+    }
+  }
+  kernels {
+    name: "PROJ_GEMM"
+    id: 10
+    topological_number: 7
+    config: 9
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 256000
+      K: 256000
+      N: 2048
+      input_tensor_size: 1048576000.0
+      weight_tensor_size: 131072000000.0
+      output_tensor_size: 1048576000.0
+      sharding: K_SHARDING
+      communication_type: ALL_REDUCE
+      communication_size: 1048576000.0
+      shard_outer_M: 256003
+      shard_K: 32000
+      shard_N: 24
+      tiling: N_TILING
+    }
+  }
+  kernels {
+    name: "DropOut_2"
+    id: 11
+    topological_number: 8
+    config: 10
+    fwd_bwd: FWD
+    type: SIMD
+    elementwise_input1 {
+      outer: 1
+      M: 256000
+      N: 2048
+      input_tensor_size: 1048576000.0
+      output_tensor_size: 1048576000.0
+      sharding: NO_SHARDING
+      shard_outer_M: 256000
+      shard_N: 24
+      tiling: N_TILING
+    }
+  }
+  kernels {
+    name: "Add_1"
+    id: 12
+    topological_number: 9
+    config: 11
+    fwd_bwd: FWD
+    type: SIMD
+    elementwise_input1_input2 {
+      outer: 1
+      M: 256000
+      N: 2048
+      input_tensor_1_size: 1048576000.0
+      output_tensor_size: 1048576000.0
+      sharding: NO_SHARDING
+      shard_outer_M: 256000
+      shard_N: 24
+      tiling: N_TILING
+      input_tensor_2_size: 1048576000.0
+    }
+  }
+  kernels {
+    name: "LayerNorm_2"
+    id: 13
+    topological_number: 10
+    config: 12
+    fwd_bwd: FWD
+    type: SIMD
+    elementwise_input1 {
+      outer: 1
+      M: 256000
+      N: 2048
+      input_tensor_size: 1048576000.0
+      output_tensor_size: 1048576000.0
+      sharding: NO_SHARDING
+      shard_outer_M: 256000
+      shard_N: 24
+      tiling: N_TILING
+    }
+  }
+  kernels {
+    name: "FFN0"
+    id: 14
+    topological_number: 11
+    config: 13
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 1024000
+      K: 256000
+      N: 2048
+      input_tensor_size: 1048576000.0
+      weight_tensor_size: 524288000000.0
+      output_tensor_size: 4194304000.0
+      sharding: M_SHARDING
+      shard_outer_M: 128006
+      shard_K: 256013
+      shard_N: 24
+      tiling: N_TILING
+    }
+  }
+  kernels {
+    name: "GeLU"
+    id: 15
+    topological_number: 12
+    config: 14
+    fwd_bwd: FWD
+    type: SIMD
+    elementwise_input1 {
+      outer: 1
+      M: 1024000
+      N: 2048
+      input_tensor_size: 4194304000.0
+      output_tensor_size: 4194304000.0
+      sharding: M_SHARDING
+      shard_outer_M: 128000
+      shard_N: 24
+      tiling: N_TILING
+    }
+  }
+  kernels {
+    name: "FFN1"
+    id: 16
+    topological_number: 13
+    config: 15
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 256000
+      K: 1024000
+      N: 2048
+      input_tensor_size: 4194304000.0
+      weight_tensor_size: 524288000000.0
+      output_tensor_size: 1048576000.0
+      sharding: K_SHARDING
+      communication_type: ALL_REDUCE
+      communication_size: 1048576000.0
+      shard_outer_M: 256001
+      shard_K: 128009
+      shard_N: 24
+      tiling: N_TILING
+    }
+  }
+  kernels {
+    name: "DropOut_3"
+    id: 17
+    topological_number: 14
+    config: 16
+    fwd_bwd: FWD
+    type: SIMD
+    elementwise_input1 {
+      outer: 1
+      M: 256000
+      N: 2048
+      input_tensor_size: 1048576000.0
+      output_tensor_size: 1048576000.0
+      sharding: NO_SHARDING
+      shard_outer_M: 256000
+      shard_N: 24
+      tiling: N_TILING
+    }
+  }
+  kernels {
+    name: "Add_2"
+    id: 18
+    topological_number: 15
+    config: 17
+    fwd_bwd: FWD
+    type: SIMD
+    elementwise_input1_input2 {
+      outer: 1
+      M: 256000
+      N: 2048
+      input_tensor_1_size: 1048576000.0
+      output_tensor_size: 1048576000.0
+      sharding: NO_SHARDING
+      shard_outer_M: 256000
+      shard_N: 2560
+      tiling: N_TILING
+      input_tensor_2_size: 1048576000.0
+    }
+  }
+  connections {
+    startIdx: 1
+    endIdx: 2
+    communication_size: -0.0
+    buffer_depth: 2
+    tensor_size: 1048576000.0
+    shard_tensor_size: 12800700.0
+    id: 1
+    startName: "Add_Prev_Layer"
+    endName: "LayerNorm_1"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 2
+    endIdx: 3
+    buffer_depth: 2
+    tensor_size: 1048576000.0
+    shard_tensor_size: 12804400.0
+    id: 2
+    startName: "LayerNorm_1"
+    endName: "Q"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 2
+    endIdx: 4
+    buffer_depth: 2
+    tensor_size: 1048576000.0
+    shard_tensor_size: 12804400.0
+    id: 3
+    startName: "LayerNorm_1"
+    endName: "K"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 2
+    endIdx: 5
+    buffer_depth: 2
+    tensor_size: 1048576000.0
+    shard_tensor_size: 12804400.0
+    id: 4
+    startName: "LayerNorm_1"
+    endName: "V"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 3
+    endIdx: 6
+    buffer_depth: 2
+    tensor_size: 1048576000.0
+    shard_tensor_size: 1542288.0
+    id: 5
+    startName: "Q"
+    endName: "MHA_GEMM_1"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 4
+    endIdx: 6
+    buffer_depth: 2
+    tensor_size: 1048576000.0
+    shard_tensor_size: 1537104.0
+    id: 6
+    startName: "K"
+    endName: "MHA_GEMM_1"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 6
+    endIdx: 7
+    buffer_depth: 2
+    tensor_size: 5368709000.0
+    shard_tensor_size: 7864320.0
+    id: 7
+    startName: "MHA_GEMM_1"
+    endName: "SOFTMAX"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 7
+    endIdx: 8
+    buffer_depth: 2
+    tensor_size: 5368709000.0
+    shard_tensor_size: 7864320.0
+    id: 8
+    startName: "SOFTMAX"
+    endName: "DropOut_1"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 5
+    endIdx: 9
+    buffer_depth: 5
+    tensor_size: 1048576000.0
+    shard_tensor_size: 1536000.0
+    id: 9
+    startName: "V"
+    endName: "MHA_GEMM_2"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 8
+    endIdx: 9
+    buffer_depth: 2
+    tensor_size: 5368709000.0
+    shard_tensor_size: 7864320.0
+    id: 10
+    startName: "DropOut_1"
+    endName: "MHA_GEMM_2"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 9
+    endIdx: 10
+    buffer_depth: 2
+    tensor_size: 1048576000.0
+    shard_tensor_size: 1536000.0
+    id: 11
+    startName: "MHA_GEMM_2"
+    endName: "PROJ_GEMM"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 10
+    endIdx: 11
+    communication_size: -0.0
+    buffer_depth: 2
+    tensor_size: 1048576000.0
+    shard_tensor_size: 12288144.0
+    id: 12
+    startName: "PROJ_GEMM"
+    endName: "DropOut_2"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 11
+    endIdx: 12
+    communication_size: -0.0
+    buffer_depth: 2
+    tensor_size: 1048576000.0
+    shard_tensor_size: 12288000.0
+    id: 13
+    startName: "DropOut_2"
+    endName: "Add_1"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 1
+    endIdx: 12
+    communication_size: -0.0
+    buffer_depth: 10
+    tensor_size: 1048576000.0
+    shard_tensor_size: 12800700.0
+    id: 14
+    startName: "Add_Prev_Layer"
+    endName: "Add_1"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 12
+    endIdx: 13
+    communication_size: -0.0
+    buffer_depth: 2
+    tensor_size: 1048576000.0
+    shard_tensor_size: 12288000.0
+    id: 15
+    startName: "Add_1"
+    endName: "LayerNorm_2"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 13
+    endIdx: 14
+    communication_size: -0.0
+    buffer_depth: 2
+    tensor_size: 1048576000.0
+    shard_tensor_size: 12288000.0
+    id: 16
+    startName: "LayerNorm_2"
+    endName: "FFN0"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 14
+    endIdx: 15
+    communication_size: -0.0
+    buffer_depth: 2
+    tensor_size: 4194304000.0
+    shard_tensor_size: 6144288.0
+    id: 17
+    startName: "FFN0"
+    endName: "GeLU"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 15
+    endIdx: 16
+    communication_size: -0.0
+    buffer_depth: 2
+    tensor_size: 4194304000.0
+    shard_tensor_size: 6144000.0
+    id: 18
+    startName: "GeLU"
+    endName: "FFN1"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 16
+    endIdx: 17
+    communication_size: -0.0
+    buffer_depth: 2
+    tensor_size: 1048576000.0
+    shard_tensor_size: 12288048.0
+    id: 19
+    startName: "FFN1"
+    endName: "DropOut_3"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 17
+    endIdx: 18
+    communication_size: -0.0
+    buffer_depth: 2
+    tensor_size: 1048576000.0
+    shard_tensor_size: 12288000.0
+    id: 20
+    startName: "DropOut_3"
+    endName: "Add_2"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 12
+    endIdx: 18
+    communication_size: -0.0
+    buffer_depth: 7
+    tensor_size: 1048576000.0
+    shard_tensor_size: 12288000.0
+    id: 21
+    startName: "Add_1"
+    endName: "Add_2"
+    lane_stage_type: LANE
+  }
+}
+system {
+  num_chip: 8
+  accelerator {
+    core: 1040
+    systolic_width: 32
+    systolic_height: 6
+    sram_cap: 545259500.0
+    freq: 1.6
+  }
+  r {
+    x: 8
+    link_bw_x: 1000.0
+    par_x: "TP"
+  }
+  memory {
+    dram_bw: 1024.0
+  }
+}
+cost {
+  link_unit_price: 2.0
+  switch_unit_price: 24.0
+  dram_unit_price: 1.0
+  accelerator_price: 16522.25
+  link_unit_power_x: 0.052
+  link_unit_power_y: 0.052
+  link_unit_power_z: 0.052
+  switch_unit_power: 0.052
+  dram_unit_power: 0.16248
+  accelerator_power: 444.7062
+}
+execution {
+  llm {
+    hidden_dim: 256000
+    head_dim: 640
+    num_head: 400
+    seq_len: 2048
+    num_layer: 128
+    global_batch_size: 16384
+    micro_batch_size: 1
+    num_layer_in_graph: 1
+  }
+  execution_style: KERNEL_BY_KERNEL
+  overlap: PERFECT_OVERLAP
+  word: 2
+}
+gurobi {
+  gap: 0.001
+  time: 180
+}

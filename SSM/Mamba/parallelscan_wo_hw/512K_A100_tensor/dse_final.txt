@@ -1,0 +1,879 @@
+dataflow_graph {
+  kernels {
+    name: "Proj1"
+    id: 1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 32
+      K: 32
+      N: 524288
+      input_tensor_size: 33554432.0
+      weight_tensor_size: 2048.0
+      output_tensor_size: 33554432.0
+      sharding: NO_SHARDING
+      shard_outer_M: 32
+      shard_K: 32
+      shard_N: 262144
+      tiling: N_TILING
+    }
+  }
+  kernels {
+    name: "Proj2"
+    id: 2
+    config: 2
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 32
+      K: 32
+      N: 524288
+      input_tensor_size: 33554432.0
+      weight_tensor_size: 2048.0
+      output_tensor_size: 33554432.0
+      sharding: NO_SHARDING
+      shard_outer_M: 32
+      shard_K: 32
+      shard_N: 262144
+      tiling: N_TILING
+    }
+  }
+  kernels {
+    name: "Conv"
+    id: 3
+    topological_number: 1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 524288
+      K: 32
+      N: 1
+      input_tensor_size: 1048576.0
+      output_tensor_size: 1048576.0
+      sharding: NO_SHARDING
+      shard_outer_M: 262144
+      shard_K: 32
+      shard_N: 2
+      tiling: M_TILING
+      skip_weight: true
+    }
+  }
+  kernels {
+    name: "Scan_stage_0"
+    id: 4
+    topological_number: 2
+    config: 1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 524288
+      K: 1
+      N: 1
+      input_tensor_size: 1048576.0
+      output_tensor_size: 1048576.0
+      sharding: NO_SHARDING
+      shard_outer_M: 524288
+      shard_K: 1
+      shard_N: 1
+      tiling: NO_TILING
+      skip_weight: true
+      num_input: 32
+    }
+  }
+  kernels {
+    name: "Scan_stage_1"
+    id: 5
+    topological_number: 3
+    config: 1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 524288
+      K: 1
+      N: 1
+      input_tensor_size: 1048576.0
+      output_tensor_size: 1048576.0
+      sharding: NO_SHARDING
+      shard_outer_M: 524288
+      shard_K: 1
+      shard_N: 1
+      tiling: NO_TILING
+      skip_weight: true
+      num_input: 32
+    }
+  }
+  kernels {
+    name: "Scan_stage_2"
+    id: 6
+    topological_number: 4
+    config: 1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 524288
+      K: 1
+      N: 1
+      input_tensor_size: 1048576.0
+      output_tensor_size: 1048576.0
+      sharding: NO_SHARDING
+      shard_outer_M: 524288
+      shard_K: 1
+      shard_N: 1
+      tiling: NO_TILING
+      skip_weight: true
+      num_input: 32
+    }
+  }
+  kernels {
+    name: "Scan_stage_3"
+    id: 7
+    topological_number: 5
+    config: 1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 524288
+      K: 1
+      N: 1
+      input_tensor_size: 1048576.0
+      output_tensor_size: 1048576.0
+      sharding: NO_SHARDING
+      shard_outer_M: 524288
+      shard_K: 1
+      shard_N: 1
+      tiling: NO_TILING
+      skip_weight: true
+      num_input: 32
+    }
+  }
+  kernels {
+    name: "Scan_stage_4"
+    id: 8
+    topological_number: 6
+    config: 1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 524288
+      K: 1
+      N: 1
+      input_tensor_size: 1048576.0
+      output_tensor_size: 1048576.0
+      sharding: NO_SHARDING
+      shard_outer_M: 524288
+      shard_K: 1
+      shard_N: 1
+      tiling: NO_TILING
+      skip_weight: true
+      num_input: 32
+    }
+  }
+  kernels {
+    name: "Scan_stage_5"
+    id: 9
+    topological_number: 7
+    config: 1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 524288
+      K: 1
+      N: 1
+      input_tensor_size: 1048576.0
+      output_tensor_size: 1048576.0
+      sharding: NO_SHARDING
+      shard_outer_M: 524288
+      shard_K: 1
+      shard_N: 1
+      tiling: NO_TILING
+      skip_weight: true
+      num_input: 32
+    }
+  }
+  kernels {
+    name: "Scan_stage_6"
+    id: 10
+    topological_number: 8
+    config: 1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 524288
+      K: 1
+      N: 1
+      input_tensor_size: 1048576.0
+      output_tensor_size: 1048576.0
+      sharding: NO_SHARDING
+      shard_outer_M: 524288
+      shard_K: 1
+      shard_N: 1
+      tiling: NO_TILING
+      skip_weight: true
+      num_input: 32
+    }
+  }
+  kernels {
+    name: "Scan_stage_7"
+    id: 11
+    topological_number: 9
+    config: 1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 524288
+      K: 1
+      N: 1
+      input_tensor_size: 1048576.0
+      output_tensor_size: 1048576.0
+      sharding: NO_SHARDING
+      shard_outer_M: 524288
+      shard_K: 1
+      shard_N: 1
+      tiling: NO_TILING
+      skip_weight: true
+      num_input: 32
+    }
+  }
+  kernels {
+    name: "Scan_stage_8"
+    id: 12
+    topological_number: 10
+    config: 1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 524288
+      K: 1
+      N: 1
+      input_tensor_size: 1048576.0
+      output_tensor_size: 1048576.0
+      sharding: NO_SHARDING
+      shard_outer_M: 524288
+      shard_K: 1
+      shard_N: 1
+      tiling: NO_TILING
+      skip_weight: true
+      num_input: 32
+    }
+  }
+  kernels {
+    name: "Scan_stage_9"
+    id: 13
+    topological_number: 11
+    config: 1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 524288
+      K: 1
+      N: 1
+      input_tensor_size: 1048576.0
+      output_tensor_size: 1048576.0
+      sharding: NO_SHARDING
+      shard_outer_M: 524288
+      shard_K: 1
+      shard_N: 1
+      tiling: NO_TILING
+      skip_weight: true
+      num_input: 32
+    }
+  }
+  kernels {
+    name: "Scan_stage_10"
+    id: 14
+    topological_number: 12
+    config: 1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 524288
+      K: 1
+      N: 1
+      input_tensor_size: 1048576.0
+      output_tensor_size: 1048576.0
+      sharding: NO_SHARDING
+      shard_outer_M: 524288
+      shard_K: 1
+      shard_N: 1
+      tiling: NO_TILING
+      skip_weight: true
+      num_input: 32
+    }
+  }
+  kernels {
+    name: "Scan_stage_11"
+    id: 15
+    topological_number: 13
+    config: 1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 524288
+      K: 1
+      N: 1
+      input_tensor_size: 1048576.0
+      output_tensor_size: 1048576.0
+      sharding: NO_SHARDING
+      shard_outer_M: 524288
+      shard_K: 1
+      shard_N: 1
+      tiling: NO_TILING
+      skip_weight: true
+      num_input: 32
+    }
+  }
+  kernels {
+    name: "Scan_stage_12"
+    id: 16
+    topological_number: 14
+    config: 1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 524288
+      K: 1
+      N: 1
+      input_tensor_size: 1048576.0
+      output_tensor_size: 1048576.0
+      sharding: NO_SHARDING
+      shard_outer_M: 524288
+      shard_K: 1
+      shard_N: 1
+      tiling: NO_TILING
+      skip_weight: true
+      num_input: 32
+    }
+  }
+  kernels {
+    name: "Scan_stage_13"
+    id: 17
+    topological_number: 15
+    config: 1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 524288
+      K: 1
+      N: 1
+      input_tensor_size: 1048576.0
+      output_tensor_size: 1048576.0
+      sharding: NO_SHARDING
+      shard_outer_M: 524288
+      shard_K: 1
+      shard_N: 1
+      tiling: NO_TILING
+      skip_weight: true
+      num_input: 32
+    }
+  }
+  kernels {
+    name: "Scan_stage_14"
+    id: 18
+    topological_number: 16
+    config: 1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 524288
+      K: 1
+      N: 1
+      input_tensor_size: 1048576.0
+      output_tensor_size: 1048576.0
+      sharding: NO_SHARDING
+      shard_outer_M: 524288
+      shard_K: 1
+      shard_N: 1
+      tiling: NO_TILING
+      skip_weight: true
+      num_input: 32
+    }
+  }
+  kernels {
+    name: "Scan_stage_15"
+    id: 19
+    topological_number: 17
+    config: 1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 524288
+      K: 1
+      N: 1
+      input_tensor_size: 1048576.0
+      output_tensor_size: 1048576.0
+      sharding: NO_SHARDING
+      shard_outer_M: 524288
+      shard_K: 1
+      shard_N: 1
+      tiling: NO_TILING
+      skip_weight: true
+      num_input: 32
+    }
+  }
+  kernels {
+    name: "Scan_stage_16"
+    id: 20
+    topological_number: 18
+    config: 1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 524288
+      K: 1
+      N: 1
+      input_tensor_size: 1048576.0
+      output_tensor_size: 1048576.0
+      sharding: NO_SHARDING
+      shard_outer_M: 524288
+      shard_K: 1
+      shard_N: 1
+      tiling: NO_TILING
+      skip_weight: true
+      num_input: 32
+    }
+  }
+  kernels {
+    name: "Scan_stage_17"
+    id: 21
+    topological_number: 19
+    config: 1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 524288
+      K: 1
+      N: 1
+      input_tensor_size: 1048576.0
+      output_tensor_size: 1048576.0
+      sharding: NO_SHARDING
+      shard_outer_M: 524288
+      shard_K: 1
+      shard_N: 1
+      tiling: NO_TILING
+      skip_weight: true
+      num_input: 32
+    }
+  }
+  kernels {
+    name: "Scan_stage_18"
+    id: 22
+    topological_number: 20
+    config: 1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 524288
+      K: 1
+      N: 1
+      input_tensor_size: 1048576.0
+      output_tensor_size: 1048576.0
+      sharding: NO_SHARDING
+      shard_outer_M: 524288
+      shard_K: 1
+      shard_N: 1
+      tiling: NO_TILING
+      skip_weight: true
+      num_input: 32
+    }
+  }
+  kernels {
+    name: "Scan_stage_19"
+    id: 23
+    topological_number: 21
+    config: 1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 524288
+      K: 1
+      N: 1
+      input_tensor_size: 1048576.0
+      output_tensor_size: 1048576.0
+      sharding: NO_SHARDING
+      shard_outer_M: 524288
+      shard_K: 1
+      shard_N: 1
+      tiling: NO_TILING
+      skip_weight: true
+      num_input: 32
+    }
+  }
+  kernels {
+    name: "Multiply"
+    id: 24
+    topological_number: 22
+    config: 2
+    fwd_bwd: FWD
+    type: SIMD
+    elementwise_input1_input2 {
+      outer: 1
+      M: 524288
+      N: 32
+      input_tensor_1_size: 33554432.0
+      output_tensor_size: 33554432.0
+      sharding: NO_SHARDING
+      shard_outer_M: 262144
+      shard_N: 32
+      tiling: M_TILING
+      input_tensor_2_size: 33554432.0
+    }
+  }
+  kernels {
+    name: "Proj3"
+    id: 25
+    topological_number: 23
+    config: 2
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 32
+      K: 32
+      N: 524288
+      input_tensor_size: 33554432.0
+      weight_tensor_size: 2048.0
+      output_tensor_size: 33554432.0
+      sharding: NO_SHARDING
+      shard_outer_M: 32
+      shard_K: 32
+      shard_N: 262144
+      tiling: N_TILING
+    }
+  }
+  connections {
+    startIdx: 1
+    endIdx: 3
+    buffer_depth: 2
+    tensor_size: 33554432.0
+    shard_tensor_size: 16777216.0
+    startName: "Proj1"
+    endName: "Conv"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 3
+    endIdx: 4
+    buffer_depth: 2
+    tensor_size: 1048576.0
+    shard_tensor_size: 1048576.0
+    id: 1
+    startName: "Conv"
+    endName: "Scan_stage_0"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 4
+    endIdx: 5
+    buffer_depth: 2
+    tensor_size: 1048576.0
+    shard_tensor_size: 1048576.0
+    id: 2
+    startName: "Scan_stage_0"
+    endName: "Scan_stage_1"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 5
+    endIdx: 6
+    buffer_depth: 2
+    tensor_size: 1048576.0
+    shard_tensor_size: 1048576.0
+    id: 3
+    startName: "Scan_stage_1"
+    endName: "Scan_stage_2"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 6
+    endIdx: 7
+    buffer_depth: 2
+    tensor_size: 1048576.0
+    shard_tensor_size: 1048576.0
+    id: 4
+    startName: "Scan_stage_2"
+    endName: "Scan_stage_3"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 7
+    endIdx: 8
+    buffer_depth: 2
+    tensor_size: 1048576.0
+    shard_tensor_size: 1048576.0
+    id: 5
+    startName: "Scan_stage_3"
+    endName: "Scan_stage_4"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 8
+    endIdx: 9
+    buffer_depth: 2
+    tensor_size: 1048576.0
+    shard_tensor_size: 1048576.0
+    id: 6
+    startName: "Scan_stage_4"
+    endName: "Scan_stage_5"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 9
+    endIdx: 10
+    buffer_depth: 2
+    tensor_size: 1048576.0
+    shard_tensor_size: 1048576.0
+    id: 7
+    startName: "Scan_stage_5"
+    endName: "Scan_stage_6"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 10
+    endIdx: 11
+    buffer_depth: 2
+    tensor_size: 1048576.0
+    shard_tensor_size: 1048576.0
+    id: 8
+    startName: "Scan_stage_6"
+    endName: "Scan_stage_7"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 11
+    endIdx: 12
+    buffer_depth: 2
+    tensor_size: 1048576.0
+    shard_tensor_size: 1048576.0
+    id: 9
+    startName: "Scan_stage_7"
+    endName: "Scan_stage_8"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 12
+    endIdx: 13
+    buffer_depth: 2
+    tensor_size: 1048576.0
+    shard_tensor_size: 1048576.0
+    id: 10
+    startName: "Scan_stage_8"
+    endName: "Scan_stage_9"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 13
+    endIdx: 14
+    buffer_depth: 2
+    tensor_size: 1048576.0
+    shard_tensor_size: 1048576.0
+    id: 11
+    startName: "Scan_stage_9"
+    endName: "Scan_stage_10"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 14
+    endIdx: 15
+    buffer_depth: 2
+    tensor_size: 1048576.0
+    shard_tensor_size: 1048576.0
+    id: 12
+    startName: "Scan_stage_10"
+    endName: "Scan_stage_11"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 15
+    endIdx: 16
+    buffer_depth: 2
+    tensor_size: 1048576.0
+    shard_tensor_size: 1048576.0
+    id: 13
+    startName: "Scan_stage_11"
+    endName: "Scan_stage_12"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 16
+    endIdx: 17
+    buffer_depth: 2
+    tensor_size: 1048576.0
+    shard_tensor_size: 1048576.0
+    id: 14
+    startName: "Scan_stage_12"
+    endName: "Scan_stage_13"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 17
+    endIdx: 18
+    buffer_depth: 2
+    tensor_size: 1048576.0
+    shard_tensor_size: 1048576.0
+    id: 15
+    startName: "Scan_stage_13"
+    endName: "Scan_stage_14"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 18
+    endIdx: 19
+    buffer_depth: 2
+    tensor_size: 1048576.0
+    shard_tensor_size: 1048576.0
+    id: 16
+    startName: "Scan_stage_14"
+    endName: "Scan_stage_15"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 19
+    endIdx: 20
+    buffer_depth: 2
+    tensor_size: 1048576.0
+    shard_tensor_size: 1048576.0
+    id: 17
+    startName: "Scan_stage_15"
+    endName: "Scan_stage_16"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 20
+    endIdx: 21
+    buffer_depth: 2
+    tensor_size: 1048576.0
+    shard_tensor_size: 1048576.0
+    id: 18
+    startName: "Scan_stage_16"
+    endName: "Scan_stage_17"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 21
+    endIdx: 22
+    buffer_depth: 2
+    tensor_size: 1048576.0
+    shard_tensor_size: 1048576.0
+    id: 19
+    startName: "Scan_stage_17"
+    endName: "Scan_stage_18"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 22
+    endIdx: 23
+    buffer_depth: 2
+    tensor_size: 1048576.0
+    shard_tensor_size: 1048576.0
+    id: 20
+    startName: "Scan_stage_18"
+    endName: "Scan_stage_19"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 23
+    endIdx: 24
+    buffer_depth: 2
+    tensor_size: 1048576.0
+    shard_tensor_size: 1048576.0
+    id: 21
+    startName: "Scan_stage_19"
+    endName: "Multiply"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 2
+    endIdx: 24
+    buffer_depth: 23
+    tensor_size: 33554432.0
+    shard_tensor_size: 16777216.0
+    id: 22
+    startName: "Proj2"
+    endName: "Multiply"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 24
+    endIdx: 25
+    buffer_depth: 2
+    tensor_size: 33554432.0
+    shard_tensor_size: 16777216.0
+    id: 23
+    startName: "Multiply"
+    endName: "Proj3"
+    lane_stage_type: LANE
+  }
+}
+system {
+  num_chip: 1
+  accelerator {
+    core: 432
+    systolic_width: 16
+    systolic_height: 16
+    freq: 1.41
+  }
+  r {
+    x: 1
+    link_bw_x: 10.0
+    par_x: "TP"
+  }
+  memory {
+    dram_bw: 8192.0
+    dram_cap: 103079215000.0
+  }
+}
+cost {
+  link_unit_price: 2.0
+  switch_unit_price: 24.0
+  dram_unit_price: 1.0
+  accelerator_price: 16522.25
+  link_unit_power_x: 0.052
+  switch_unit_power: 0.052
+  dram_unit_power: 0.16248
+  accelerator_power: 444.7062
+}
+execution {
+  llm {
+    hidden_dim: 32
+    head_dim: 16
+    num_head: 2
+    seq_len: 524288
+    num_layer: 1
+    global_batch_size: 1
+    micro_batch_size: 1
+    tile_size: 524288
+    num_layer_in_graph: 1
+  }
+  execution_style: DATAFLOW
+  num_config: 3
+  overlap: PERFECT_OVERLAP
+  word: 2
+  skip_inter_chip_optimization: true
+}
+gurobi {
+  gap: 0.001
+  time: 180
+}

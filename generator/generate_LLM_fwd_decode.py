@@ -13,6 +13,7 @@ parser.add_argument('--word', type=int, required=True)
 parser.add_argument('--seq_window', type=int, required=True)
 parser.add_argument('--tp', type=int, required=True)
 parser.add_argument('--mlp_dim', type=int, required=True)
+parser.add_argument('--seq', type=int, required=True)
 args = parser.parse_args()
 
 
@@ -23,8 +24,7 @@ word = args.word
 seq_window = args.seq_window
 tp = args.tp
 mlp_dim = args.mlp_dim
-
-seq = 1
+seq = args.seq
 
 
 if num_head * head_dim != hidden:
@@ -122,9 +122,9 @@ for i in range(1, 21):
         kernel.elementwise_input1.dram_extra = word*hidden*seq_window/tp
         kernel.elementwise_input1.outer = num_head
         kernel.elementwise_input1.M = head_dim
-        kernel.elementwise_input1.N = seq_window+1
+        kernel.elementwise_input1.N = seq_window
         kernel.elementwise_input1.input_tensor_size = hidden*seq*word
-        kernel.elementwise_input1.output_tensor_size = hidden*(seq_window+1)*word
+        kernel.elementwise_input1.output_tensor_size = hidden*(seq_window)*word
         kernel.elementwise_input1.tiling = 4
     
     elif i == 7:
@@ -138,9 +138,9 @@ for i in range(1, 21):
         kernel.elementwise_input1.dram_extra = word*hidden*seq_window/tp
         kernel.elementwise_input1.outer = num_head
         kernel.elementwise_input1.M = head_dim
-        kernel.elementwise_input1.N = seq_window+1
+        kernel.elementwise_input1.N = seq_window
         kernel.elementwise_input1.input_tensor_size = hidden*seq*word
-        kernel.elementwise_input1.output_tensor_size = hidden*(seq_window+1)*word
+        kernel.elementwise_input1.output_tensor_size = hidden*(seq_window)*word
         kernel.elementwise_input1.tiling = 4
 
     elif i == 8:
@@ -152,10 +152,10 @@ for i in range(1, 21):
         kernel.gemm_input1_input2.outer = num_head
         kernel.gemm_input1_input2.M = seq
         kernel.gemm_input1_input2.K = head_dim
-        kernel.gemm_input1_input2.N = seq_window+1
+        kernel.gemm_input1_input2.N = seq_window
         kernel.gemm_input1_input2.input_tensor_1_size = hidden*seq*word
-        kernel.gemm_input1_input2.input_tensor_2_size = hidden*(seq_window+1)*word
-        kernel.gemm_input1_input2.output_tensor_size = seq*(seq_window+1)*num_head*word
+        kernel.gemm_input1_input2.input_tensor_2_size = hidden*(seq_window)*word
+        kernel.gemm_input1_input2.output_tensor_size = seq*(seq_window)*num_head*word
         kernel.gemm_input1_input2.tiling = 4
         
     elif i == 9:
@@ -166,9 +166,9 @@ for i in range(1, 21):
         kernel.config = -1
         kernel.elementwise_input1.outer = num_head
         kernel.elementwise_input1.M = seq
-        kernel.elementwise_input1.N = seq_window+1
-        kernel.elementwise_input1.input_tensor_size = seq*(seq_window+1)*num_head*word
-        kernel.elementwise_input1.output_tensor_size = seq*(seq_window+1)*num_head*word
+        kernel.elementwise_input1.N = seq_window
+        kernel.elementwise_input1.input_tensor_size = seq*(seq_window)*num_head*word
+        kernel.elementwise_input1.output_tensor_size = seq*(seq_window)*num_head*word
         kernel.elementwise_input1.tiling = 4
 
     elif i == 10:
@@ -179,9 +179,9 @@ for i in range(1, 21):
         kernel.config = -1
         kernel.elementwise_input1.outer = num_head
         kernel.elementwise_input1.M = seq
-        kernel.elementwise_input1.N = seq_window+1
-        kernel.elementwise_input1.input_tensor_size = seq*(seq_window+1)*num_head*word
-        kernel.elementwise_input1.output_tensor_size = seq*(seq_window+1)*num_head*word
+        kernel.elementwise_input1.N = seq_window
+        kernel.elementwise_input1.input_tensor_size = seq*(seq_window)*num_head*word
+        kernel.elementwise_input1.output_tensor_size = seq*(seq_window)*num_head*word
         kernel.elementwise_input1.tiling = 4
 
     elif i == 11:
@@ -192,10 +192,10 @@ for i in range(1, 21):
         kernel.config = -1
         kernel.gemm_input1_input2.outer = num_head
         kernel.gemm_input1_input2.M = head_dim
-        kernel.gemm_input1_input2.K = seq_window+1
+        kernel.gemm_input1_input2.K = seq_window
         kernel.gemm_input1_input2.N = seq
-        kernel.gemm_input1_input2.input_tensor_1_size = hidden*(seq_window+1)*word
-        kernel.gemm_input1_input2.input_tensor_2_size = seq*(seq_window+1)*num_head*word
+        kernel.gemm_input1_input2.input_tensor_1_size = hidden*(seq_window)*word
+        kernel.gemm_input1_input2.input_tensor_2_size = seq*(seq_window)*num_head*word
         kernel.gemm_input1_input2.output_tensor_size = hidden*seq*word
         kernel.gemm_input1_input2.tiling = 4
 

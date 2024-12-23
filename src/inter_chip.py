@@ -276,7 +276,7 @@ else:
     if dse.execution.llm.num_layer_in_graph == 0:
         raise Exception('Wrong!')
         
-    if dse.execution.llm.num_layer_in_graph == 1: # assume users inputs only the dataflow graph of one layer, but there are many otehr layers denoted in "num_layer", which will be divided into PP (pipeline parallelism)
+    if dse.execution.llm.num_layer_in_graph == 1: # assume users inputs only the dataflow graph of one layer, but there are many other layers denoted in "num_layer", which will be divided into PP (pipeline parallelism)
     
         model = gp.Model()
         model.params.NonConvex = 2
@@ -499,7 +499,7 @@ else:
             link_bw = [dse.system.sw_sw_sw.link_bw_x, dse.system.sw_sw_sw.link_bw_y, dse.system.sw_sw_sw.link_bw_z]
             dimension = [dse.system.sw_sw_sw.x, dse.system.sw_sw_sw.y, dse.system.sw_sw_sw.z]
             par = [dse.system.sw_sw_sw.par_x, dse.system.sw_sw_sw.par_y, dse.system.sw_sw_sw.par_z]
-            
+
         else:
             raise Exception('Wrong!')
 

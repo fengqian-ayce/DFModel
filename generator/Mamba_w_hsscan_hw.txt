@@ -8,10 +8,10 @@ kernels {
     outer: 1
     M: 32
     K: 32
-    N: 262144
-    input_tensor_size: 16777216.0
+    N: 524288
+    input_tensor_size: 33554432.0
     weight_tensor_size: 2048.0
-    output_tensor_size: 16777216.0
+    output_tensor_size: 33554432.0
     tiling: N_TILING
   }
 }
@@ -25,10 +25,10 @@ kernels {
     outer: 1
     M: 32
     K: 32
-    N: 262144
-    input_tensor_size: 16777216.0
+    N: 524288
+    input_tensor_size: 33554432.0
     weight_tensor_size: 2048.0
-    output_tensor_size: 16777216.0
+    output_tensor_size: 33554432.0
     tiling: N_TILING
   }
 }
@@ -40,11 +40,11 @@ kernels {
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 262144
+    M: 524288
     K: 32
     N: 1
-    input_tensor_size: 524288.0
-    output_tensor_size: 524288.0
+    input_tensor_size: 1048576.0
+    output_tensor_size: 1048576.0
     tiling: M_TILING
     skip_weight: true
   }
@@ -57,11 +57,11 @@ kernels {
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 262144
+    M: 524288
     K: 5
     N: 1
-    input_tensor_size: 524288.0
-    output_tensor_size: 524288.0
+    input_tensor_size: 1048576.0
+    output_tensor_size: 1048576.0
     tiling: NO_TILING
     skip_weight: true
     use_effective_stage: true
@@ -76,11 +76,11 @@ kernels {
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 262144
+    M: 524288
     K: 5
     N: 1
-    input_tensor_size: 524288.0
-    output_tensor_size: 524288.0
+    input_tensor_size: 1048576.0
+    output_tensor_size: 1048576.0
     tiling: NO_TILING
     skip_weight: true
     use_effective_stage: true
@@ -95,11 +95,11 @@ kernels {
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 262144
+    M: 524288
     K: 5
     N: 1
-    input_tensor_size: 524288.0
-    output_tensor_size: 524288.0
+    input_tensor_size: 1048576.0
+    output_tensor_size: 1048576.0
     tiling: NO_TILING
     skip_weight: true
     use_effective_stage: true
@@ -114,11 +114,11 @@ kernels {
   type: SYSTOLIC
   gemm_input1_weight {
     outer: 1
-    M: 262144
+    M: 524288
     K: 5
     N: 1
-    input_tensor_size: 524288.0
-    output_tensor_size: 524288.0
+    input_tensor_size: 1048576.0
+    output_tensor_size: 1048576.0
     tiling: NO_TILING
     skip_weight: true
     use_effective_stage: true
@@ -133,12 +133,12 @@ kernels {
   type: SIMD
   elementwise_input1_input2 {
     outer: 1
-    M: 262144
+    M: 524288
     N: 32
-    input_tensor_1_size: 16777216.0
-    output_tensor_size: 16777216.0
+    input_tensor_1_size: 33554432.0
+    output_tensor_size: 33554432.0
     tiling: M_TILING
-    input_tensor_2_size: 16777216.0
+    input_tensor_2_size: 33554432.0
   }
 }
 kernels {
@@ -151,10 +151,10 @@ kernels {
     outer: 1
     M: 32
     K: 32
-    N: 262144
-    input_tensor_size: 16777216.0
+    N: 524288
+    input_tensor_size: 33554432.0
     weight_tensor_size: 2048.0
-    output_tensor_size: 16777216.0
+    output_tensor_size: 33554432.0
     tiling: N_TILING
   }
 }

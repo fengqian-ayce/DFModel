@@ -191,7 +191,7 @@ system {
   }
   memory {
     dram_bw: 8192.0
-    dram_cap: 68719480000.0
+    dram_cap: 103079215000.0
   }
 }
 cost {

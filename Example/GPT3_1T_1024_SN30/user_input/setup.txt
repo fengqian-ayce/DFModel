@@ -989,12 +989,11 @@ execution {
   }
   execution_style: DATAFLOW
   num_config: 6
-  perfect_overlap: true
-  compute_util: 0.9
+  overlap: true
+  #compute_util: 0.9
   word: 2
 }
 gurobi {
-  thread: 144
   gap: 0.1
-  time: 3600
+  time: 180
 }

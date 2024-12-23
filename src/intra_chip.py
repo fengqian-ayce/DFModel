@@ -75,7 +75,9 @@ class BasicTopology(Enum):
     R = 1
     FC = 2
     SW = 3
+
     
+
 kernel_id = []
 kernel_name = []   
 kernel_type = []
@@ -268,6 +270,15 @@ memory_size = np.array(memory_size)
 
 
 
+
+
+
+
+
+
+
+
+
 # get edges
 startIdx = []
 endIdx = []
@@ -275,6 +286,7 @@ depth = []
 tensor_size = []
 lane_stage_type = []
 edge_communication_type = []
+edge_communication_type_2 = []
 zero_out = []
 for connection in dse.dataflow_graph.connections:
     startIdx.append(connection.startIdx)
@@ -283,9 +295,25 @@ for connection in dse.dataflow_graph.connections:
     tensor_size.append(connection.tensor_size)
     lane_stage_type.append(connection.lane_stage_type)
     edge_communication_type.append(connection.communication_type)
+    edge_communication_type_2.append(connection.communication_type_2)
     zero_out.append(connection.zero_out)
 
 num_edge = len(startIdx)
+
+
+
+
+
+print(node_communication_type_2)
+print(edge_communication_type_2)
+print('zzzzzzzzzzzzzzzzzzzzz')
+
+
+
+
+
+
+
 
 
 
@@ -539,7 +567,13 @@ elif dse.system.WhichOneof('topology_variant') == 'sw_sw_sw': # 3D DGX-2
     if dse.execution.WhichOneof('workload_variant') == 'dlrm' or dse.execution.WhichOneof('workload_variant') == 'fft':
         a2a_bw_factor = [dse.system.sw_sw_sw.x, dse.system.sw_sw_sw.y, dse.system.sw_sw_sw.z]
         a2a_msg_factor = [dse.system.sw_sw_sw.x**2 / 4, (dse.system.sw_sw_sw.x*dse.system.sw_sw_sw.y)**2 / 4, Num_Chips_Per_Copy**2 / 4]
-    
+
+elif dse.system.WhichOneof('topology_variant') == 'r_r_r_r': # 4D torus
+    topology = [BasicTopology.R.value, BasicTopology.R.value, BasicTopology.R.value, BasicTopology.R.value]
+    link_bw = [dse.system.r_r_r_r.link_bw_w, dse.system.r_r_r_r.link_bw_x, dse.system.r_r_r_r.link_bw_y, dse.system.r_r_r_r.link_bw_z]
+    dimension = [dse.system.r_r_r_r.w, dse.system.r_r_r_r.x, dse.system.r_r_r_r.y, dse.system.r_r_r_r.z]
+    par = [dse.system.r_r_r_r.par_w, dse.system.r_r_r_r.par_x, dse.system.r_r_r_r.par_y, dse.system.r_r_r_r.par_z]
+
 else:
     raise Exception('Wrong!')
 
@@ -584,7 +618,8 @@ else:
 
 
 
-# TP/PP/DP
+# SP/TP/PP/DP
+SP = model.addVar(name='SP', vtype=gp.GRB.INTEGER, lb=1)
 TP = model.addVar(name='TP', vtype=gp.GRB.INTEGER, lb=1)
 PP = model.addVar(name='PP', vtype=gp.GRB.INTEGER, lb=1)
 DP = model.addVar(name='DP', vtype=gp.GRB.INTEGER, lb=1)
@@ -733,6 +768,12 @@ elif dse.execution.WhichOneof('workload_variant') == 'llm':
     ALL_TO_ALL_ratio = model.addVar(name='ALL_TO_ALL_ratio', vtype=gp.GRB.CONTINUOUS, lb=0)
     ALL_GATHER_ratio = model.addVar(name='ALL_GATHER_ratio', vtype=gp.GRB.CONTINUOUS, lb=0)
     ALL_REDUCE_PERIODIC_ratio = model.addVar(name='ALL_REDUCE_PERIODIC_ratio', vtype=gp.GRB.CONTINUOUS, lb=0)
+
+
+    ALL_REDUCE_ratio_sp = model.addVar(name='ALL_REDUCE_ratio_sp', vtype=gp.GRB.CONTINUOUS, lb=0)
+    ALL_GATHER_ratio_sp = model.addVar(name='ALL_GATHER_ratio_sp', vtype=gp.GRB.CONTINUOUS, lb=0)
+
+
     P2P_ratio = model.addVar(name='P2P_ratio', vtype=gp.GRB.CONTINUOUS, lb=0)
     
     if len(topology) == 1: # 1D
@@ -1110,6 +1151,172 @@ elif dse.execution.WhichOneof('workload_variant') == 'llm':
             
         else:
             raise Exception('Wrong!')
+    
+    elif len(topology) == 4: # 4D
+
+
+
+
+        Shape = model.addMVar(4, name='Shape', vtype=gp.GRB.INTEGER, lb=1)
+        if dimension[0] == 0:
+            pass
+        else:
+            model.addConstr(Shape[0] == dimension[0])
+        
+        if dimension[1] == 0:
+            pass
+        else:
+            model.addConstr(Shape[1] == dimension[1])
+        
+        if dimension[2] == 0:
+            pass
+        else:
+            model.addConstr(Shape[2] == dimension[2])
+
+        if dimension[3] == 0:
+            pass
+        else:
+            model.addConstr(Shape[3] == dimension[3])
+            
+        aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
+        bbb = model.addVar(vtype=gp.GRB.CONTINUOUS)
+        model.addConstr(aaa == Shape[0] * Shape[1])
+        model.addConstr(bbb == Shape[2] * Shape[3])
+        model.addConstr(aaa * bbb == num_chip)
+        
+        
+        Link_BW = model.addMVar(4, name='Link_BW', vtype=gp.GRB.CONTINUOUS, lb=0)
+        for i in range(len(topology)):
+            model.addConstr(Link_BW[i] == link_bw[i])  
+
+        Link_BW_SP = model.addVar(name='Link_BW_SP', vtype=gp.GRB.CONTINUOUS, lb=0)
+        Link_BW_TP = model.addVar(name='Link_BW_TP', vtype=gp.GRB.CONTINUOUS, lb=0)
+        Link_BW_PP = model.addVar(name='Link_BW_PP', vtype=gp.GRB.CONTINUOUS, lb=0)
+        Link_BW_DP = model.addVar(name='Link_BW_DP', vtype=gp.GRB.CONTINUOUS, lb=0)
+        
+        if par[0] == 'SP' and par[1] == 'TP' and par[2] == 'PP' and par[3] == 'DP':
+            model.addConstr(SP == Shape[0])
+            model.addConstr(TP == Shape[1])
+            model.addConstr(PP == Shape[2])
+            model.addConstr(DP == Shape[3])
+            
+            model.addConstr(Link_BW_SP == Link_BW[0])
+            model.addConstr(Link_BW_TP == Link_BW[1])
+            model.addConstr(Link_BW_PP == Link_BW[2])
+            model.addConstr(Link_BW_DP == Link_BW[3])
+            
+            
+
+            aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
+            model.addConstr(aaa == TP * Link_BW_TP)
+            if topology[1] == BasicTopology.R.value:
+                model.addConstr(ALL_TO_ALL_ratio * Link_BW_TP * 8 == TP * TP)
+                model.addConstr(ALL_GATHER_ratio * aaa == TP - 1)
+            elif topology[1] == BasicTopology.FC.value:
+                model.addConstr(ALL_TO_ALL_ratio * Link_BW_TP == 1)
+                model.addConstr(ALL_GATHER_ratio * aaa == 1)
+            elif topology[1] == BasicTopology.SW.value:
+                model.addConstr(ALL_TO_ALL_ratio * Link_BW_TP * 4 == TP)
+                model.addConstr(ALL_GATHER_ratio * aaa == TP - 1)
+            else:
+                raise Exception('Wrong!')
+            
+
+
+            aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
+            model.addConstr(aaa == TP * Link_BW_TP)
+            if topology[1] == BasicTopology.R.value:
+                if dse.execution.separate_rs_ag_for_ar:
+                    model.addConstr(ALL_REDUCE_ratio * aaa == (TP - 1)*2)
+                else:
+                    model.addConstr(ALL_REDUCE_ratio * aaa == TP - 1)
+            elif topology[1] == BasicTopology.FC.value:
+                if dse.execution.separate_rs_ag_for_ar:
+                    model.addConstr(ALL_REDUCE_ratio * aaa == 2)
+                else:
+                    model.addConstr(ALL_REDUCE_ratio * aaa == 1)
+            elif topology[1] == BasicTopology.SW.value:
+                if dse.execution.separate_rs_ag_for_ar:
+                    model.addConstr(ALL_REDUCE_ratio * aaa == (TP - 1)*2)
+                else:
+                    model.addConstr(ALL_REDUCE_ratio * aaa == TP - 1)
+            else:
+                raise Exception('Wrong!')
+                            
+            bbb = model.addVar(vtype=gp.GRB.CONTINUOUS)
+            model.addConstr(bbb == DP * Link_BW_DP)
+            if topology[3] == BasicTopology.R.value:
+                if dse.execution.separate_rs_ag_for_ar:
+                    model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == (DP - 1)*2)
+                else:
+                    model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
+            elif topology[3] == BasicTopology.FC.value:
+                model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == 1)
+            elif topology[3] == BasicTopology.SW.value:
+                if dse.execution.separate_rs_ag_for_ar:
+                    model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == (DP - 1)*2)
+                else:
+                    model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
+            else:
+                raise Exception('Wrong!')
+            
+
+
+
+
+
+
+
+
+
+
+
+            aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
+            model.addConstr(aaa == SP * Link_BW_SP)
+            if topology[0] == BasicTopology.R.value:
+                model.addConstr(ALL_GATHER_ratio_sp * aaa == SP - 1)
+            elif topology[0] == BasicTopology.FC.value:
+                model.addConstr(ALL_GATHER_ratio_sp * aaa == 1)
+            elif topology[0] == BasicTopology.SW.value:
+                model.addConstr(ALL_GATHER_ratio_sp * aaa == SP - 1)
+            else:
+                raise Exception('Wrong!')
+            
+
+
+            aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
+            model.addConstr(aaa == SP * Link_BW_SP)
+            if topology[0] == BasicTopology.R.value:
+                if dse.execution.separate_rs_ag_for_ar:
+                    model.addConstr(ALL_REDUCE_ratio_sp * aaa == (SP - 1)*2)
+                else:
+                    model.addConstr(ALL_REDUCE_ratio_sp * aaa == SP - 1)
+            elif topology[0] == BasicTopology.FC.value:
+                if dse.execution.separate_rs_ag_for_ar:
+                    model.addConstr(ALL_REDUCE_ratio_sp * aaa == 2)
+                else:
+                    model.addConstr(ALL_REDUCE_ratio_sp * aaa == 1)
+            elif topology[0] == BasicTopology.SW.value:
+                if dse.execution.separate_rs_ag_for_ar:
+                    model.addConstr(ALL_REDUCE_ratio_sp * aaa == (SP - 1)*2)
+                else:
+                    model.addConstr(ALL_REDUCE_ratio_sp * aaa == SP - 1)
+            else:
+                raise Exception('Wrong!')
+
+
+                
+            model.addConstr(P2P_ratio * Link_BW_PP == 1)
+
+        else:
+            raise Exception('Wrong!')
+
+
+
+
+
+
+
         
     else:
         raise Exception('Wrong!')
@@ -1152,6 +1359,10 @@ if dse.execution.WhichOneof('workload_variant') == 'llm':
         pass
     else:
         model.addConstr(tile_size == dse.execution.llm.tile_size)
+
+    if len(dimension) == 4:
+        sp_dim = dimension[0]
+        seq_len = seq_len // sp_dim
     
     model.addConstr(tile_size * num_tile >= seq_len)
     
@@ -1322,6 +1533,10 @@ if dse.execution.WhichOneof('workload_variant') == 'llm':
     ALL_GATHER_communication_size_node = model.addMVar(num_node, name='ALL_GATHER_communication_size_node', vtype=gp.GRB.CONTINUOUS, lb=0)
     ALL_REDUCE_PERIODIC_communication_size_node = model.addMVar(num_node, name='ALL_REDUCE_PERIODIC_communication_size_node', vtype=gp.GRB.CONTINUOUS, lb=0)
 
+    ALL_REDUCE_communication_size_node_sp = model.addMVar(num_node, name='ALL_REDUCE_communication_size_node_sp', vtype=gp.GRB.CONTINUOUS, lb=0)
+    ALL_GATHER_communication_size_node_sp = model.addMVar(num_node, name='ALL_GATHER_communication_size_node_sp', vtype=gp.GRB.CONTINUOUS, lb=0)
+
+
     for i in range(num_node):
         if node_communication_type[i] == Communication.ALL_REDUCE.value:
             model.addConstr(ALL_REDUCE_communication_size_node[i] == shard_M[i] * shard_N[i] * word)
@@ -1346,12 +1561,30 @@ if dse.execution.WhichOneof('workload_variant') == 'llm':
             model.addConstr(ALL_REDUCE_PERIODIC_communication_size_node[i] * num_micro_batch_per_pipeline >= aaa)
         else:
             model.addConstr(ALL_REDUCE_PERIODIC_communication_size_node[i] == 0)
+
+        
+
+
+
+        if node_communication_type_2[i] == Communication.ALL_REDUCE.value:
+            model.addConstr(ALL_REDUCE_communication_size_node_sp[i] == shard_M[i] * shard_N[i] * word)
+        else:
+            model.addConstr(ALL_REDUCE_communication_size_node_sp[i] == 0)
+
+        if node_communication_type_2[i] == Communication.ALL_GATHER.value:
+            model.addConstr(ALL_GATHER_communication_size_node_sp[i] == shard_M[i] * shard_N[i] * word)
+        else:
+            model.addConstr(ALL_GATHER_communication_size_node_sp[i] == 0)
     
 
 
     ALL_REDUCE_communication_size_edge = model.addMVar(num_edge, name='ALL_REDUCE_communication_size_edge', vtype=gp.GRB.CONTINUOUS, lb=0)
     ALL_TO_ALL_communication_size_edge = model.addMVar(num_edge, name='ALL_TO_ALL_communication_size_edge', vtype=gp.GRB.CONTINUOUS, lb=0)
     ALL_GATHER_communication_size_edge = model.addMVar(num_edge, name='ALL_GATHER_communication_size_edge', vtype=gp.GRB.CONTINUOUS, lb=0)
+    
+    ALL_REDUCE_communication_size_edge_sp = model.addMVar(num_edge, name='ALL_REDUCE_communication_size_edge_sp', vtype=gp.GRB.CONTINUOUS, lb=0)
+    ALL_GATHER_communication_size_edge_sp = model.addMVar(num_edge, name='ALL_GATHER_communication_size_edge_sp', vtype=gp.GRB.CONTINUOUS, lb=0)
+    
     for i in range(num_edge):
         start_node_idx = node_dict[startIdx[i]]
         
@@ -1369,6 +1602,22 @@ if dse.execution.WhichOneof('workload_variant') == 'llm':
             model.addConstr(ALL_GATHER_communication_size_edge[i] == shard_M[start_node_idx] * shard_N[start_node_idx] * word)
         else:
             model.addConstr(ALL_GATHER_communication_size_edge[i] == 0)
+        
+
+
+
+        start_node_idx = node_dict[startIdx[i]]
+        
+        if edge_communication_type_2[i] == Communication.ALL_REDUCE.value:
+            model.addConstr(ALL_REDUCE_communication_size_edge_sp[i] == shard_M[start_node_idx] * shard_N[start_node_idx] * word)
+        else:
+            model.addConstr(ALL_REDUCE_communication_size_edge_sp[i] == 0)
+
+        if edge_communication_type_2[i] == Communication.ALL_GATHER.value:
+            model.addConstr(ALL_GATHER_communication_size_edge_sp[i] == shard_M[start_node_idx] * shard_N[start_node_idx] * word)
+            print('aaaaaa', start_node_idx, kernel_name, kernel_name[start_node_idx])
+        else:
+            model.addConstr(ALL_GATHER_communication_size_edge_sp[i] == 0)
 
 
 
@@ -1807,6 +2056,25 @@ if dse.system.accelerator.pmu == 0:
         if dse.execution.WhichOneof('workload_variant') == 'llm':
             model.addConstr(SRAM_Per_Config_total[i] <= sram_cap)
 
+
+
+
+
+
+
+
+    tiling_per_config = model.addMVar(C, name='tiling_per_config', vtype=gp.GRB.INTEGER)
+    for i in range(C):
+        tmp = model.addMVar(num_node, vtype=gp.GRB.INTEGER)
+
+        for j in range(num_node):
+            model.addConstr(tmp[j] == A[j, i] * tiling_factor[j])
+        
+        model.addConstr(tiling_per_config[i] == gp.max_(tmp[j] for j in range(num_node)))
+
+    
+
+
 else:
     p_and_r_flag = True
     
@@ -1972,7 +2240,9 @@ else:
 
 
 
-
+    tiling_per_config = model.addMVar(C, name='tiling_per_config', vtype=gp.GRB.INTEGER)
+    for i in range(C):
+        model.addConstr(tiling_per_config[i] == A[:, i] @ tiling_factor)
 
 
 
@@ -2141,9 +2411,11 @@ memory_latency = model.addMVar(C, name='memory_latency', vtype=gp.GRB.CONTINUOUS
 explicit_memory_latency = model.addMVar(C, name='explicit_memory_latency', vtype=gp.GRB.CONTINUOUS, lb=0)
 for i in range(C):
     t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
+    t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
     model.addConstr(t1 == shard_intermediate_buffer_size @ D[:, i])
+    model.addConstr(t2 == num_tile_per_config[i] * tiling_per_config[i])
 
-    model.addConstr(memory_latency[i] * DRAM_BW == t1 * num_tile_per_config[i])
+    model.addConstr(memory_latency[i] * DRAM_BW == t1 * t2)
     model.addConstr(explicit_memory_latency[i] * DRAM_BW == memory_size @ A[:, i])
 
     model.addConstr(Memory_Latency[i] == memory_latency[i] + explicit_memory_latency[i])
@@ -2177,6 +2449,8 @@ p2p_latency = model.addVar(name='p2p_latency', vtype=gp.GRB.CONTINUOUS)
 
 if dse.execution.WhichOneof('workload_variant') == 'llm':
 
+
+    # TP
     Network_Latency_ALL_REDUCE_node = model.addMVar(C, name='Network_Latency_ALL_REDUCE_node', vtype=gp.GRB.CONTINUOUS, lb=0)
     if is_TP_hierarchical == True:
         for i in range(C):
@@ -2232,7 +2506,7 @@ if dse.execution.WhichOneof('workload_variant') == 'llm':
             model.addConstr(Network_Latency_ALL_REDUCE_node[i] == serialization_latency_allreduce_node[i] + link_latency_allreduce_node[i])
 
             
-
+    # TP
     Network_Latency_ALL_TO_ALL_node = model.addMVar(C, name='Network_Latency_ALL_TO_ALL_node', vtype=gp.GRB.CONTINUOUS, lb=0)
     for i in range(C):
         t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
@@ -2241,7 +2515,7 @@ if dse.execution.WhichOneof('workload_variant') == 'llm':
         model.addConstr(t2 == ALL_TO_ALL_ratio * num_tile_per_config[i])
         model.addConstr(Network_Latency_ALL_TO_ALL_node[i] == t1*t2)
 
-
+    # TP
     Network_Latency_ALL_GATHER_node = model.addMVar(C, name='Network_Latency_ALL_GATHER_node', vtype=gp.GRB.CONTINUOUS, lb=0)
     for i in range(C):
         t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
@@ -2251,34 +2525,7 @@ if dse.execution.WhichOneof('workload_variant') == 'llm':
         model.addConstr(Network_Latency_ALL_GATHER_node[i] == t1*t2)
 
 
-
-
-
-    Network_Latency_ALL_REDUCE_PERIODIC_node = model.addMVar(C, name='Network_Latency_ALL_REDUCE_PERIODIC_node', vtype=gp.GRB.CONTINUOUS, lb=0)
-    if is_DP_hierarchical == True:
-        for i in range(C):
-            t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            t3 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            model.addConstr(t1 == A[:, i] @ ALL_REDUCE_PERIODIC_communication_size_node)
-            model.addConstr(t2 == ALL_REDUCE_PERIODIC_ratio_fast)
-            model.addConstr(t3 == ALL_REDUCE_PERIODIC_ratio_slow)
-            model.addConstr(Network_Latency_ALL_REDUCE_PERIODIC_node[i] == t1*t2 + t1*t3)
-            
-    else:
-        for i in range(C):
-            t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            model.addConstr(t1 == A[:, i] @ ALL_REDUCE_PERIODIC_communication_size_node)
-            model.addConstr(t2 == ALL_REDUCE_PERIODIC_ratio)
-            model.addConstr(Network_Latency_ALL_REDUCE_PERIODIC_node[i] == t1*t2) # reduce-scatter/all-gather
-
-
-
-
-
-
-
+    # TP
     Network_Latency_ALL_REDUCE_edge = model.addMVar(C, name='Network_Latency_ALL_REDUCE_edge', vtype=gp.GRB.CONTINUOUS, lb=0)
     t3 = model.addMVar((num_edge, C), vtype=gp.GRB.CONTINUOUS)
     t4 = model.addMVar((num_edge, C), vtype=gp.GRB.BINARY)
@@ -2318,19 +2565,13 @@ if dse.execution.WhichOneof('workload_variant') == 'llm':
         else:
             model.addConstr(link_latency_allreduce_edge[i] == 0)
 
-
-
-
-
-        
-
         model.addConstr(serialization_latency_allreduce_edge[i] == t1*t2)
         model.addConstr(Network_Latency_ALL_REDUCE_edge[i] == serialization_latency_allreduce_edge[i] + link_latency_allreduce_edge[i])
         
 
 
 
-
+    # TP
     Network_Latency_ALL_TO_ALL_edge = model.addMVar(C, name='Network_Latency_ALL_TO_ALL_edge', vtype=gp.GRB.CONTINUOUS, lb=0)
     for i in range(C):
         t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
@@ -2339,6 +2580,10 @@ if dse.execution.WhichOneof('workload_variant') == 'llm':
         model.addConstr(t2 == ALL_TO_ALL_ratio * num_tile_per_config[i])
         model.addConstr(Network_Latency_ALL_TO_ALL_edge[i] == t1*t2)
 
+
+
+
+    # TP
     Network_Latency_ALL_GATHER_edge = model.addMVar(C, name='Network_Latency_ALL_GATHER_edge', vtype=gp.GRB.CONTINUOUS, lb=0)
     for i in range(C):
         t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
@@ -2347,14 +2592,134 @@ if dse.execution.WhichOneof('workload_variant') == 'llm':
         model.addConstr(t2 == ALL_GATHER_ratio * num_tile_per_config[i])
         model.addConstr(Network_Latency_ALL_GATHER_edge[i] == t1*t2)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # DP
+    Network_Latency_ALL_REDUCE_PERIODIC_node = model.addMVar(C, name='Network_Latency_ALL_REDUCE_PERIODIC_node', vtype=gp.GRB.CONTINUOUS, lb=0)
+    if is_DP_hierarchical == True:
+        for i in range(C):
+            t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
+            t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
+            t3 = model.addVar(vtype=gp.GRB.CONTINUOUS)
+            model.addConstr(t1 == A[:, i] @ ALL_REDUCE_PERIODIC_communication_size_node)
+            model.addConstr(t2 == ALL_REDUCE_PERIODIC_ratio_fast)
+            model.addConstr(t3 == ALL_REDUCE_PERIODIC_ratio_slow)
+            model.addConstr(Network_Latency_ALL_REDUCE_PERIODIC_node[i] == t1*t2 + t1*t3)
+            
+    else:
+        for i in range(C):
+            t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
+            t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
+            model.addConstr(t1 == A[:, i] @ ALL_REDUCE_PERIODIC_communication_size_node)
+            model.addConstr(t2 == ALL_REDUCE_PERIODIC_ratio)
+            model.addConstr(Network_Latency_ALL_REDUCE_PERIODIC_node[i] == t1*t2) # reduce-scatter/all-gather
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # SP
+    Network_Latency_ALL_REDUCE_node_sp = model.addMVar(C, name='Network_Latency_ALL_REDUCE_node_sp', vtype=gp.GRB.CONTINUOUS, lb=0)
     for i in range(C):
-        model.addConstr(Network_Latency[i] == Network_Latency_ALL_REDUCE_node[i]
-                                            + Network_Latency_ALL_TO_ALL_node[i]
-                                            + Network_Latency_ALL_GATHER_node[i]
-                                            + Network_Latency_ALL_REDUCE_PERIODIC_node[i]
-                                            + Network_Latency_ALL_REDUCE_edge[i]
-                                            + Network_Latency_ALL_TO_ALL_edge[i]
-                                            + Network_Latency_ALL_GATHER_edge[i])
+        t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
+        t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
+        model.addConstr(t1 == A[:, i] @ ALL_REDUCE_communication_size_node_sp)
+        model.addConstr(t2 == ALL_REDUCE_ratio_sp * num_tile_per_config[i])       
+        model.addConstr(Network_Latency_ALL_REDUCE_node_sp[i] == t1*t2)
+
+        
+
+
+
+
+
+    # SP
+    Network_Latency_ALL_GATHER_node_sp = model.addMVar(C, name='Network_Latency_ALL_GATHER_node_sp', vtype=gp.GRB.CONTINUOUS, lb=0)
+    for i in range(C):
+        t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
+        t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
+        model.addConstr(t1 == A[:, i] @ ALL_GATHER_communication_size_node_sp)
+        model.addConstr(t2 == ALL_GATHER_ratio_sp * num_tile_per_config[i])
+        model.addConstr(Network_Latency_ALL_GATHER_node_sp[i] == t1*t2)
+
+
+
+    # SP
+    Network_Latency_ALL_REDUCE_edge_sp = model.addMVar(C, name='Network_Latency_ALL_REDUCE_edge_sp', vtype=gp.GRB.CONTINUOUS, lb=0)
+    for i in range(C):
+        t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
+        t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
+        
+        model.addConstr(t1 == H[:, i] @ ALL_REDUCE_communication_size_edge_sp)
+        model.addConstr(t2 == ALL_REDUCE_ratio_sp * num_tile_per_config[i])
+        model.addConstr(Network_Latency_ALL_REDUCE_edge_sp[i] == t1*t2)
+
+
+
+
+
+    # SP
+    Network_Latency_ALL_GATHER_edge_sp = model.addMVar(C, name='Network_Latency_ALL_GATHER_edge_sp', vtype=gp.GRB.CONTINUOUS, lb=0)
+    for i in range(C):
+        t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
+        t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
+        model.addConstr(t1 == H[:, i] @ ALL_GATHER_communication_size_edge_sp)
+        model.addConstr(t2 == ALL_GATHER_ratio_sp * num_tile_per_config[i])
+        model.addConstr(Network_Latency_ALL_GATHER_edge_sp[i] == t1*t2)
+
+
+
+
+
+
+
+
+
+
+    for i in range(C):
+        aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
+        bbb = model.addVar(vtype=gp.GRB.CONTINUOUS)
+        ccc = model.addVar(vtype=gp.GRB.CONTINUOUS)
+        model.addConstr(aaa == Network_Latency_ALL_REDUCE_node[i]
+                             + Network_Latency_ALL_TO_ALL_node[i]
+                             + Network_Latency_ALL_GATHER_node[i]
+                             + Network_Latency_ALL_REDUCE_edge[i]
+                             + Network_Latency_ALL_TO_ALL_edge[i]
+                             + Network_Latency_ALL_GATHER_edge[i])
+        model.addConstr(bbb == Network_Latency_ALL_REDUCE_PERIODIC_node[i])
+        model.addConstr(ccc == Network_Latency_ALL_REDUCE_node_sp[i]
+                             + Network_Latency_ALL_GATHER_node_sp[i]
+                             + Network_Latency_ALL_REDUCE_edge_sp[i]
+                             + Network_Latency_ALL_GATHER_edge_sp[i])
+        
+        model.addConstr(Network_Latency[i] == gp.max_(aaa, bbb, ccc))
+
     
 
     # p2p communication
@@ -2470,9 +2835,32 @@ for i in range(C):
         model.addConstr(Per_Config_II[i] == tmp * num_input_per_config[i])
 
     elif dse.execution.overlap == Overlap_Style.NO_OVERLAP.value:
-        tmp = model.addVar(vtype=gp.GRB.CONTINUOUS)
-        model.addConstr(tmp == Compute_Latency[i] + Memory_Latency[i] + Network_Latency[i])
-        model.addConstr(Per_Config_II[i] == tmp * num_input_per_config[i])
+        
+        if dse.execution.optimization == "" or dse.execution.optimization == "CMN":
+            tmp = model.addVar(vtype=gp.GRB.CONTINUOUS)
+            model.addConstr(tmp == Compute_Latency[i] + Memory_Latency[i] + Network_Latency[i])
+            model.addConstr(Per_Config_II[i] == tmp * num_input_per_config[i])
+            
+        elif dse.execution.optimization == "CM":
+            tmp = model.addVar(vtype=gp.GRB.CONTINUOUS)
+            model.addConstr(tmp == Compute_Latency[i] + Memory_Latency[i])
+            model.addConstr(Per_Config_II[i] == tmp * num_input_per_config[i])
+
+        elif dse.execution.optimization == "CN":
+            tmp = model.addVar(vtype=gp.GRB.CONTINUOUS)
+            model.addConstr(tmp == Compute_Latency[i] + Network_Latency[i])
+            model.addConstr(Per_Config_II[i] == tmp * num_input_per_config[i])
+
+        elif dse.execution.optimization == "C":
+            tmp = model.addVar(vtype=gp.GRB.CONTINUOUS)
+            model.addConstr(tmp == Compute_Latency[i])
+            model.addConstr(Per_Config_II[i] == tmp * num_input_per_config[i])
+            
+        else:
+            raise Exception('Wrong!')
+        
+
+
 
     else:
         raise Exception("Wrong!")
@@ -2642,9 +3030,25 @@ elif dse.system.WhichOneof('topology_variant') == 'sw_sw_sw': # 3d dgx-2
     model.addConstr(SWITCH_cost[0] == num_chips_per_copy * Link_BW[0] * switch_unit_price)
     model.addConstr(SWITCH_cost[1] == ccc * Link_BW[1] * switch_unit_price)
     model.addConstr(SWITCH_cost[2] == Shape[2] * Link_BW[2] * switch_unit_price)
-       
+
+elif dse.system.WhichOneof('topology_variant') == 'r_r_r_r': # 4d torus
+    aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
+    bbb = model.addVar(vtype=gp.GRB.CONTINUOUS)
+    ccc = model.addVar(vtype=gp.GRB.CONTINUOUS)
+    model.addConstr(aaa == Shape[0] * Shape[1])
+    model.addConstr(bbb == Shape[0] * Shape[2])
+    model.addConstr(ccc == Shape[1] * Shape[2])
+    
+    model.addConstr(LINK_cost[0] == num_chips_per_copy * Link_BW[0] * link_unit_price)
+    model.addConstr(LINK_cost[1] == num_chips_per_copy * Link_BW[1] * link_unit_price)
+    model.addConstr(LINK_cost[2] == num_chips_per_copy * Link_BW[2] * link_unit_price)
+    
+    model.addConstr(SWITCH_cost[0] == 2 * ccc * Link_BW[0] * switch_unit_price)
+    model.addConstr(SWITCH_cost[1] == 2 * bbb * Link_BW[1] * switch_unit_price)
+    model.addConstr(SWITCH_cost[2] == 2 * aaa * Link_BW[2] * switch_unit_price)
+
 else:
-    raise Exception('Wrong!')
+    raise Exception('Wrong!')      
 
 
 
@@ -2793,10 +3197,24 @@ elif dse.system.WhichOneof('topology_variant') == 'sw_sw_sw': # 3d dgx-2
     model.addConstr(SWITCH_power[1] == ccc * Link_BW[1] * switch_unit_power)
     model.addConstr(SWITCH_power[2] == Shape[2] * Link_BW[2] * switch_unit_power)
        
+elif dse.system.WhichOneof('topology_variant') == 'r_r_r_r': # 4d torus
+    aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
+    bbb = model.addVar(vtype=gp.GRB.CONTINUOUS)
+    ccc = model.addVar(vtype=gp.GRB.CONTINUOUS)
+    model.addConstr(aaa == Shape[0] * Shape[1])
+    model.addConstr(bbb == Shape[0] * Shape[2])
+    model.addConstr(ccc == Shape[1] * Shape[2])
+    
+    model.addConstr(LINK_power[0] == num_chips_per_copy * Link_BW[0] * link_unit_power_x)
+    model.addConstr(LINK_power[1] == num_chips_per_copy * Link_BW[1] * link_unit_power_y)
+    model.addConstr(LINK_power[2] == num_chips_per_copy * Link_BW[2] * link_unit_power_z)
+    
+    model.addConstr(SWITCH_power[0] == 2 * ccc * Link_BW[0] * switch_unit_power)
+    model.addConstr(SWITCH_power[1] == 2 * bbb * Link_BW[1] * switch_unit_power)
+    model.addConstr(SWITCH_power[2] == 2 * aaa * Link_BW[2] * switch_unit_power)
+
 else:
     raise Exception('Wrong!')
-
-
 
 
 total_DRAM_power = model.addVar(name='total_DRAM_power', vtype=gp.GRB.CONTINUOUS, lb=0)
@@ -2831,22 +3249,40 @@ model.addConstr(total_power == total_DRAM_power + total_accelerator_power + tota
 final_ii_ns = model.addVar(name='final_ii_ns', vtype=gp.GRB.CONTINUOUS, lb=0)
 model.addConstr(final_ii_ns * num_copy >= ns_per_batch)
 
+total_compute_latency = model.addVar(name='total_compute_latency', vtype=gp.GRB.CONTINUOUS, lb=0)
+model.addConstr(total_compute_latency == np.ones((C)) @ Compute_Latency)
+
+total_memory_latency = model.addVar(name='total_memory_latency', vtype=gp.GRB.CONTINUOUS, lb=0)
+model.addConstr(total_memory_latency == np.ones((C)) @ Memory_Latency)
+
+total_network_latency = model.addVar(name='total_network_latency', vtype=gp.GRB.CONTINUOUS, lb=0)
+model.addConstr(total_network_latency == np.ones((C)) @ Network_Latency)
+
 if p_and_r_flag:
     total_pcu_pmu_used = model.addVar(name='total_pcu_pmu_used', vtype=gp.GRB.CONTINUOUS, lb=0)
     model.addConstr(total_pcu_pmu_used == PMU_used_per_config @ np.ones((C)) + Par_total @ np.ones((num_node)))
 
-    model.setObjectiveN(final_ii_ns, index=0, priority=1)
-    model.setObjectiveN(total_pcu_pmu_used, index=1, priority=0)
+    model.setObjectiveN(final_ii_ns, index=0, priority=4)
+    model.setObjectiveN(total_pcu_pmu_used, index=1, priority=3)
+    model.setObjectiveN(total_compute_latency, index=2, priority=2)
+    model.setObjectiveN(total_memory_latency, index=3, priority=1)
+    model.setObjectiveN(total_network_latency, index=4, priority=0)
     model.ModelSense = gp.GRB.MINIMIZE
 
 else:
     if first_bwd_kernel == -1 and dse.execution.WhichOneof('workload_variant') == 'llm': # inference
-        model.setObjectiveN(final_ii_ns, index=0, priority=1)
-        model.setObjectiveN(final_latency_ns, index=1, priority=0)
+        model.setObjectiveN(final_ii_ns, index=0, priority=4)
+        model.setObjectiveN(final_latency_ns, index=1, priority=3)
+        model.setObjectiveN(total_compute_latency, index=2, priority=2)
+        model.setObjectiveN(total_memory_latency, index=3, priority=1)
+        model.setObjectiveN(total_network_latency, index=4, priority=0)
         model.ModelSense = gp.GRB.MINIMIZE
     else:
-        model.setObjective(final_ii_ns, gp.GRB.MINIMIZE)
-
+        model.setObjective(final_ii_ns, index=0, priority=3)
+        model.setObjectiveN(total_compute_latency, index=1, priority=2)
+        model.setObjectiveN(total_memory_latency, index=2, priority=1)
+        model.setObjectiveN(total_network_latency, index=3, priority=0)
+        model.ModelSense = gp.GRB.MINIMIZE
 model.optimize()
 
 
@@ -3042,6 +3478,8 @@ print()
 print()
 print()
 
+if len(dimension) == 4:
+    print('SP', dimension[0])
 print('TP', TP)   
 print('PP', PP)   
 print('DP', DP)
@@ -3158,632 +3596,631 @@ print('\n\n\n')
 
 
 
-
-
-class pcu():
-    def __init__(self):
-        self.x = -1
-        self.y = -1
-        self.cycle = -1
-        self.kernel_idx = -1
-        self.name = 'N/A'
-        self.M = -1
-        self.K = -1
-        self.N = -1
-        self.SIMD_or_Systolic = 'N/A'
-    
-    def set_pcu_x(self, x):
-        self.x = x
-
-    def set_pcu_y(self, y):
-        self.y = y
-
-    def set_pcu_cycle(self, cycle):
-        self.cycle = cycle
+if not dse.execution.turn_off_p_and_r:
+    class pcu():
+        def __init__(self):
+            self.x = -1
+            self.y = -1
+            self.cycle = -1
+            self.kernel_idx = -1
+            self.name = 'N/A'
+            self.M = -1
+            self.K = -1
+            self.N = -1
+            self.SIMD_or_Systolic = 'N/A'
         
-    def set_pcu_kernel_idx(self, kernel_idx):    
-        self.kernel_idx = kernel_idx
-        
-    def set_pcu_name(self, name):
-        self.name = name
-    
-    def set_pcu_M(self, M):
-        self.M = M 
-    
-    def set_pcu_K(self, K):
-        self.K = K 
-        
-    def set_pcu_N(self, N):
-        self.N = N 
-        
-    def set_pcu_SIMD_or_Systolic(self, SIMD_or_Systolic):
-        self.SIMD_or_Systolic = SIMD_or_Systolic
-        
-class pmu():
-    def __init__(self):
-        self.x = -1
-        self.y = -1
-        self.upstream_cycle = -1
-        self.downstream_cycle = -1
-        self.tensor_idx = -1
-        self.name = 'N/A'
-    
-    def set_pmu_x(self, x):
-        self.x = x
+        def set_pcu_x(self, x):
+            self.x = x
 
-    def set_pmu_y(self, y):
-        self.y = y
+        def set_pcu_y(self, y):
+            self.y = y
 
-    def set_pmu_upstream(self, upstream_cycle):
-        self.upstream_cycle = upstream_cycle
-        
-    def set_pmu_downstream(self, downstream_cycle):
-        self.downstream_cycle = downstream_cycle     
-    
-    def set_pmu_tensor_idx(self, tensor_idx):
-        self.tensor_idx = tensor_idx  
-    
-    def set_pmu_name(self, name):
-        self.name = name  
-        
-
-if p_and_r_flag == True:
-    
-    kernel_to_name = {}
-    
-    config_to_kernel = {}
-    for i in range(C):
-        config_to_kernel[i] = []
-        
-    for i in range(num_node):
-        for j in range(C):
-            if A[i * C + j] == 1:
-                config_to_kernel[j].append(i)
-                
-                
-                
-    kernel_to_num_pcu = {}
-    kernel_to_cycle = {}
-    kernel_to_M = {}
-    kernel_to_K = {}
-    kernel_to_N = {}
-    kernel_to_SIMD_Systolic = {}
-    for i in range(num_node):
-        kernel_to_num_pcu[i] = round(Par_lane[i] * Par_stage[i])
-        kernel_to_cycle[i] = round(Cycle[i])
-        kernel_to_M[i] = round(MMM[i])
-        kernel_to_K[i] = round(KKK[i])
-        kernel_to_N[i] = round(NNN[i])
-        kernel_to_SIMD_Systolic[i] = SIMD_or_Systolic[i]
-    
-    kernel_to_upstream_edge = {}
-    kernel_to_downstream_edge = {}
-    kernel_to_weight = {}
-    
-    for i in range(num_node):
-        kernel_to_upstream_edge[i] = []
-        kernel_to_downstream_edge[i] = []
-        
-    
-    for i in range(num_node):
-        if i in upstream_edge_dict.keys():
-            for j in upstream_edge_dict[i]:
-                kernel_to_upstream_edge[i].append((j, round(PMU_used_intermediate[j])))    
-    for i in range(num_node):
-        if i in downstream_edge_dict.keys():
-            for j in downstream_edge_dict[i]:
-                kernel_to_downstream_edge[i].append((j, round(PMU_used_intermediate[j])))           
-    for i in range(num_weight):
-        kernel_to_weight[node_dict[weight_dict[i]]] = (i+num_edge, round(PMU_used_initiation[i]))
-
-    
-    if dse.system.accelerator.x * dse.system.accelerator.y != dse.system.accelerator.core + dse.system.accelerator.pmu:
-        raise Exception('Wrong!')
-    else:
-        X = dse.system.accelerator.x
-        Y = dse.system.accelerator.y
-
-        hardware_pcu = []
-        hardware_pmu = []
-
-        if dse.system.accelerator.placement == "rowwise":
-            for x in range(X):
-                for y in range(Y):
-                    if x % 2 == 0:
-                        if y % 2 == 1:
-                            hardware_pcu.append((x, y))
-                    else:
-                        if y % 2 == 0:
-                            hardware_pcu.append((x, y))
+        def set_pcu_cycle(self, cycle):
+            self.cycle = cycle
             
-            for x in range(X):
-                for y in range(Y):
-                    if x % 2 == 0:
-                        if y % 2 == 0:
-                            hardware_pmu.append((x, y))
-                    else:
-                        if y % 2 == 1:
-                            hardware_pmu.append((x, y))
-
-        elif dse.system.accelerator.placement == "diagonalwise":
-            tmp = X+Y
-            for i in range(tmp):
-                for j in range(i+1):
-                    y = j
-                    x = i - j
-                    if 0 <= x < X and 0 <= y < Y:
-                        if x % 2 == 0:
-                            if y % 2 == 1:
-                                hardware_pcu.append((x, y))
-                        else:
-                            if y % 2 == 0:
-                                hardware_pcu.append((x, y))
+        def set_pcu_kernel_idx(self, kernel_idx):    
+            self.kernel_idx = kernel_idx
             
-            for i in range(tmp):
-                for j in range(i+1):
-                    y = j
-                    x = i - j
-                    if 0 <= x < X and 0 <= y < Y:
-                        if x % 2 == 0:
-                            if y % 2 == 0:
-                                hardware_pmu.append((x, y))
-                        else:
-                            if y % 2 == 1:
-                                hardware_pmu.append((x, y))
-
-        else:
-            raise Exception("Wrong!")
-
-
-
-
-
-
-
-
-
+        def set_pcu_name(self, name):
+            self.name = name
         
+        def set_pcu_M(self, M):
+            self.M = M 
+        
+        def set_pcu_K(self, K):
+            self.K = K 
+            
+        def set_pcu_N(self, N):
+            self.N = N 
+            
+        def set_pcu_SIMD_or_Systolic(self, SIMD_or_Systolic):
+            self.SIMD_or_Systolic = SIMD_or_Systolic
+            
+    class pmu():
+        def __init__(self):
+            self.x = -1
+            self.y = -1
+            self.upstream_cycle = -1
+            self.downstream_cycle = -1
+            self.tensor_idx = -1
+            self.name = 'N/A'
+        
+        def set_pmu_x(self, x):
+            self.x = x
+
+        def set_pmu_y(self, y):
+            self.y = y
+
+        def set_pmu_upstream(self, upstream_cycle):
+            self.upstream_cycle = upstream_cycle
+            
+        def set_pmu_downstream(self, downstream_cycle):
+            self.downstream_cycle = downstream_cycle     
+        
+        def set_pmu_tensor_idx(self, tensor_idx):
+            self.tensor_idx = tensor_idx  
+        
+        def set_pmu_name(self, name):
+            self.name = name  
+            
+
+    if p_and_r_flag == True:
+        
+        kernel_to_name = {}
+        
+        config_to_kernel = {}
         for i in range(C):
-            print('------------------- Config', i, '-----------------------')
-
-            pcu_arr = []
-            pmu_arr = []
+            config_to_kernel[i] = []
+            
+        for i in range(num_node):
+            for j in range(C):
+                if A[i * C + j] == 1:
+                    config_to_kernel[j].append(i)
                     
-            tensor_to_upstream_cycle = {}
-            tensor_to_downstream_cycle = {}
-            tensor_to_upstream_name = {}
-            tensor_to_downstream_name = {}
-            tensor_to_pmu_used = {}
-            tensor_to_pmu_placement = {}
-            tensor_to_pcu_placement = {}
-
-
-            
-            
-            
                     
-            cnt = 0      
-            for j in config_to_kernel[i]:
-                kernel_idx = j
-                num_pcu = kernel_to_num_pcu[kernel_idx]
-                cycle = kernel_to_cycle[kernel_idx]
-                name = kernel_name[kernel_idx]
-                M = kernel_to_M[kernel_idx]
-                K = kernel_to_K[kernel_idx]
-                N = kernel_to_N[kernel_idx]
-                SIMD_or_Systolic = kernel_to_SIMD_Systolic[kernel_idx]
-                
-                tensor_to_pcu_placement[kernel_idx] = (cnt, cnt+num_pcu-1)
-                
-                for _ in range(num_pcu):
-                    my_pcu = pcu()
-                    my_pcu.set_pcu_cycle(cycle)
-                    my_pcu.set_pcu_kernel_idx(kernel_idx)
-                    my_pcu.set_pcu_name(name)
-                    my_pcu.set_pcu_M(M)
-                    my_pcu.set_pcu_K(K)
-                    my_pcu.set_pcu_N(N)
-                    my_pcu.set_pcu_SIMD_or_Systolic(SIMD_or_Systolic)
-                    pcu_arr.append(my_pcu)
-                    cnt += 1
-
-            
-            cnt = 0
-            for j in config_to_kernel[i]:
-                kernel_idx = j
-                cycle = kernel_to_cycle[kernel_idx]
-                name = kernel_name[kernel_idx]
-                
-                for tensor_idx, pmu_used in kernel_to_upstream_edge[kernel_idx]:
-                    tensor_to_pmu_used[tensor_idx] = pmu_used
-                    tensor_to_downstream_cycle[tensor_idx] = cycle
-                    tensor_to_downstream_name[tensor_idx] = name
                     
-                for tensor_idx, pmu_used in kernel_to_downstream_edge[kernel_idx]:
-                    tensor_to_pmu_used[tensor_idx] = pmu_used
-                    tensor_to_upstream_cycle[tensor_idx] = cycle
-                    tensor_to_upstream_name[tensor_idx] = name
-                
-                if kernel_idx in kernel_to_weight.keys():
-                    tensor_idx = kernel_to_weight[kernel_idx][0]
-                    pmu_used = kernel_to_weight[kernel_idx][1]
-                    tensor_to_pmu_used[tensor_idx] = pmu_used
-                    tensor_to_downstream_cycle[tensor_idx] = cycle
-                    tensor_to_downstream_name[tensor_idx] = name
-
-
-
-            cnt = 0  
-            for j in tensor_to_pmu_used.keys():
-                tensor_idx = j
-                pmu_used = tensor_to_pmu_used[j]
-                
-                if tensor_idx not in tensor_to_upstream_cycle.keys():
-                    upstream_cycle = 0
-                    upstream_name = 'N/A'
-                else:
-                    upstream_cycle = tensor_to_upstream_cycle[tensor_idx]
-                    upstream_name = tensor_to_upstream_name[tensor_idx]
-                    
-                if tensor_idx not in tensor_to_downstream_cycle.keys():
-                    downstream_cycle = 0
-                    downstream_name = 'N/A'
-                else:
-                    downstream_cycle = tensor_to_downstream_cycle[tensor_idx]
-                    downstream_name = tensor_to_downstream_name[tensor_idx]
-                
-                tensor_to_pmu_placement[tensor_idx] = (cnt, cnt+pmu_used-1)
-                
-                for _ in range(pmu_used):
-                    my_pmu = pmu()
-                    my_pmu.set_pmu_upstream(upstream_cycle)
-                    my_pmu.set_pmu_downstream(downstream_cycle)
-                    my_pmu.set_pmu_tensor_idx(tensor_idx)
-                    my_pmu.set_pmu_name(upstream_name+'___'+downstream_name)
-                    pmu_arr.append(my_pmu)
-                    cnt += 1
-            
-            
-            
-            
-            
-            connection_list = []
-            connection_list_sender = []
-            connection_list_receiver = []
-            
-            for j in config_to_kernel[i]:
-                kernel_idx = j
-                kernel_start = tensor_to_pcu_placement[kernel_idx][0]
-                kernel_end = tensor_to_pcu_placement[kernel_idx][1]
-                num_pcu = kernel_end - kernel_start + 1
-                
-                for tensor_idx, _ in kernel_to_upstream_edge[kernel_idx]: # tensor to kernel
-                    tensor_start = tensor_to_pmu_placement[tensor_idx][0]
-                    tensor_end = tensor_to_pmu_placement[tensor_idx][1]
-                    num_pmu = tensor_end - tensor_start + 1
-
-                    if num_pmu >= num_pcu:
-                        ratio = math.floor(num_pmu / num_pcu)
-                        for k in range(num_pcu):
-                            for l in range(ratio):
-                                tmp = ('pmu', tensor_start+k*ratio+l, 'pcu', kernel_start+k)
-                                connection_list.append(tmp)
-                                
-                        for k in range(tensor_start+num_pcu*ratio, tensor_end+1):
-                            tmp = ('pmu', k, 'pcu', kernel_end)
-                            connection_list.append(tmp)
-
-                    else:
-                        ratio = math.floor(num_pcu / num_pmu)
-                        for k in range(num_pmu):
-                            for l in range(ratio):
-                                tmp = ('pmu', tensor_start+k, 'pcu', kernel_start+k*ratio+l)
-                                connection_list.append(tmp)
-                                
-                        for k in range(kernel_start+num_pmu*ratio, kernel_end+1):
-                            tmp = ('pmu', tensor_end, 'pcu', k)
-                            connection_list.append(tmp)
-
-                for tensor_idx, _ in kernel_to_downstream_edge[kernel_idx]: # kernel to tensor
-                    tensor_start = tensor_to_pmu_placement[tensor_idx][0]
-                    tensor_end = tensor_to_pmu_placement[tensor_idx][1]
-                    num_pmu = tensor_end - tensor_start + 1
-
-                    if num_pcu >= num_pmu:
-                        ratio = math.floor(num_pcu / num_pmu)
-                        for k in range(num_pmu):
-                            for l in range(ratio):
-                                tmp = ('pcu', kernel_start+k*ratio+l, 'pmu', tensor_start+k)
-                                connection_list.append(tmp)
-                                
-                        for k in range(kernel_start+num_pmu*ratio, kernel_end+1):
-                            tmp = ('pcu', k, 'pmu', tensor_end)
-                            connection_list.append(tmp)
-
-                    else:
-                        ratio = math.floor(num_pmu / num_pcu)
-                        for k in range(num_pcu):
-                            for l in range(ratio):
-                                tmp = ('pcu', kernel_start+k, 'pmu', tensor_start+k*ratio+l)
-                                connection_list.append(tmp)
-                                
-                        for k in range(tensor_start+num_pcu*ratio, tensor_end+1):
-                            tmp = ('pcu', kernel_end, 'pmu', k)
-                            connection_list.append(tmp)
-
-
-
-                if kernel_idx in kernel_to_weight.keys(): # weight tensor to kernel
-                    tensor_idx, _ = kernel_to_weight[kernel_idx]
-                    tensor_start = tensor_to_pmu_placement[tensor_idx][0]
-                    tensor_end = tensor_to_pmu_placement[tensor_idx][1]
-                    num_pmu = tensor_end - tensor_start + 1
-
-                    if num_pmu >= num_pcu:
-                        ratio = math.floor(num_pmu / num_pcu)
-                        for k in range(num_pcu):
-                            for l in range(ratio):
-                                tmp = ('pmu', tensor_start+k*ratio+l, 'pcu', kernel_start+k)
-                                connection_list.append(tmp)
-                                
-                        for k in range(tensor_start+num_pcu*ratio, tensor_end+1):
-                            tmp = ('pmu', k, 'pcu', kernel_end)
-                            connection_list.append(tmp)
-
-                    else:
-                        ratio = math.floor(num_pcu / num_pmu)
-                        for k in range(num_pmu):
-                            for l in range(ratio):
-                                tmp = ('pmu', tensor_start+k, 'pcu', kernel_start+k*ratio+l)
-                                connection_list.append(tmp)
-                                
-                        for k in range(kernel_start+num_pmu*ratio, kernel_end+1):
-                            tmp = ('pmu', tensor_end, 'pcu', k)
-                            connection_list.append(tmp)
-
-
-
-            for a,b,c,d in connection_list:
-                connection_list_sender.append((a, b))
-                connection_list_receiver.append((c, d))
-            
-            
-            
-
-
-            # PCU
-            pcu_list_to_print = []
-            cnt = 0
-            for j in range(len(pcu_arr)):
-                if pcu_arr[j].cycle != -1: 
-                    sender_list = []
-                    for ii in range(len(connection_list_sender)):
-                        if ('pcu', j) == connection_list_sender[ii]:
-                            sender_list.append(ii)
-                    
-                    if len(sender_list) == 0:
-                        sender_list = [999999]
-                    
-                    receiver_list = []
-                    for ii in range(len(connection_list_receiver)):
-                        if ('pcu', j) == connection_list_receiver[ii]:
-                            receiver_list.append(ii)
-                    
-                    if len(receiver_list) == 0:
-                        receiver_list = [999999]
-                    
-
-                    
-                    pcu_arr[j].set_pcu_x(hardware_pcu[cnt][0])
-                    pcu_arr[j].set_pcu_y(hardware_pcu[cnt][1])
-                    
-                    pcu_list_to_print.append((pcu_arr[j].name, pcu_arr[j].x, pcu_arr[j].y, round(pcu_arr[j].cycle), pcu_arr[j].SIMD_or_Systolic, sender_list, receiver_list))
-
-                    cnt += 1
-
-
-
-
-
-
-
-
-
-            # PMU
-            cnt = 0
-            pmu_list_to_print = []
-            for j in range(len(pmu_arr)):
-                if pmu_arr[j].upstream_cycle != -1 and pmu_arr[j].downstream_cycle != -1:
-                    sender_list = []
-                    for ii in range(len(connection_list_sender)):
-                        if ('pmu', j) == connection_list_sender[ii]:
-                            sender_list.append(ii)
-                    
-                    if len(sender_list) == 0:
-                        sender_list = [999999]
-                    
-                    receiver_list = []
-                    for ii in range(len(connection_list_receiver)):
-                        if ('pmu', j) == connection_list_receiver[ii]:
-                            receiver_list.append(ii)
-                    
-                    if len(receiver_list) == 0:
-                        receiver_list = [999999]
-                    
-
-
-                    pmu_arr[j].set_pmu_x(hardware_pmu[cnt][0])
-                    pmu_arr[j].set_pmu_y(hardware_pmu[cnt][1])
-
-                    pmu_list_to_print.append((pmu_arr[j].name, pmu_arr[j].x, pmu_arr[j].y, round(max(pmu_arr[j].upstream_cycle, pmu_arr[j].downstream_cycle)), sender_list, receiver_list))
-
-                    cnt += 1
-                        
-            
-
-
-
-            connection_list_to_print = []
-            for a,b,c,d in connection_list:
-                first = a
-                second = c
-
-                if first == 'pcu':
-                    first_x = pcu_arr[b].x
-                    first_y = pcu_arr[b].y
-                elif first == 'pmu':
-                    first_x = pmu_arr[b].x
-                    first_y = pmu_arr[b].y
-                else:
-                    raise Exception("Wrong!")
-                
-                if second == 'pcu':
-                    second_x = pcu_arr[d].x
-                    second_y = pcu_arr[d].y
-                elif second == 'pmu':
-                    second_x = pmu_arr[d].x
-                    second_y = pmu_arr[d].y
-                else:
-                    raise Exception("Wrong!")
-                
-                connection_list_to_print.append((first, first_x, first_y, second, second_x, second_y))
-
-
-
-
-
-
-            # print on-chip traffic
-            print('on-chip traffic -----------------------------')
-            print('PCU array')
-            for aa,bb,cc,dd,ee,ff,gg in pcu_list_to_print:
-                print('pcu on_chip_config',i,aa,bb,cc,dd,ee,'sender',end=' ')
-                for ele in ff:
-                    print(ele, end=' ')
-                print('receiver', end=' ')
-                for ele in gg:
-                    print(ele, end=' ')
-                print()
-            
-            print('PMU array')
-            for aa,bb,cc,dd,ee,ff in pmu_list_to_print:
-                print('pmu on_chip_config',i,aa,bb,cc,dd,'sender',end=' ')
-                for ele in ee:
-                    print(ele, end=' ')
-                print('receiver', end=' ')
-                for ele in ff:
-                    print(ele, end=' ')
-                print()
-
-            for aa,bb,cc,dd,ee,ff in connection_list_to_print:
-                print('connection on_chip_config',i,aa,bb,cc,dd,ee,ff)
-            print('num_of_connections', 'on_chip_config', i, len(connection_list_to_print))
-            
-
-
-
-
-
-
-
-            # off-chip traffic
-            connection_list_to_print = []
+        kernel_to_num_pcu = {}
+        kernel_to_cycle = {}
+        kernel_to_M = {}
+        kernel_to_K = {}
+        kernel_to_N = {}
+        kernel_to_SIMD_Systolic = {}
+        for i in range(num_node):
+            kernel_to_num_pcu[i] = round(Par_lane[i] * Par_stage[i])
+            kernel_to_cycle[i] = round(Cycle[i])
+            kernel_to_M[i] = round(MMM[i])
+            kernel_to_K[i] = round(KKK[i])
+            kernel_to_N[i] = round(NNN[i])
+            kernel_to_SIMD_Systolic[i] = SIMD_or_Systolic[i]
         
+        kernel_to_upstream_edge = {}
+        kernel_to_downstream_edge = {}
+        kernel_to_weight = {}
+        
+        for i in range(num_node):
+            kernel_to_upstream_edge[i] = []
+            kernel_to_downstream_edge[i] = []
             
-            if dse.execution.WhichOneof('workload_variant') == 'llm':
-                if len(dimension) != 2:
-                    raise Exception('Wrong!')
+        
+        for i in range(num_node):
+            if i in upstream_edge_dict.keys():
+                for j in upstream_edge_dict[i]:
+                    kernel_to_upstream_edge[i].append((j, round(PMU_used_intermediate[j])))    
+        for i in range(num_node):
+            if i in downstream_edge_dict.keys():
+                for j in downstream_edge_dict[i]:
+                    kernel_to_downstream_edge[i].append((j, round(PMU_used_intermediate[j])))           
+        for i in range(num_weight):
+            kernel_to_weight[node_dict[weight_dict[i]]] = (i+num_edge, round(PMU_used_initiation[i]))
 
-                if dse.system.WhichOneof('topology_variant') == 'r_r':
+        
+        if dse.system.accelerator.x * dse.system.accelerator.y != dse.system.accelerator.core + dse.system.accelerator.pmu:
+            raise Exception('Wrong!')
+        else:
+            X = dse.system.accelerator.x
+            Y = dse.system.accelerator.y
+
+            hardware_pcu = []
+            hardware_pmu = []
+
+            if dse.system.accelerator.placement == "rowwise":
+                for x in range(X):
+                    for y in range(Y):
+                        if x % 2 == 0:
+                            if y % 2 == 1:
+                                hardware_pcu.append((x, y))
+                        else:
+                            if y % 2 == 0:
+                                hardware_pcu.append((x, y))
+                
+                for x in range(X):
+                    for y in range(Y):
+                        if x % 2 == 0:
+                            if y % 2 == 0:
+                                hardware_pmu.append((x, y))
+                        else:
+                            if y % 2 == 1:
+                                hardware_pmu.append((x, y))
+
+            elif dse.system.accelerator.placement == "diagonalwise":
+                tmp = X+Y
+                for i in range(tmp):
+                    for j in range(i+1):
+                        y = j
+                        x = i - j
+                        if 0 <= x < X and 0 <= y < Y:
+                            if x % 2 == 0:
+                                if y % 2 == 1:
+                                    hardware_pcu.append((x, y))
+                            else:
+                                if y % 2 == 0:
+                                    hardware_pcu.append((x, y))
+                
+                for i in range(tmp):
+                    for j in range(i+1):
+                        y = j
+                        x = i - j
+                        if 0 <= x < X and 0 <= y < Y:
+                            if x % 2 == 0:
+                                if y % 2 == 0:
+                                    hardware_pmu.append((x, y))
+                            else:
+                                if y % 2 == 1:
+                                    hardware_pmu.append((x, y))
+
+            else:
+                raise Exception("Wrong!")
+
+
+
+
+
+
+
+
+
+            
+            for i in range(C):
+                print('------------------- Config', i, '-----------------------')
+
+                pcu_arr = []
+                pmu_arr = []
+                        
+                tensor_to_upstream_cycle = {}
+                tensor_to_downstream_cycle = {}
+                tensor_to_upstream_name = {}
+                tensor_to_downstream_name = {}
+                tensor_to_pmu_used = {}
+                tensor_to_pmu_placement = {}
+                tensor_to_pcu_placement = {}
+
+
+                
+                
+                
+                        
+                cnt = 0      
+                for j in config_to_kernel[i]:
+                    kernel_idx = j
+                    num_pcu = kernel_to_num_pcu[kernel_idx]
+                    cycle = kernel_to_cycle[kernel_idx]
+                    name = kernel_name[kernel_idx]
+                    M = kernel_to_M[kernel_idx]
+                    K = kernel_to_K[kernel_idx]
+                    N = kernel_to_N[kernel_idx]
+                    SIMD_or_Systolic = kernel_to_SIMD_Systolic[kernel_idx]
+                    
+                    tensor_to_pcu_placement[kernel_idx] = (cnt, cnt+num_pcu-1)
+                    
+                    for _ in range(num_pcu):
+                        my_pcu = pcu()
+                        my_pcu.set_pcu_cycle(cycle)
+                        my_pcu.set_pcu_kernel_idx(kernel_idx)
+                        my_pcu.set_pcu_name(name)
+                        my_pcu.set_pcu_M(M)
+                        my_pcu.set_pcu_K(K)
+                        my_pcu.set_pcu_N(N)
+                        my_pcu.set_pcu_SIMD_or_Systolic(SIMD_or_Systolic)
+                        pcu_arr.append(my_pcu)
+                        cnt += 1
+
+                
+                cnt = 0
+                for j in config_to_kernel[i]:
+                    kernel_idx = j
+                    cycle = kernel_to_cycle[kernel_idx]
+                    name = kernel_name[kernel_idx]
+                    
+                    for tensor_idx, pmu_used in kernel_to_upstream_edge[kernel_idx]:
+                        tensor_to_pmu_used[tensor_idx] = pmu_used
+                        tensor_to_downstream_cycle[tensor_idx] = cycle
+                        tensor_to_downstream_name[tensor_idx] = name
+                        
+                    for tensor_idx, pmu_used in kernel_to_downstream_edge[kernel_idx]:
+                        tensor_to_pmu_used[tensor_idx] = pmu_used
+                        tensor_to_upstream_cycle[tensor_idx] = cycle
+                        tensor_to_upstream_name[tensor_idx] = name
+                    
+                    if kernel_idx in kernel_to_weight.keys():
+                        tensor_idx = kernel_to_weight[kernel_idx][0]
+                        pmu_used = kernel_to_weight[kernel_idx][1]
+                        tensor_to_pmu_used[tensor_idx] = pmu_used
+                        tensor_to_downstream_cycle[tensor_idx] = cycle
+                        tensor_to_downstream_name[tensor_idx] = name
+
+
+
+                cnt = 0  
+                for j in tensor_to_pmu_used.keys():
+                    tensor_idx = j
+                    pmu_used = tensor_to_pmu_used[j]
+                    
+                    if tensor_idx not in tensor_to_upstream_cycle.keys():
+                        upstream_cycle = 0
+                        upstream_name = 'N/A'
+                    else:
+                        upstream_cycle = tensor_to_upstream_cycle[tensor_idx]
+                        upstream_name = tensor_to_upstream_name[tensor_idx]
+                        
+                    if tensor_idx not in tensor_to_downstream_cycle.keys():
+                        downstream_cycle = 0
+                        downstream_name = 'N/A'
+                    else:
+                        downstream_cycle = tensor_to_downstream_cycle[tensor_idx]
+                        downstream_name = tensor_to_downstream_name[tensor_idx]
+                    
+                    tensor_to_pmu_placement[tensor_idx] = (cnt, cnt+pmu_used-1)
+                    
+                    for _ in range(pmu_used):
+                        my_pmu = pmu()
+                        my_pmu.set_pmu_upstream(upstream_cycle)
+                        my_pmu.set_pmu_downstream(downstream_cycle)
+                        my_pmu.set_pmu_tensor_idx(tensor_idx)
+                        my_pmu.set_pmu_name(upstream_name+'___'+downstream_name)
+                        pmu_arr.append(my_pmu)
+                        cnt += 1
+                
+                
+                
+                
+                
+                connection_list = []
+                connection_list_sender = []
+                connection_list_receiver = []
+                
+                for j in config_to_kernel[i]:
+                    kernel_idx = j
+                    kernel_start = tensor_to_pcu_placement[kernel_idx][0]
+                    kernel_end = tensor_to_pcu_placement[kernel_idx][1]
+                    num_pcu = kernel_end - kernel_start + 1
+                    
+                    for tensor_idx, _ in kernel_to_upstream_edge[kernel_idx]: # tensor to kernel
+                        tensor_start = tensor_to_pmu_placement[tensor_idx][0]
+                        tensor_end = tensor_to_pmu_placement[tensor_idx][1]
+                        num_pmu = tensor_end - tensor_start + 1
+
+                        if num_pmu >= num_pcu:
+                            ratio = math.floor(num_pmu / num_pcu)
+                            for k in range(num_pcu):
+                                for l in range(ratio):
+                                    tmp = ('pmu', tensor_start+k*ratio+l, 'pcu', kernel_start+k)
+                                    connection_list.append(tmp)
+                                    
+                            for k in range(tensor_start+num_pcu*ratio, tensor_end+1):
+                                tmp = ('pmu', k, 'pcu', kernel_end)
+                                connection_list.append(tmp)
+
+                        else:
+                            ratio = math.floor(num_pcu / num_pmu)
+                            for k in range(num_pmu):
+                                for l in range(ratio):
+                                    tmp = ('pmu', tensor_start+k, 'pcu', kernel_start+k*ratio+l)
+                                    connection_list.append(tmp)
+                                    
+                            for k in range(kernel_start+num_pmu*ratio, kernel_end+1):
+                                tmp = ('pmu', tensor_end, 'pcu', k)
+                                connection_list.append(tmp)
+
+                    for tensor_idx, _ in kernel_to_downstream_edge[kernel_idx]: # kernel to tensor
+                        tensor_start = tensor_to_pmu_placement[tensor_idx][0]
+                        tensor_end = tensor_to_pmu_placement[tensor_idx][1]
+                        num_pmu = tensor_end - tensor_start + 1
+
+                        if num_pcu >= num_pmu:
+                            ratio = math.floor(num_pcu / num_pmu)
+                            for k in range(num_pmu):
+                                for l in range(ratio):
+                                    tmp = ('pcu', kernel_start+k*ratio+l, 'pmu', tensor_start+k)
+                                    connection_list.append(tmp)
+                                    
+                            for k in range(kernel_start+num_pmu*ratio, kernel_end+1):
+                                tmp = ('pcu', k, 'pmu', tensor_end)
+                                connection_list.append(tmp)
+
+                        else:
+                            ratio = math.floor(num_pmu / num_pcu)
+                            for k in range(num_pcu):
+                                for l in range(ratio):
+                                    tmp = ('pcu', kernel_start+k, 'pmu', tensor_start+k*ratio+l)
+                                    connection_list.append(tmp)
+                                    
+                            for k in range(tensor_start+num_pcu*ratio, tensor_end+1):
+                                tmp = ('pcu', kernel_end, 'pmu', k)
+                                connection_list.append(tmp)
+
+
+
+                    if kernel_idx in kernel_to_weight.keys(): # weight tensor to kernel
+                        tensor_idx, _ = kernel_to_weight[kernel_idx]
+                        tensor_start = tensor_to_pmu_placement[tensor_idx][0]
+                        tensor_end = tensor_to_pmu_placement[tensor_idx][1]
+                        num_pmu = tensor_end - tensor_start + 1
+
+                        if num_pmu >= num_pcu:
+                            ratio = math.floor(num_pmu / num_pcu)
+                            for k in range(num_pcu):
+                                for l in range(ratio):
+                                    tmp = ('pmu', tensor_start+k*ratio+l, 'pcu', kernel_start+k)
+                                    connection_list.append(tmp)
+                                    
+                            for k in range(tensor_start+num_pcu*ratio, tensor_end+1):
+                                tmp = ('pmu', k, 'pcu', kernel_end)
+                                connection_list.append(tmp)
+
+                        else:
+                            ratio = math.floor(num_pcu / num_pmu)
+                            for k in range(num_pmu):
+                                for l in range(ratio):
+                                    tmp = ('pmu', tensor_start+k, 'pcu', kernel_start+k*ratio+l)
+                                    connection_list.append(tmp)
+                                    
+                            for k in range(kernel_start+num_pmu*ratio, kernel_end+1):
+                                tmp = ('pmu', tensor_end, 'pcu', k)
+                                connection_list.append(tmp)
+
+
+
+                for a,b,c,d in connection_list:
+                    connection_list_sender.append((a, b))
+                    connection_list_receiver.append((c, d))
+                
+                
+                
+
+
+                # PCU
+                pcu_list_to_print = []
+                cnt = 0
+                for j in range(len(pcu_arr)):
+                    if pcu_arr[j].cycle != -1: 
+                        sender_list = []
+                        for ii in range(len(connection_list_sender)):
+                            if ('pcu', j) == connection_list_sender[ii]:
+                                sender_list.append(ii)
+                        
+                        if len(sender_list) == 0:
+                            sender_list = [999999]
+                        
+                        receiver_list = []
+                        for ii in range(len(connection_list_receiver)):
+                            if ('pcu', j) == connection_list_receiver[ii]:
+                                receiver_list.append(ii)
+                        
+                        if len(receiver_list) == 0:
+                            receiver_list = [999999]
+                        
+
+                        
+                        pcu_arr[j].set_pcu_x(hardware_pcu[cnt][0])
+                        pcu_arr[j].set_pcu_y(hardware_pcu[cnt][1])
+                        
+                        pcu_list_to_print.append((pcu_arr[j].name, pcu_arr[j].x, pcu_arr[j].y, round(pcu_arr[j].cycle), pcu_arr[j].SIMD_or_Systolic, sender_list, receiver_list))
+
+                        cnt += 1
+
+
+
+
+
+
+
+
+
+                # PMU
+                cnt = 0
+                pmu_list_to_print = []
+                for j in range(len(pmu_arr)):
+                    if pmu_arr[j].upstream_cycle != -1 and pmu_arr[j].downstream_cycle != -1:
+                        sender_list = []
+                        for ii in range(len(connection_list_sender)):
+                            if ('pmu', j) == connection_list_sender[ii]:
+                                sender_list.append(ii)
+                        
+                        if len(sender_list) == 0:
+                            sender_list = [999999]
+                        
+                        receiver_list = []
+                        for ii in range(len(connection_list_receiver)):
+                            if ('pmu', j) == connection_list_receiver[ii]:
+                                receiver_list.append(ii)
+                        
+                        if len(receiver_list) == 0:
+                            receiver_list = [999999]
+                        
+
+
+                        pmu_arr[j].set_pmu_x(hardware_pmu[cnt][0])
+                        pmu_arr[j].set_pmu_y(hardware_pmu[cnt][1])
+
+                        pmu_list_to_print.append((pmu_arr[j].name, pmu_arr[j].x, pmu_arr[j].y, round(max(pmu_arr[j].upstream_cycle, pmu_arr[j].downstream_cycle)), sender_list, receiver_list))
+
+                        cnt += 1
+                            
+                
+
+
+
+                connection_list_to_print = []
+                for a,b,c,d in connection_list:
+                    first = a
+                    second = c
+
+                    if first == 'pcu':
+                        first_x = pcu_arr[b].x
+                        first_y = pcu_arr[b].y
+                    elif first == 'pmu':
+                        first_x = pmu_arr[b].x
+                        first_y = pmu_arr[b].y
+                    else:
+                        raise Exception("Wrong!")
+                    
+                    if second == 'pcu':
+                        second_x = pcu_arr[d].x
+                        second_y = pcu_arr[d].y
+                    elif second == 'pmu':
+                        second_x = pmu_arr[d].x
+                        second_y = pmu_arr[d].y
+                    else:
+                        raise Exception("Wrong!")
+                    
+                    connection_list_to_print.append((first, first_x, first_y, second, second_x, second_y))
+
+
+
+
+
+
+                # print on-chip traffic
+                print('on-chip traffic -----------------------------')
+                print('PCU array')
+                for aa,bb,cc,dd,ee,ff,gg in pcu_list_to_print:
+                    print('pcu on_chip_config',i,aa,bb,cc,dd,ee,'sender',end=' ')
+                    for ele in ff:
+                        print(ele, end=' ')
+                    print('receiver', end=' ')
+                    for ele in gg:
+                        print(ele, end=' ')
+                    print()
+                
+                print('PMU array')
+                for aa,bb,cc,dd,ee,ff in pmu_list_to_print:
+                    print('pmu on_chip_config',i,aa,bb,cc,dd,'sender',end=' ')
+                    for ele in ee:
+                        print(ele, end=' ')
+                    print('receiver', end=' ')
+                    for ele in ff:
+                        print(ele, end=' ')
+                    print()
+
+                for aa,bb,cc,dd,ee,ff in connection_list_to_print:
+                    print('connection on_chip_config',i,aa,bb,cc,dd,ee,ff)
+                print('num_of_connections', 'on_chip_config', i, len(connection_list_to_print))
+                
+
+
+
+
+
+
+
+                # off-chip traffic
+                connection_list_to_print = []
+            
+                
+                if dse.execution.WhichOneof('workload_variant') == 'llm':
+                    if len(dimension) != 2:
+                        raise Exception('Wrong!')
+
+                    if dse.system.WhichOneof('topology_variant') == 'r_r':
+                        network_bytes = 0
+                        for m in range(num_node):
+                            if int(Config[m]) == i:
+                                network_bytes += ALL_REDUCE_communication_size_node[m] * num_tile_per_config[i]
+
+                        network_bytes = network_bytes * (TP-1) / TP;
+
+                        # all-reduce traffic
+                        if network_bytes != 0:
+                            for y in range(dimension[1]):
+                                for x in range(dimension[0]):
+                                    connection_list_to_print.append(('router', x, y, 'router', (x+1)%dimension[0], y))
+
+                        print('network_bytes off_chip_config', i, network_bytes)
+
+                    elif dse.system.WhichOneof('topology_variant') == 'fc_fc':
+                        network_bytes = 0
+                        for m in range(num_node):
+                            if int(Config[m]) == i:
+                                network_bytes += ALL_REDUCE_communication_size_node[m] * num_tile_per_config[i]
+
+                        network_bytes = network_bytes * 1 / TP;
+
+                        # all-reduce traffic
+                        if network_bytes != 0:
+                            for y in range(dimension[1]):
+                                for x1 in range(dimension[0]):
+                                    for x2 in range(dimension[0]):
+                                        if x1 != x2:
+                                            connection_list_to_print.append(('router', x1, y, 'router', x2, y))
+
+                        print('network_bytes off_chip_config', i, network_bytes)
+
+
+
+
+
+                elif dse.execution.WhichOneof('workload_variant') == 'hpl':
+                    if len(dimension) != 2:
+                        raise Exception('Wrong!')
+                    
                     network_bytes = 0
                     for m in range(num_node):
                         if int(Config[m]) == i:
-                            network_bytes += ALL_REDUCE_communication_size_node[m] * num_tile_per_config[i]
+                            network_bytes += BROADCAST_communication_size[m] * num_tile_per_config[i]
 
-                    network_bytes = network_bytes * (TP-1) / TP;
-
-                    # all-reduce traffic
+                    # broadcast traffic
                     if network_bytes != 0:
-                        for y in range(dimension[1]):
-                            for x in range(dimension[0]):
+                        for x in range(dimension[0]-1):
+                            for y in range(dimension[1]):
                                 connection_list_to_print.append(('router', x, y, 'router', (x+1)%dimension[0], y))
 
                     print('network_bytes off_chip_config', i, network_bytes)
 
-                elif dse.system.WhichOneof('topology_variant') == 'fc_fc':
+
+
+
+
+                elif dse.execution.WhichOneof('workload_variant') == 'fft' or dse.execution.WhichOneof('workload_variant') == 'dlrm':
+                    if len(dimension) != 2:
+                        raise Exception('Wrong!')
+
                     network_bytes = 0
                     for m in range(num_node):
                         if int(Config[m]) == i:
-                            network_bytes += ALL_REDUCE_communication_size_node[m] * num_tile_per_config[i]
+                            network_bytes += ALL_TO_ALL_communication_size_node[m] * num_tile_per_config[i]
 
-                    network_bytes = network_bytes * 1 / TP;
 
-                    # all-reduce traffic
+                    # all-to-all traffic
                     if network_bytes != 0:
-                        for y in range(dimension[1]):
-                            for x1 in range(dimension[0]):
+                        for x1 in range(dimension[0]):
+                            for y1 in range(dimension[1]):
                                 for x2 in range(dimension[0]):
-                                    if x1 != x2:
-                                        connection_list_to_print.append(('router', x1, y, 'router', x2, y))
+                                    for y2 in range(dimension[1]):
+                                        if x1 * dimension[1] + y1 != x2 * dimension[1] + y2:
+                                            connection_list_to_print.append(('router', x1, y1, 'router', x2, y2))
 
                     print('network_bytes off_chip_config', i, network_bytes)
+                                            
 
 
 
+                # print off-chip traffic
+                print('off-chip traffic -----------------------------')
+                for aa,bb,cc,dd,ee,ff in connection_list_to_print:
+                    print('connection off_chip_config',i,aa,bb,cc,dd,ee,ff)     
+                print('num_of_connections', 'off_chip_config', i, len(connection_list_to_print))
+
+                print('\n\n\n\n\n\n\n\n')
 
 
-            elif dse.execution.WhichOneof('workload_variant') == 'hpl':
-                if len(dimension) != 2:
-                    raise Exception('Wrong!')
                 
-                network_bytes = 0
-                for m in range(num_node):
-                    if int(Config[m]) == i:
-                        network_bytes += BROADCAST_communication_size[m] * num_tile_per_config[i]
-
-                # broadcast traffic
-                if network_bytes != 0:
-                    for x in range(dimension[0]-1):
-                        for y in range(dimension[1]):
-                            connection_list_to_print.append(('router', x, y, 'router', (x+1)%dimension[0], y))
-
-                print('network_bytes off_chip_config', i, network_bytes)
-
-
-
-
-
-            elif dse.execution.WhichOneof('workload_variant') == 'fft' or dse.execution.WhichOneof('workload_variant') == 'dlrm':
-                if len(dimension) != 2:
-                    raise Exception('Wrong!')
-
-                network_bytes = 0
-                for m in range(num_node):
-                    if int(Config[m]) == i:
-                        network_bytes += ALL_TO_ALL_communication_size_node[m] * num_tile_per_config[i]
-
-
-                # all-to-all traffic
-                if network_bytes != 0:
-                    for x1 in range(dimension[0]):
-                        for y1 in range(dimension[1]):
-                            for x2 in range(dimension[0]):
-                                for y2 in range(dimension[1]):
-                                    if x1 * dimension[1] + y1 != x2 * dimension[1] + y2:
-                                        connection_list_to_print.append(('router', x1, y1, 'router', x2, y2))
-
-                print('network_bytes off_chip_config', i, network_bytes)
-                                        
-
-
-
-            # print off-chip traffic
-            print('off-chip traffic -----------------------------')
-            for aa,bb,cc,dd,ee,ff in connection_list_to_print:
-                print('connection off_chip_config',i,aa,bb,cc,dd,ee,ff)     
-            print('num_of_connections', 'off_chip_config', i, len(connection_list_to_print))
-
-            print('\n\n\n\n\n\n\n\n')
-
-
-            

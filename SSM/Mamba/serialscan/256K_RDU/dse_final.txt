@@ -1,0 +1,230 @@
+dataflow_graph {
+  kernels {
+    name: "Proj1"
+    id: 1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 32
+      K: 32
+      N: 262144
+      input_tensor_size: 16777216.0
+      weight_tensor_size: 2048.0
+      output_tensor_size: 16777216.0
+      sharding: NO_SHARDING
+      shard_outer_M: 32
+      shard_K: 32
+      shard_N: 262144
+      tiling: N_TILING
+    }
+  }
+  kernels {
+    name: "Proj2"
+    id: 2
+    config: 2
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 32
+      K: 32
+      N: 262144
+      input_tensor_size: 16777216.0
+      weight_tensor_size: 2048.0
+      output_tensor_size: 16777216.0
+      sharding: NO_SHARDING
+      shard_outer_M: 32
+      shard_K: 32
+      shard_N: 262144
+      tiling: N_TILING
+    }
+  }
+  kernels {
+    name: "Conv"
+    id: 3
+    topological_number: 1
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 262144
+      K: 32
+      N: 1
+      input_tensor_size: 524288.0
+      output_tensor_size: 524288.0
+      sharding: NO_SHARDING
+      shard_outer_M: 262144
+      shard_K: 32
+      shard_N: 1
+      tiling: M_TILING
+      skip_weight: true
+    }
+  }
+  kernels {
+    name: "Scan"
+    id: 4
+    topological_number: 2
+    config: 1
+    fwd_bwd: FWD
+    type: SIMD
+    elementwise_input1 {
+      outer: 1
+      M: 1
+      N: 262144
+      input_tensor_size: 524288.0
+      output_tensor_size: 524288.0
+      sharding: NO_SHARDING
+      shard_outer_M: 1
+      shard_N: 262144
+      tiling: NO_TILING
+      num_input: 32
+    }
+  }
+  kernels {
+    name: "Multiply"
+    id: 5
+    topological_number: 3
+    config: 2
+    fwd_bwd: FWD
+    type: SIMD
+    elementwise_input1_input2 {
+      outer: 1
+      M: 262144
+      N: 32
+      input_tensor_1_size: 16777216.0
+      output_tensor_size: 16777216.0
+      sharding: NO_SHARDING
+      shard_outer_M: 262144
+      shard_N: 32
+      tiling: M_TILING
+      input_tensor_2_size: 16777216.0
+    }
+  }
+  kernels {
+    name: "Proj3"
+    id: 6
+    topological_number: 4
+    config: 2
+    fwd_bwd: FWD
+    type: SYSTOLIC
+    gemm_input1_weight {
+      outer: 1
+      M: 32
+      K: 32
+      N: 262144
+      input_tensor_size: 16777216.0
+      weight_tensor_size: 2048.0
+      output_tensor_size: 16777216.0
+      sharding: NO_SHARDING
+      shard_outer_M: 32
+      shard_K: 32
+      shard_N: 262144
+      tiling: N_TILING
+    }
+  }
+  connections {
+    startIdx: 1
+    endIdx: 3
+    buffer_depth: 2
+    tensor_size: 16777216.0
+    shard_tensor_size: 16777216.0
+    startName: "Proj1"
+    endName: "Conv"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 3
+    endIdx: 4
+    buffer_depth: 2
+    tensor_size: 524288.0
+    shard_tensor_size: 524288.0
+    id: 1
+    startName: "Conv"
+    endName: "Scan"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 4
+    endIdx: 5
+    buffer_depth: 2
+    tensor_size: 524288.0
+    shard_tensor_size: 524288.0
+    id: 2
+    startName: "Scan"
+    endName: "Multiply"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 2
+    endIdx: 5
+    buffer_depth: 4
+    tensor_size: 16777216.0
+    shard_tensor_size: 16777216.0
+    id: 3
+    startName: "Proj2"
+    endName: "Multiply"
+    lane_stage_type: LANE
+  }
+  connections {
+    startIdx: 5
+    endIdx: 6
+    buffer_depth: 2
+    tensor_size: 16777216.0
+    shard_tensor_size: 16777216.0
+    id: 4
+    startName: "Multiply"
+    endName: "Proj3"
+    lane_stage_type: LANE
+  }
+}
+system {
+  num_chip: 1
+  accelerator {
+    core: 520
+    systolic_width: 32
+    systolic_height: 12
+    freq: 1.6
+  }
+  r {
+    x: 1
+    link_bw_x: 10.0
+    par_x: "TP"
+  }
+  memory {
+    dram_bw: 8192.0
+    dram_cap: 103079215000.0
+  }
+}
+cost {
+  link_unit_price: 2.0
+  switch_unit_price: 24.0
+  dram_unit_price: 1.0
+  accelerator_price: 16522.25
+  link_unit_power_x: 0.052
+  switch_unit_power: 0.052
+  dram_unit_power: 0.16248
+  accelerator_power: 444.7062
+}
+execution {
+  llm {
+    hidden_dim: 32
+    head_dim: 16
+    num_head: 2
+    seq_len: 262144
+    num_layer: 1
+    global_batch_size: 1
+    micro_batch_size: 1
+    tile_size: 262144
+    num_layer_in_graph: 1
+  }
+  execution_style: DATAFLOW
+  num_config: 3
+  overlap: PERFECT_OVERLAP
+  word: 2
+  skip_inter_chip_optimization: true
+}
+gurobi {
+  gap: 0.001
+  time: 180
+}

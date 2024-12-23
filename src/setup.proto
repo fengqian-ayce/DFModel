@@ -252,6 +252,7 @@ message Connection {
 	int64 endIdx = 2;
 
 	Communication_Type communication_type = 4;
+	Communication_Type communication_type_2 = 999;
 	float communication_size = 5;
 
 	enum Communication_Type {
@@ -324,6 +325,7 @@ message System {
 		R_R_R r_r_r = 12;
 		R_SW_SW r_sw_sw = 13;
 		SW_SW_SW sw_sw_sw = 14;
+		R_R_R_R r_r_r_r = 15;
 	}		
 	int64 HBD = 110;
 }
@@ -449,6 +451,25 @@ message SW_SW_SW {
 	string par_z = 108;
 }
 
+
+message R_R_R_R {
+	int64 w = 100;
+	int64 x = 101;
+	int64 y = 102;
+	int64 z = 103;
+	
+	float link_bw_w = 104;
+	float link_bw_x = 105;
+	float link_bw_y = 106;
+	float link_bw_z = 107;
+	
+	string par_w = 108;
+	string par_x = 109;
+	string par_y = 110;
+	string par_z = 111;
+}
+
+
 message Cost {
 	float link_unit_price = 1;
     float switch_unit_price = 2;
@@ -489,8 +510,10 @@ message Execution
 	Execution_Style execution_style = 14;
 	int64 num_config = 15;
 	Overlap_Style overlap = 16;
+	string optimization = 10001;
 	bool separate_rs_ag_for_ar = 100;
 	bool skip_inter_chip_optimization = 1000;
+	bool turn_off_p_and_r = 100000;
 	int64 effective_stage = 20;
 	float compute_util = 17;
 	int64 word = 18;
