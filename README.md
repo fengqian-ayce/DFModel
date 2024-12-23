@@ -2,10 +2,10 @@
 DFModel is used to model workload performance on a distributed system of accelerators. It uses Gurobi for optimization given the input constraints set up by users. The following images show the flow chart of DFModel. It goes through two steps of optimization from inter-chip level to intra-chip level. Inter-chip optimization figures out the best sharding strategy given a certain dataflow graph. Intra-chip level optimization figures out the mapping for each kernel on the accelerator and calculates the overall performance.
 
 ## Overview
-[View the PDF](https://github.com/kosho2013/DFModel/blob/master/images/DFModel_figure1.pdf)
+![](images/DFModel_figure1.pdf)
 
 ## Detailed flow chart
-[View the PDF](https://github.com/kosho2013/DFModel/blob/master/images/DFModel_figure2.pdf)
+![](images/DFModel_figure2.pdf)
 
 # Environment
 Gurobi 10.0.3<br />
@@ -1081,7 +1081,7 @@ connections {
 }
 ```
 The following graph shows the different kernels and buffers corresponding to the dataflow graph above.
-![Image](https://github.com/kosho2013/DFModel/blob/master/Example/GPT3_1T_1024_SN30/dataflow_graph.png)
+![](images/dataflow_graph.png)
 
 ## System
 The system is composed of 1024 SN30 RDUs. Each RDU has more than 600 MB of SRAM and more than 600 TFLOPS of compute power. Each chip is attched with 1TB of DDR memory. The interconnection topolopy is a 8x128 2D torus with PCIe links connecting both dimensions of the hierarchical topology. The parallelization strategy is `TP` (tensor parallelism) on the dimension with degree 8 and `PP` (pipeline parallelism) on the dimension with degree 128. The following code shows the system setup for the described system.
@@ -1110,7 +1110,7 @@ system {
 }
 ```
 The following image shows the system setup.
-![Image](https://github.com/kosho2013/DFModel/blob/master/images/system.png)
+![](images/system.png)
 
 ## Cost
 We set up the cost of the system which includes both price cost and power cost. We need to set up the unit cost for the interconnection links, switches, DRAM as well as the cost of the accelerator silicon. The following code shows an example.
