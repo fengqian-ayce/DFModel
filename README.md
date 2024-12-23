@@ -1159,5 +1159,6 @@ System FLOPS Utilization 0.7748055154407518
 Optimizer Runtime (s) 262.675754070282
 ```
 There are a total of six configurations and the following output graph shows six clusters of kernels.
-![Project Screenshot](images/system.png)
+![](images/dataflow_graph_final.png)
+
 
