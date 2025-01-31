@@ -1,3 +1,5 @@
+[![License](https://img.shields.io/badge/License-FreeBSD-blue.svg)](https://opensource.org/licenses/FreeBSD)
+
 # Introduction
 DFModel is used to model workload performance on a distributed system of accelerators. It uses Gurobi for optimization given the input constraints set up by users. The following images show the flow chart of DFModel. It goes through two steps of optimization from inter-chip level to intra-chip level. Inter-chip optimization figures out the best sharding strategy given a certain dataflow graph. Intra-chip level optimization figures out the mapping for each kernel on the accelerator and calculates the overall performance.
 
