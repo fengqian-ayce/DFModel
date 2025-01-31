@@ -1,4 +1,4 @@
-## License
+# License
 This project is licensed under the [FreeBSD License](LICENSE).
 
 # Introduction
