@@ -1,4 +1,4 @@
-import gurobipy as gp
+from highspy import Highs  # Assumes HiGHS Python API
 import argparse
 import numpy as np
 import setup_pb2
@@ -278,39 +278,33 @@ else:
         
     if dse.execution.llm.num_layer_in_graph == 1: # assume users inputs only the dataflow graph of one layer, but there are many other layers denoted in "num_layer", which will be divided into PP (pipeline parallelism)
     
-        model = gp.Model()
-        model.params.NonConvex = 2
-        model.params.MIPGap = 0.001
-        if dse.gurobi.thread == 0:
-            model.Params.Threads = os.cpu_count()
-        else:
-            model.Params.Threads = dse.gurobi.thread
+        model = Highs()
+        # HiGHS does not support the same parameter settings; adjust if needed
 
-
-        sharding = model.addMVar((num_kernel, 5), name='sharding', vtype=gp.GRB.BINARY) # outer,M,K,N,no sharding
-        communication_type = model.addMVar((num_kernel), name='communication_type', vtype=gp.GRB.INTEGER, lb=Communication.NO_COMMUNICATION.value, ub=Communication.ALL_GATHER.value)
-        communication_size = model.addMVar((num_kernel), name='communication_size', vtype=gp.GRB.CONTINUOUS, lb=0)
+        sharding = model.add_binary_matrix(num_kernel, 5, name='sharding')  
+        communication_type = model.add_integer_vector(num_kernel, name='communication_type', lb=Communication.NO_COMMUNICATION.value, ub=Communication.ALL_GATHER.value)
+        communication_size = model.add_continuous_vector(num_kernel, name='communication_size', lb=0)
 
         for i in range(num_kernel):
             if outer[i] == 1:
-                model.addConstr(sharding[i, Dim.OUTER.value] == 0)
+                model.add_constraint(sharding[i, Dim.OUTER.value] == 0)
             if M[i] == 1:
-                model.addConstr(sharding[i, Dim.M.value] == 0)
+                model.add_constraint(sharding[i, Dim.M.value] == 0)
             if K[i] == 1:
-                model.addConstr(sharding[i, Dim.K.value] == 0)
+                model.add_constraint(sharding[i, Dim.K.value] == 0)
             if N[i] == 1:
-                model.addConstr(sharding[i, Dim.N.value] == 0)
-            model.addConstr(np.ones((5)) @ sharding[i, :] == 1)
+                model.add_constraint(sharding[i, Dim.N.value] == 0)
+            model.add_constraint(binary_sum(sharding[i, :]) == 1)
                 
             # don't shard the tile dim
             if tiling[i] == Dim.OUTER.value+1:
-                model.addConstr(sharding[i, Dim.OUTER.value] == 0)
+                model.add_constraint(sharding[i, Dim.OUTER.value] == 0)
             elif tiling[i] == Dim.M.value+1:
-                model.addConstr(sharding[i, Dim.M.value] == 0)
+                model.add_constraint(sharding[i, Dim.M.value] == 0)
             elif tiling[i] == Dim.K.value+1:
-                model.addConstr(sharding[i, Dim.K.value] == 0)
+                model.add_constraint(sharding[i, Dim.K.value] == 0)
             elif tiling[i] == Dim.N.value+1:
-                model.addConstr(sharding[i, Dim.N.value] == 0)
+                model.add_constraint(sharding[i, Dim.N.value] == 0)
             else:
                 raise Exception('Wrong!')
             
@@ -319,32 +313,32 @@ else:
             if weight_tensor_size[i] == -1: # no weights
                 pass
             else:
-                model.addConstr(sharding[i, Dim.NO_DIM.value] == 0)
+                model.add_constraint(sharding[i, Dim.NO_DIM.value] == 0)
 
 
 
             # if K is sharded
-            model.addConstr((sharding[i, Dim.K.value] == 1) >> (communication_type[i] == Communication.ALL_REDUCE.value))
-            model.addConstr((sharding[i, Dim.K.value] == 1) >> (communication_size[i] == output_tensor_size[i]))
+            model.add_constraint((sharding[i, Dim.K.value] == 1) >> (communication_type[i] == Communication.ALL_REDUCE.value))
+            model.add_constraint((sharding[i, Dim.K.value] == 1) >> (communication_size[i] == output_tensor_size[i]))
 
             # if K is not sharded
-            model.addConstr((sharding[i, Dim.K.value] == 0) >> (communication_type[i] == Communication.NO_COMMUNICATION.value))
-            model.addConstr((sharding[i, Dim.K.value] == 0) >> (communication_size[i] == 0))
+            model.add_constraint((sharding[i, Dim.K.value] == 0) >> (communication_type[i] == Communication.NO_COMMUNICATION.value))
+            model.add_constraint((sharding[i, Dim.K.value] == 0) >> (communication_size[i] == 0))
 
             if outer[i] > 1:
-                model.addConstr(sharding[i, Dim.OUTER.value] == 1)
+                model.add_constraint(sharding[i, Dim.OUTER.value] == 1)
 
 
 
 
             
 
-        # RR, RS, SR
-        upstream_sharding = model.addMVar((num_edge, 3), name='upstream_sharding', vtype=gp.GRB.BINARY)
-        downstream_sharding = model.addMVar((num_edge, 3), name='downstream_sharding', vtype=gp.GRB.BINARY)
+
+        upstream_sharding = model.add_binary_matrix(num_edge, 3, name='upstream_sharding')
+        downstream_sharding = model.add_binary_matrix(num_edge, 3, name='downstream_sharding')
         for i in range(num_edge):
-            model.addConstr(np.ones((3)) @ upstream_sharding[i, :] == 1)
-            model.addConstr(np.ones((3)) @ downstream_sharding[i, :] == 1)
+            model.add_constraint(binary_sum(upstream_sharding[i, :]) == 1)
+            model.add_constraint(binary_sum(downstream_sharding[i, :]) == 1)
             
             upstream_node_idx = node_dict[startIdx[i]]
             downstream_node_idx = node_dict[endIdx[i]]
@@ -353,52 +347,52 @@ else:
             
             
             # upsteam 
-            model.addConstr((sharding[upstream_node_idx, Dim.OUTER.value] == 1) >> (upstream_sharding[i, Tensor.SR.value] == 1)) # shard outer
-            model.addConstr((sharding[upstream_node_idx, Dim.M.value] == 1) >> (upstream_sharding[i, Tensor.SR.value] == 1)) # shard M
-            model.addConstr((sharding[upstream_node_idx, Dim.K.value] == 1) >> (upstream_sharding[i, Tensor.RR.value] == 1)) # shard K
-            model.addConstr((sharding[upstream_node_idx, Dim.N.value] == 1) >> (upstream_sharding[i, Tensor.RS.value] == 1)) # shard N
-            model.addConstr((sharding[upstream_node_idx, Dim.NO_DIM.value] == 1) >> (upstream_sharding[i, Tensor.RR.value] == 1)) # no sharding
+            model.add_constraint((sharding[upstream_node_idx, Dim.OUTER.value] == 1) >> (upstream_sharding[i, Tensor.SR.value] == 1)) # shard outer
+            model.add_constraint((sharding[upstream_node_idx, Dim.M.value] == 1) >> (upstream_sharding[i, Tensor.SR.value] == 1)) # shard M
+            model.add_constraint((sharding[upstream_node_idx, Dim.K.value] == 1) >> (upstream_sharding[i, Tensor.RR.value] == 1)) # shard K
+            model.add_constraint((sharding[upstream_node_idx, Dim.N.value] == 1) >> (upstream_sharding[i, Tensor.RS.value] == 1)) # shard N
+            model.add_constraint((sharding[upstream_node_idx, Dim.NO_DIM.value] == 1) >> (upstream_sharding[i, Tensor.RR.value] == 1)) # no sharding
 
 
 
             # downstream
             if tiling[downstream_node_idx] == Dim.K.value+1: # for weight update kernels
-                model.addConstr((sharding[downstream_node_idx, Dim.OUTER.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1))
-                model.addConstr((sharding[downstream_node_idx, Dim.M.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1))
-                model.addConstr((sharding[downstream_node_idx, Dim.K.value] == 1) >> (downstream_sharding[i, Tensor.RS.value] == 1))
-                model.addConstr((sharding[downstream_node_idx, Dim.N.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1))
-                model.addConstr((sharding[downstream_node_idx, Dim.NO_DIM.value] == 1) >> (downstream_sharding[i, Tensor.RR.value] == 1))
+                model.add_constraint((sharding[downstream_node_idx, Dim.OUTER.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1))
+                model.add_constraint((sharding[downstream_node_idx, Dim.M.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1))
+                model.add_constraint((sharding[downstream_node_idx, Dim.K.value] == 1) >> (downstream_sharding[i, Tensor.RS.value] == 1))
+                model.add_constraint((sharding[downstream_node_idx, Dim.N.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1))
+                model.add_constraint((sharding[downstream_node_idx, Dim.NO_DIM.value] == 1) >> (downstream_sharding[i, Tensor.RR.value] == 1))
             
             else:
                 if kernel_type[downstream_node_idx] == KernelType.SIMD.value:
-                    model.addConstr((sharding[downstream_node_idx, Dim.OUTER.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1)) # shard outer
-                    model.addConstr((sharding[downstream_node_idx, Dim.M.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1)) # shard M
-                    model.addConstr((sharding[downstream_node_idx, Dim.K.value] == 1) >> (downstream_sharding[i, Tensor.RR.value] == 1)) # shard K
-                    model.addConstr((sharding[downstream_node_idx, Dim.N.value] == 1) >> (downstream_sharding[i, Tensor.RS.value] == 1)) # shard N
-                    model.addConstr((sharding[downstream_node_idx, Dim.NO_DIM.value] == 1) >> (downstream_sharding[i, Tensor.RR.value] == 1)) # no sharding
+                    model.add_constraint((sharding[downstream_node_idx, Dim.OUTER.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1)) # shard outer
+                    model.add_constraint((sharding[downstream_node_idx, Dim.M.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1)) # shard M
+                    model.add_constraint((sharding[downstream_node_idx, Dim.K.value] == 1) >> (downstream_sharding[i, Tensor.RR.value] == 1)) # shard K
+                    model.add_constraint((sharding[downstream_node_idx, Dim.N.value] == 1) >> (downstream_sharding[i, Tensor.RS.value] == 1)) # shard N
+                    model.add_constraint((sharding[downstream_node_idx, Dim.NO_DIM.value] == 1) >> (downstream_sharding[i, Tensor.RR.value] == 1)) # no sharding
 
                 else:
                     if weight_tensor_size[downstream_node_idx] != -1: # weight is present, this edge represents outer,K,N
-                        model.addConstr((sharding[downstream_node_idx, Dim.OUTER.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1)) # shard outer
-                        model.addConstr((sharding[downstream_node_idx, Dim.M.value] == 1) >> (downstream_sharding[i, Tensor.RR.value] == 1)) # shard M
-                        model.addConstr((sharding[downstream_node_idx, Dim.K.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1)) # shard K
-                        model.addConstr((sharding[downstream_node_idx, Dim.N.value] == 1) >> (downstream_sharding[i, Tensor.RS.value] == 1)) # shard N
-                        model.addConstr((sharding[downstream_node_idx, Dim.NO_DIM.value] == 1) >> (downstream_sharding[i, Tensor.RR.value] == 1)) # no sharding
+                        model.add_constraint((sharding[downstream_node_idx, Dim.OUTER.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1)) # shard outer
+                        model.add_constraint((sharding[downstream_node_idx, Dim.M.value] == 1) >> (downstream_sharding[i, Tensor.RR.value] == 1)) # shard M
+                        model.add_constraint((sharding[downstream_node_idx, Dim.K.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1)) # shard K
+                        model.add_constraint((sharding[downstream_node_idx, Dim.N.value] == 1) >> (downstream_sharding[i, Tensor.RS.value] == 1)) # shard N
+                        model.add_constraint((sharding[downstream_node_idx, Dim.NO_DIM.value] == 1) >> (downstream_sharding[i, Tensor.RR.value] == 1)) # no sharding
 
                     else: # weight is not present
                         if tensor_size[i] == input_tensor_1_size[downstream_node_idx]: # if the edge represent tensor 1
-                            model.addConstr((sharding[downstream_node_idx, Dim.OUTER.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1)) # shard outer
-                            model.addConstr((sharding[downstream_node_idx, Dim.M.value] == 1) >> (downstream_sharding[i, Tensor.RR.value] == 1)) # shard M
-                            model.addConstr((sharding[downstream_node_idx, Dim.K.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1)) # shard K
-                            model.addConstr((sharding[downstream_node_idx, Dim.N.value] == 1) >> (downstream_sharding[i, Tensor.RS.value] == 1)) # shard N
-                            model.addConstr((sharding[downstream_node_idx, Dim.NO_DIM.value] == 1) >> (downstream_sharding[i, Tensor.RR.value] == 1)) # no sharding
+                            model.add_constraint((sharding[downstream_node_idx, Dim.OUTER.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1)) # shard outer
+                            model.add_constraint((sharding[downstream_node_idx, Dim.M.value] == 1) >> (downstream_sharding[i, Tensor.RR.value] == 1)) # shard M
+                            model.add_constraint((sharding[downstream_node_idx, Dim.K.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1)) # shard K
+                            model.add_constraint((sharding[downstream_node_idx, Dim.N.value] == 1) >> (downstream_sharding[i, Tensor.RS.value] == 1)) # shard N
+                            model.add_constraint((sharding[downstream_node_idx, Dim.NO_DIM.value] == 1) >> (downstream_sharding[i, Tensor.RR.value] == 1)) # no sharding
 
                         elif tensor_size[i] == input_tensor_2_size[downstream_node_idx]: # if the edge represent tensor 2
-                            model.addConstr((sharding[downstream_node_idx, Dim.OUTER.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1)) # shard outer
-                            model.addConstr((sharding[downstream_node_idx, Dim.M.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1)) # shard M
-                            model.addConstr((sharding[downstream_node_idx, Dim.K.value] == 1) >> (downstream_sharding[i, Tensor.RS.value] == 1)) # shard K
-                            model.addConstr((sharding[downstream_node_idx, Dim.N.value] == 1) >> (downstream_sharding[i, Tensor.RR.value] == 1)) # shard N
-                            model.addConstr((sharding[downstream_node_idx, Dim.NO_DIM.value] == 1) >> (downstream_sharding[i, Tensor.RR.value] == 1)) # no sharding
+                            model.add_constraint((sharding[downstream_node_idx, Dim.OUTER.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1)) # shard outer
+                            model.add_constraint((sharding[downstream_node_idx, Dim.M.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1)) # shard M
+                            model.add_constraint((sharding[downstream_node_idx, Dim.K.value] == 1) >> (downstream_sharding[i, Tensor.RS.value] == 1)) # shard K
+                            model.add_constraint((sharding[downstream_node_idx, Dim.N.value] == 1) >> (downstream_sharding[i, Tensor.RR.value] == 1)) # shard N
+                            model.add_constraint((sharding[downstream_node_idx, Dim.NO_DIM.value] == 1) >> (downstream_sharding[i, Tensor.RR.value] == 1)) # no sharding
 
                         else:
                             raise Exception('Wrong!')
@@ -416,21 +410,21 @@ else:
         matrix_commu_type = np.array(matrix_commu_type)
         matrix_commu_size = np.array(matrix_commu_size)
 
-        edge_communication_type = model.addMVar((num_edge), name='edge_communication_type', vtype=gp.GRB.CONTINUOUS, lb=0)
-        edge_communication_size = model.addMVar((num_edge), name='edge_communication_size', vtype=gp.GRB.CONTINUOUS, lb=0)
+        edge_communication_type = model.add_continuous_vector(num_edge, name='edge_communication_type', lb=0)
+        edge_communication_size = model.add_continuous_vector(num_edge, name='edge_communication_size', lb=0)
         for i in range(num_edge):
-            model.addConstr(edge_communication_type[i] == upstream_sharding[i, :] @ matrix_commu_type @ downstream_sharding[i, :])
-            model.addConstr(edge_communication_size[i] == upstream_sharding[i, :] @ matrix_commu_size @ downstream_sharding[i, :] * tensor_size[i])
+            model.add_constraint(edge_communication_type[i] == upstream_sharding[i, :] @ matrix_commu_type @ downstream_sharding[i, :])
+            model.add_constraint(edge_communication_size[i] == upstream_sharding[i, :] @ matrix_commu_size @ downstream_sharding[i, :] * tensor_size[i])
 
 
 
-        total_communication_size = model.addVar(name='total_communication_size', vtype=gp.GRB.CONTINUOUS, lb=0)
-        model.addConstr(total_communication_size == np.ones((num_kernel)) @ communication_size + np.ones((num_edge)) @ edge_communication_size)
+        total_communication_size = model.add_continuous_var(name='total_communication_size', lb=0)
+        model.add_constraint(total_communication_size == np.ones((num_kernel)) @ communication_size + np.ones((num_edge)) @ edge_communication_size)
 
 
 
-        model.setObjective(total_communication_size, gp.GRB.MINIMIZE)
-        model.optimize()
+        model.set_objective_minimize(total_communication_size)
+        model.solve()
     
 
     else: # assume user inputs all layers in the dataflow graph, and we need to break down them into PP
@@ -537,40 +531,35 @@ else:
             else:
                 raise Exception('Wrong!')
 
-        model = gp.Model()
-        model.params.NonConvex = 2
-        model.params.MIPGap = 0.001
-        if dse.gurobi.thread == 0:
-            model.Params.Threads = os.cpu_count()
-        else:
-            model.Params.Threads = dse.gurobi.thread
+        model = Highs()
+        # HiGHS does not support the same parameter settings; adjust if needed
         
         
         
         
         
-        sharding = model.addMVar((num_kernel, 5), name='sharding', vtype=gp.GRB.BINARY) # outer,M,K,N,no sharding
-        communication_type = model.addMVar((num_kernel), name='communication_type', vtype=gp.GRB.INTEGER, lb=Communication.NO_COMMUNICATION.value, ub=Communication.ALL_GATHER.value)
-        communication_size = model.addMVar((num_kernel), name='communication_size', vtype=gp.GRB.CONTINUOUS, lb=0)
+        sharding = model.add_binary_matrix(num_kernel, 5, name='sharding')  
+        communication_type = model.add_integer_vector(num_kernel, name='communication_type', lb=Communication.NO_COMMUNICATION.value, ub=Communication.ALL_GATHER.value)
+        communication_size = model.add_continuous_vector(num_kernel, name='communication_size', lb=0)
         
         C = num_partition
             
 
-        A = model.addMVar((num_kernel, C), name='A', vtype=gp.GRB.BINARY) # kernel to config
-        H = model.addMVar((num_edge, C), name='H', vtype=gp.GRB.BINARY) # buffer to config based on producer kernel
-        L = model.addMVar((num_edge, C), name='L', vtype=gp.GRB.BINARY) # buffer to config based on lifetime
-        Config = model.addMVar(num_kernel, name='Config', vtype=gp.GRB.INTEGER, lb=0)
+        A = model.add_binary_matrix(num_kernel, C, name='A') 
+        H = model.add_binary_matrix(num_edge, C, name='H') 
+        L = model.add_binary_matrix(num_edge, C, name='L') 
+        Config = model.add_integer_vector(num_kernel, name='Config', lb=0)
         
         
         
         if dse.execution.execution_style == Execution_Style.KERNEL_BY_KERNEL.value:
             for i in range(len(configs)):
-                model.addConstr(Config[i] == i) # tuning nobe
+                model.add_constraint(Config[i] == i) # tuning nobe
             
         elif dse.execution.execution_style == Execution_Style.DATAFLOW.value:
             for i in range(len(configs)):
                 if configs[i] != -1:
-                    model.addConstr(Config[i] == configs[i])
+                    model.add_constraint(Config[i] == configs[i])
             
             if first_bwd_kernel != -1: # if config is not specified for dataflow or there is backward pass for training
                 if C % 2 == 0:
@@ -584,9 +573,9 @@ else:
                 
                 for i in range(num_kernel):
                     if fwd_bwd[i] == FWD_BWD.FWD.value:
-                        model.addConstr(Config[i] <= fwd_idx)
+                        model.add_constraint(Config[i] <= fwd_idx)
                     elif fwd_bwd[i] == FWD_BWD.BWD.value:
-                        model.addConstr(Config[i] >= bwd_idx)
+                        model.add_constraint(Config[i] >= bwd_idx)
                     else:
                         raise Exception('Wrong!')
                 
@@ -599,18 +588,18 @@ else:
 
         # kernel assignment   
         for i in range(num_kernel):
-            model.addConstr(A[i, :] @ np.ones((C)) == 1)
+            model.add_constraint(A[i, :] @ np.ones((C)) == 1)
             
             
         t2 = np.zeros((C))
         for i in range(C):
             t2[i] = i
         for i in range(num_kernel):
-            model.addConstr(A[i, :] @ t2 == Config[i])
+            model.add_constraint(A[i, :] @ t2 == Config[i])
 
 
         for i in range(num_edge):
-            model.addConstr(Config[node_dict[startIdx[i]]] <= Config[node_dict[endIdx[i]]])
+            model.add_constraint(Config[node_dict[startIdx[i]]] <= Config[node_dict[endIdx[i]]])
             
             
         
@@ -618,8 +607,8 @@ else:
         
         if dse.execution.execution_style == Execution_Style.KERNEL_BY_KERNEL.value:
             for i in range(C):
-                model.addConstr(np.ones((num_kernel)) @ A[:, i] >= 1)
-            model.addConstr(C == num_kernel)
+                model.add_constraint(np.ones((num_kernel)) @ A[:, i] >= 1)
+            model.add_constraint(C == num_kernel)
                 
         elif dse.execution.execution_style == Execution_Style.DATAFLOW.value:
             pass
@@ -636,7 +625,7 @@ else:
             end_node_idx = node_dict[endIdx[i]]
             
             for j in range(C):
-                model.addConstr(H[i, j] == A[start_node_idx, j])
+                model.add_constraint(H[i, j] == A[start_node_idx, j])
         
         
         
@@ -657,64 +646,64 @@ else:
             start_node_idx = node_dict[startIdx[i]]
             end_node_idx = node_dict[endIdx[i]]
             
-            tmp1 = model.addMVar((C), vtype=gp.GRB.BINARY)
-            tmp2 = model.addMVar((C), vtype=gp.GRB.BINARY)
+            tmp1 = model.add_binary_vector(C)
+            tmp2 = model.add_binary_vector(C)
 
-            model.addConstr(tmp1 == A[start_node_idx, :] @ ls)
-            model.addConstr(tmp2 == A[end_node_idx, :] @ lt)
+            model.add_constraint(tmp1 == A[start_node_idx, :] @ ls)
+            model.add_constraint(tmp2 == A[end_node_idx, :] @ lt)
             
             for j in range(C):
-                t1 = model.addVar(vtype=gp.GRB.BINARY)
-                t2 = model.addVar(vtype=gp.GRB.BINARY)
-                t3 = model.addVar(vtype=gp.GRB.BINARY)
-                t4 = model.addVar(vtype=gp.GRB.BINARY)
-                t5 = model.addVar(vtype=gp.GRB.BINARY)
-                t6 = model.addVar(vtype=gp.GRB.BINARY)
-                t7 = model.addVar(vtype=gp.GRB.BINARY)
-                t8 = model.addVar(vtype=gp.GRB.BINARY)
-                t9 = model.addVar(vtype=gp.GRB.BINARY)
-                t10 = model.addVar(vtype=gp.GRB.BINARY)
-                t11 = model.addVar(vtype=gp.GRB.BINARY)
+                t1 = model.add_binary_var()
+                t2 = model.add_binary_var()
+                t3 = model.add_binary_var()
+                t4 = model.add_binary_var()
+                t5 = model.add_binary_var()
+                t6 = model.add_binary_var()
+                t7 = model.add_binary_var()
+                t8 = model.add_binary_var()
+                t9 = model.add_binary_var()
+                t10 = model.add_binary_var()
+                t11 = model.add_binary_var()
 
-                model.addConstr(t1 == gp.and_(tmp1[j], tmp2[j]))
-                model.addConstr(t2 == gp.or_(tmp1[j], tmp2[j]))
-                model.addConstr(t3 == 1 - t1)
-                model.addConstr(t4 == gp.and_(t2, t3))
+                model.add_constraint(t1 == binary_and(tmp1[j], tmp2[j]))
+                model.add_constraint(t2 == binary_or(tmp1[j], tmp2[j]))
+                model.add_constraint(t3 == 1 - t1)
+                model.add_constraint(t4 == binary_and(t2, t3))
                 
-                model.addConstr(t5 == gp.and_(A[start_node_idx, j], A[end_node_idx, j]))
+                model.add_constraint(t5 == binary_and(A[start_node_idx, j], A[end_node_idx, j]))
                 
-                model.addConstr(t6 == gp.and_(t4, t5))
-                model.addConstr(t7 == gp.or_(t4, t5))
-                model.addConstr(t8 == 1 - t6)
-                model.addConstr(t9 == gp.and_(t7, t8))
-                model.addConstr(t10 == 1 - A[end_node_idx, j])
-                model.addConstr(t11 == gp.and_(t9, t10))
+                model.add_constraint(t6 == binary_and(t4, t5))
+                model.add_constraint(t7 == binary_or(t4, t5))
+                model.add_constraint(t8 == 1 - t6)
+                model.add_constraint(t9 == binary_and(t7, t8))
+                model.add_constraint(t10 == 1 - A[end_node_idx, j])
+                model.add_constraint(t11 == binary_and(t9, t10))
                 
-                model.addConstr((t11 == 1) >> (L[i, j] == 1))
-                model.addConstr((t11 == 0) >> (L[i, j] == 0))
+                model.add_constraint((t11 == 1) >> (L[i, j] == 1))
+                model.add_constraint((t11 == 0) >> (L[i, j] == 0))
         
         
         
-            
+
         
         
         # compute resources
         if dse.execution.compute_util == 0:
-            Par_lane = model.addMVar((num_kernel), name='Par_lane', vtype=gp.GRB.INTEGER, lb=1)
-            Par_stage = model.addMVar((num_kernel), name='Par_stage', vtype=gp.GRB.INTEGER, lb=1)
+            Par_lane = model.add_integer_vector(num_kernel, name='Par_lane', lb=1)
+            Par_stage = model.add_integer_vector(num_kernel, name='Par_stage', lb=1)
         else:
             pass
 
-        Par_total = model.addMVar((num_kernel), name='Par_total', vtype=gp.GRB.INTEGER, lb=1)
+        Par_total = model.add_integer_vector(num_kernel, name='Par_total', lb=1)
 
         if dse.execution.compute_util == 0:
             for i in range(num_kernel):
-                model.addConstr(Par_lane[i] * Par_stage[i] == Par_total[i])
+                model.add_constraint(Par_lane[i] * Par_stage[i] == Par_total[i])
         else:
             pass
             
         for i in range(C):
-            model.addConstr(Par_total @ A[:, i] == Core)        
+            model.add_constraint(Par_total @ A[:, i] == Core)        
 
 
 
@@ -726,219 +715,214 @@ else:
 
 
 
-
-
-
-
-        # network
-        ALL_REDUCE_ratio = model.addVar(name='ALL_REDUCE_ratio', vtype=gp.GRB.CONTINUOUS, lb=0)
-        ALL_TO_ALL_ratio = model.addVar(name='ALL_TO_ALL_ratio', vtype=gp.GRB.CONTINUOUS, lb=0)
-        ALL_GATHER_ratio = model.addVar(name='ALL_GATHER_ratio', vtype=gp.GRB.CONTINUOUS, lb=0)
-        TP = model.addVar(name='TP', vtype=gp.GRB.INTEGER, lb=1)
-        PP = model.addVar(name='PP', vtype=gp.GRB.INTEGER, lb=1)
-        DP = model.addVar(name='DP', vtype=gp.GRB.INTEGER, lb=1)
+        ALL_REDUCE_ratio = model.add_continuous_var(name='ALL_REDUCE_ratio', lb=0)
+        ALL_TO_ALL_ratio = model.add_continuous_var(name='ALL_TO_ALL_ratio', lb=0)
+        ALL_GATHER_ratio = model.add_continuous_var(name='ALL_GATHER_ratio', lb=0)
+        TP = model.add_integer_var(name='TP', lb=1)
+        PP = model.add_integer_var(name='PP', lb=1)
+        DP = model.add_integer_var(name='DP', lb=1)
 
         if len(topology) == 1: # 1D
-            Shape = model.addMVar(1, name='Shape', vtype=gp.GRB.INTEGER, lb=0)
-            model.addConstr(Shape[0] == num_chip)
+            Shape = model.add_integer_vector(1, name='Shape', lb=0)
+            model.add_constraint(Shape[0] == num_chip)
             
-            Link_BW = model.addMVar(1, name='Link_BW', vtype=gp.GRB.CONTINUOUS, lb=0)
+            Link_BW = model.add_continuous_vector(1, name='Link_BW', lb=0)
             for i in range(len(topology)):
-                model.addConstr(Link_BW[i] == link_bw[i])  
+                model.add_constraint(Link_BW[i] == link_bw[i])  
                 
-            Link_BW_TP = model.addVar(name='Link_BW_TP', vtype=gp.GRB.CONTINUOUS, lb=0)
-            Link_BW_PP = model.addVar(name='Link_BW_PP', vtype=gp.GRB.CONTINUOUS, lb=0)
-            Link_BW_DP = model.addVar(name='Link_BW_DP', vtype=gp.GRB.CONTINUOUS, lb=0)    
+            Link_BW_TP = model.add_continuous_var(name='Link_BW_TP', lb=0)
+            Link_BW_PP = model.add_continuous_var(name='Link_BW_PP', lb=0)
+            Link_BW_DP = model.add_continuous_var(name='Link_BW_DP', lb=0)    
             
             if par[0] == 'TP':
-                model.addConstr(TP == num_chip)
-                model.addConstr(PP == 1)
-                model.addConstr(DP == 1)   
+                model.add_constraint(TP == num_chip)
+                model.add_constraint(PP == 1)
+                model.add_constraint(DP == 1)   
 
-                model.addConstr(Link_BW_TP == Link_BW[0])
+                model.add_constraint(Link_BW_TP == Link_BW[0])
                 
-                aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
-                model.addConstr(aaa == TP * Link_BW_TP)
+                aaa = model.add_continuous_var()
+                model.add_constraint(aaa == TP * Link_BW_TP)
                 if topology[0] == BasicTopology.R.value:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == TP - 1)
-                    model.addConstr(ALL_TO_ALL_ratio * Link_BW_TP * 8 == TP * TP)
-                    model.addConstr(ALL_GATHER_ratio * aaa == TP - 1)
+                    model.add_constraint(ALL_REDUCE_ratio * aaa == TP - 1)
+                    model.add_constraint(ALL_TO_ALL_ratio * Link_BW_TP * 8 == TP * TP)
+                    model.add_constraint(ALL_GATHER_ratio * aaa == TP - 1)
                 elif topology[0] == BasicTopology.FC.value:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == 1)
-                    model.addConstr(ALL_TO_ALL_ratio * Link_BW_TP == 1)
-                    model.addConstr(ALL_GATHER_ratio * aaa == 1)
+                    model.add_constraint(ALL_REDUCE_ratio * aaa == 1)
+                    model.add_constraint(ALL_TO_ALL_ratio * Link_BW_TP == 1)
+                    model.add_constraint(ALL_GATHER_ratio * aaa == 1)
                 elif topology[0] == BasicTopology.SW.value:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == TP - 1)
-                    model.addConstr(ALL_TO_ALL_ratio * Link_BW_TP * 4 == TP)
-                    model.addConstr(ALL_GATHER_ratio * aaa == TP - 1)
+                    model.add_constraint(ALL_REDUCE_ratio * aaa == TP - 1)
+                    model.add_constraint(ALL_TO_ALL_ratio * Link_BW_TP * 4 == TP)
+                    model.add_constraint(ALL_GATHER_ratio * aaa == TP - 1)
                 else:
                     raise Exception('Wrong!')
                 
             elif par[0] == 'PP':
-                model.addConstr(TP == 1)
-                model.addConstr(PP == num_chip)
-                model.addConstr(DP == 1)   
+                model.add_constraint(TP == 1)
+                model.add_constraint(PP == num_chip)
+                model.add_constraint(DP == 1)   
 
-                model.addConstr(Link_BW_PP == Link_BW[0])
+                model.add_constraint(Link_BW_PP == Link_BW[0])
                 
-                model.addConstr(ALL_REDUCE_ratio == 0)
-                model.addConstr(ALL_TO_ALL_ratio == 0)
-                model.addConstr(ALL_GATHER_ratio == 0)
+                model.add_constraint(ALL_REDUCE_ratio == 0)
+                model.add_constraint(ALL_TO_ALL_ratio == 0)
+                model.add_constraint(ALL_GATHER_ratio == 0)
                 
             elif par[0] == 'DP':
-                model.addConstr(TP == 1)
-                model.addConstr(PP == 1)
-                model.addConstr(DP == num_chip)   
+                model.add_constraint(TP == 1)
+                model.add_constraint(PP == 1)
+                model.add_constraint(DP == num_chip)   
 
-                model.addConstr(Link_BW_DP == Link_BW[0])
+                model.add_constraint(Link_BW_DP == Link_BW[0])
                 
-                model.addConstr(ALL_REDUCE_ratio == 0)
-                model.addConstr(ALL_TO_ALL_ratio == 0)
-                model.addConstr(ALL_GATHER_ratio == 0)
+                model.add_constraint(ALL_REDUCE_ratio == 0)
+                model.add_constraint(ALL_TO_ALL_ratio == 0)
+                model.add_constraint(ALL_GATHER_ratio == 0)
                 
             else:
                 raise Exception('Wrong!')
                 
         elif len(topology) == 2: # 2D
-            Shape = model.addMVar(2, name='Shape', vtype=gp.GRB.INTEGER, lb=1)
+            Shape = model.add_integer_vector(2, name='Shape', lb=1)
             if dimension[0] == 0:
                 pass
             else:
-                model.addConstr(Shape[0] == dimension[0])
+                model.add_constraint(Shape[0] == dimension[0])
             
             if dimension[1] == 0:
                 pass
             else:
-                model.addConstr(Shape[1] == dimension[1])
+                model.add_constraint(Shape[1] == dimension[1])
                 
-            model.addConstr(Shape[0] * Shape[1] == num_chip)
+            model.add_constraint(Shape[0] * Shape[1] == num_chip)
             
-            Link_BW = model.addMVar(2, name='Link_BW', vtype=gp.GRB.CONTINUOUS, lb=0)
+            Link_BW = model.add_continuous_vector(2, name='Link_BW', lb=0)
             for i in range(len(topology)):
-                model.addConstr(Link_BW[i] == link_bw[i])
+                model.add_constraint(Link_BW[i] == link_bw[i])
                 
-            Link_BW_TP = model.addVar(name='Link_BW_TP', vtype=gp.GRB.CONTINUOUS, lb=0)
-            Link_BW_PP = model.addVar(name='Link_BW_PP', vtype=gp.GRB.CONTINUOUS, lb=0)
-            Link_BW_DP = model.addVar(name='Link_BW_DP', vtype=gp.GRB.CONTINUOUS, lb=0)
+            Link_BW_TP = model.add_continuous_var(name='Link_BW_TP', lb=0)
+            Link_BW_PP = model.add_continuous_var(name='Link_BW_PP', lb=0)
+            Link_BW_DP = model.add_continuous_var(name='Link_BW_DP', lb=0)
             
             if par[0] == 'TP' and par[1] == 'PP':
-                model.addConstr(TP == Shape[0])
-                model.addConstr(PP == Shape[1])
-                model.addConstr(DP == 1)
+                model.add_constraint(TP == Shape[0])
+                model.add_constraint(PP == Shape[1])
+                model.add_constraint(DP == 1)
 
-                model.addConstr(Link_BW_TP == Link_BW[0])
-                model.addConstr(Link_BW_PP == Link_BW[1])
+                model.add_constraint(Link_BW_TP == Link_BW[0])
+                model.add_constraint(Link_BW_PP == Link_BW[1])
                 
-                aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
-                model.addConstr(aaa == TP * Link_BW_TP)
+                aaa = model.add_continuous_var()
+                model.add_constraint(aaa == TP * Link_BW_TP)
                 if topology[0] == BasicTopology.R.value:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == TP - 1)
-                    model.addConstr(ALL_TO_ALL_ratio * Link_BW_TP * 8 == TP * TP)
-                    model.addConstr(ALL_GATHER_ratio * aaa == TP - 1)
+                    model.add_constraint(ALL_REDUCE_ratio * aaa == TP - 1)
+                    model.add_constraint(ALL_TO_ALL_ratio * Link_BW_TP * 8 == TP * TP)
+                    model.add_constraint(ALL_GATHER_ratio * aaa == TP - 1)
                 elif topology[0] == BasicTopology.FC.value:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == 1)
-                    model.addConstr(ALL_TO_ALL_ratio * Link_BW_TP == 1)
-                    model.addConstr(ALL_GATHER_ratio * aaa == 1)
+                    model.add_constraint(ALL_REDUCE_ratio * aaa == 1)
+                    model.add_constraint(ALL_TO_ALL_ratio * Link_BW_TP == 1)
+                    model.add_constraint(ALL_GATHER_ratio * aaa == 1)
                 elif topology[0] == BasicTopology.SW.value:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == TP - 1)
-                    model.addConstr(ALL_TO_ALL_ratio * Link_BW_TP * 4 == TP)
-                    model.addConstr(ALL_GATHER_ratio * aaa == TP - 1)
+                    model.add_constraint(ALL_REDUCE_ratio * aaa == TP - 1)
+                    model.add_constraint(ALL_TO_ALL_ratio * Link_BW_TP * 4 == TP)
+                    model.add_constraint(ALL_GATHER_ratio * aaa == TP - 1)
                 else:
                     raise Exception('Wrong!')
                 
             elif par[0] == 'TP' and par[1] == 'DP':
-                model.addConstr(TP == Shape[0])
-                model.addConstr(PP == 1)
-                model.addConstr(DP == Shape[1])
+                model.add_constraint(TP == Shape[0])
+                model.add_constraint(PP == 1)
+                model.add_constraint(DP == Shape[1])
 
-                model.addConstr(Link_BW_TP == Link_BW[0])
-                model.addConstr(Link_BW_DP == Link_BW[1])
+                model.add_constraint(Link_BW_TP == Link_BW[0])
+                model.add_constraint(Link_BW_DP == Link_BW[1])
 
-                aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
-                model.addConstr(aaa == TP * Link_BW_TP)
+                aaa = model.add_continuous_var()
+                model.add_constraint(aaa == TP * Link_BW_TP)
                 if topology[0] == BasicTopology.R.value:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == TP - 1)
-                    model.addConstr(ALL_TO_ALL_ratio * Link_BW_TP * 8 == TP * TP)
-                    model.addConstr(ALL_GATHER_ratio * aaa == TP - 1)
+                    model.add_constraint(ALL_REDUCE_ratio * aaa == TP - 1)
+                    model.add_constraint(ALL_TO_ALL_ratio * Link_BW_TP * 8 == TP * TP)
+                    model.add_constraint(ALL_GATHER_ratio * aaa == TP - 1)
                 elif topology[0] == BasicTopology.FC.value:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == 1)
-                    model.addConstr(ALL_TO_ALL_ratio * Link_BW_TP == 1)
-                    model.addConstr(ALL_GATHER_ratio * aaa == 1)
+                    model.add_constraint(ALL_REDUCE_ratio * aaa == 1)
+                    model.add_constraint(ALL_TO_ALL_ratio * Link_BW_TP == 1)
+                    model.add_constraint(ALL_GATHER_ratio * aaa == 1)
                 elif topology[0] == BasicTopology.SW.value:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == TP - 1)
-                    model.addConstr(ALL_TO_ALL_ratio * Link_BW_TP * 4 == TP)
-                    model.addConstr(ALL_GATHER_ratio * aaa == TP - 1)
+                    model.add_constraint(ALL_REDUCE_ratio * aaa == TP - 1)
+                    model.add_constraint(ALL_TO_ALL_ratio * Link_BW_TP * 4 == TP)
+                    model.add_constraint(ALL_GATHER_ratio * aaa == TP - 1)
                 else:
                     raise Exception('Wrong!')
                     
             elif par[0] == 'PP' and par[1] == 'DP':
-                model.addConstr(TP == 1)
-                model.addConstr(PP == Shape[0])
-                model.addConstr(DP == Shape[1])
+                model.add_constraint(TP == 1)
+                model.add_constraint(PP == Shape[0])
+                model.add_constraint(DP == Shape[1])
 
-                model.addConstr(Link_BW_PP == Link_BW[0])
-                model.addConstr(Link_BW_DP == Link_BW[1])
+                model.add_constraint(Link_BW_PP == Link_BW[0])
+                model.add_constraint(Link_BW_DP == Link_BW[1])
                 
-                model.addConstr(ALL_REDUCE_ratio == 0)
-                model.addConstr(ALL_TO_ALL_ratio == 0)
-                model.addConstr(ALL_GATHER_ratio == 0)
+                model.add_constraint(ALL_REDUCE_ratio == 0)
+                model.add_constraint(ALL_TO_ALL_ratio == 0)
+                model.add_constraint(ALL_GATHER_ratio == 0)
                 
             else:    
                 raise Exception('Wrong!')
                 
         elif len(topology) == 3: # 3D
-            Shape = model.addMVar(3, name='Shape', vtype=gp.GRB.INTEGER, lb=1)
+            Shape = model.add_integer_vector(3, name='Shape', lb=1)
             if dimension[0] == 0:
                 pass
             else:
-                model.addConstr(Shape[0] == dimension[0])
+                model.add_constraint(Shape[0] == dimension[0])
             
             if dimension[1] == 0:
                 pass
             else:
-                model.addConstr(Shape[1] == dimension[1])
+                model.add_constraint(Shape[1] == dimension[1])
             
             if dimension[2] == 0:
                 pass
             else:
-                model.addConstr(Shape[2] == dimension[2])
+                model.add_constraint(Shape[2] == dimension[2])
                 
-            aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            model.addConstr(aaa == Shape[0] * Shape[1])
-            model.addConstr(aaa * Shape[2] == num_chip)
+            aaa = model.add_continuous_var()
+            model.add_constraint(aaa == Shape[0] * Shape[1])
+            model.add_constraint(aaa * Shape[2] == num_chip)
             
             
-            Link_BW = model.addMVar(3, name='Link_BW', vtype=gp.GRB.CONTINUOUS, lb=0)
+            Link_BW = model.add_continuous_vector(3, name='Link_BW', lb=0)
             for i in range(len(topology)):
-                model.addConstr(Link_BW[i] == link_bw[i])  
+                model.add_constraint(Link_BW[i] == link_bw[i])  
 
-            Link_BW_TP = model.addVar(name='Link_BW_TP', vtype=gp.GRB.CONTINUOUS, lb=0)
-            Link_BW_PP = model.addVar(name='Link_BW_PP', vtype=gp.GRB.CONTINUOUS, lb=0)
-            Link_BW_DP = model.addVar(name='Link_BW_DP', vtype=gp.GRB.CONTINUOUS, lb=0)
+            Link_BW_TP = model.add_continuous_var(name='Link_BW_TP', lb=0)
+            Link_BW_PP = model.add_continuous_var(name='Link_BW_PP', lb=0)
+            Link_BW_DP = model.add_continuous_var(name='Link_BW_DP', lb=0)
             
             if par[0] == 'TP' and par[1] == 'PP' and par[2] == 'DP':
-                model.addConstr(TP == Shape[0])
-                model.addConstr(PP == Shape[1])
-                model.addConstr(DP == Shape[2])
+                model.add_constraint(TP == Shape[0])
+                model.add_constraint(PP == Shape[1])
+                model.add_constraint(DP == Shape[2])
                 
-                model.addConstr(Link_BW_TP == Link_BW[0])
-                model.addConstr(Link_BW_PP == Link_BW[1])
-                model.addConstr(Link_BW_DP == Link_BW[2])
+                model.add_constraint(Link_BW_TP == Link_BW[0])
+                model.add_constraint(Link_BW_PP == Link_BW[1])
+                model.add_constraint(Link_BW_DP == Link_BW[2])
 
-                aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
-                model.addConstr(aaa == TP * Link_BW_TP)
+                aaa = model.add_continuous_var()
+                model.add_constraint(aaa == TP * Link_BW_TP)
                 if topology[0] == BasicTopology.R.value:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == TP - 1)
-                    model.addConstr(ALL_TO_ALL_ratio * Link_BW_TP * 8 == TP * TP)
-                    model.addConstr(ALL_GATHER_ratio * aaa == TP - 1)
+                    model.add_constraint(ALL_REDUCE_ratio * aaa == TP - 1)
+                    model.add_constraint(ALL_TO_ALL_ratio * Link_BW_TP * 8 == TP * TP)
+                    model.add_constraint(ALL_GATHER_ratio * aaa == TP - 1)
                 elif topology[0] == BasicTopology.FC.value:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == 1)
-                    model.addConstr(ALL_TO_ALL_ratio * Link_BW_TP == 1)
-                    model.addConstr(ALL_GATHER_ratio * aaa == 1)
+                    model.add_constraint(ALL_REDUCE_ratio * aaa == 1)
+                    model.add_constraint(ALL_TO_ALL_ratio * Link_BW_TP == 1)
+                    model.add_constraint(ALL_GATHER_ratio * aaa == 1)
                 elif topology[0] == BasicTopology.SW.value:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == TP - 1)
-                    model.addConstr(ALL_TO_ALL_ratio * Link_BW_TP * 4 == TP)
-                    model.addConstr(ALL_GATHER_ratio * aaa == TP - 1)
+                    model.add_constraint(ALL_REDUCE_ratio * aaa == TP - 1)
+                    model.add_constraint(ALL_TO_ALL_ratio * Link_BW_TP * 4 == TP)
+                    model.add_constraint(ALL_GATHER_ratio * aaa == TP - 1)
                 else:
                     raise Exception('Wrong!')
                 
@@ -962,101 +946,40 @@ else:
 
 
 
-
-
-
-        # network
-        # TP = model.addVar(name='TP', vtype=gp.GRB.INTEGER, lb=0)
-        # network_bw_TP = model.addVar(name='network_bw_TP', vtype=gp.GRB.CONTINUOUS, lb=0)
-        # network_bw_PP = model.addVar(name='network_bw_PP', vtype=gp.GRB.CONTINUOUS, lb=0)
-        
-        # if len(topology) == 1: # 1D      
-        #     if par[0] == 'TP':
-        #         model.addConstr(TP == dimension[0]) 
-        #         model.addConstr(network_bw_TP == link_bw[0])
-        #         model.addConstr(network_bw_PP == 50)
-        #     elif par[0] == 'PP':
-        #         model.addConstr(TP == 1)
-        #         model.addConstr(network_bw_TP == 50)
-        #         model.addConstr(network_bw_PP == link_bw[0])
-        #     elif par[0] == 'DP':
-        #         model.addConstr(TP == 1)
-        #         model.addConstr(network_bw_TP == 50) 
-        #         model.addConstr(network_bw_PP == 50) 
-        #     else:
-        #         raise Exception('Wrong!')    
-        # elif len(topology) == 2: # 2D        
-        #     if par[0] == 'TP' and par[1] == 'PP':
-        #         model.addConstr(TP == dimension[0])
-        #         model.addConstr(network_bw_TP == link_bw[0])
-        #         model.addConstr(network_bw_PP == link_bw[1])
-        #     elif par[0] == 'TP' and par[1] == 'DP':
-        #         model.addConstr(TP == dimension[0])
-        #         model.addConstr(network_bw_TP == link_bw[0])
-        #         model.addConstr(network_bw_PP == 50)
-        #     elif par[0] == 'PP' and par[1] == 'DP':
-        #         model.addConstr(TP == 1)
-        #         model.addConstr(network_bw_TP == 50)           
-        #         model.addConstr(network_bw_PP == link_bw[0])           
-        #     else:
-        #         raise Exception('Wrong!')      
-        # elif len(topology) == 3: # 3D        
-        #     if par[0] == 'TP' and par[1] == 'PP' and par[2] == 'DP':
-        #         model.addConstr(TP == dimension[0])
-        #         model.addConstr(network_bw_TP == link_bw[0])
-        #         model.addConstr(network_bw_PP == link_bw[1])
-        #     else:
-        #         raise Exception('Wrong!')    
-        # else:
-        #     raise Exception('Wrong!')
-        
-        
-        
-        
-
-
-
-
-
-
-
-
-
-
-        M_sharded = model.addMVar(num_kernel, name='M_sharded', vtype=gp.GRB.CONTINUOUS, lb=1)
+        M_sharded = model.add_continuous_vector(num_kernel, name='M_sharded', lb=1)
         for i in range(num_kernel):
-            model.addConstr(M_sharded[i] * TP >= M[i])
+            model.add_constraint(M_sharded[i] * TP >= M[i])
         
         # compute cycle
         if dse.execution.compute_util == 0:
-            Cycle = model.addMVar(num_kernel, name='Cycle', vtype=gp.GRB.INTEGER, lb=0)
-            m_factor = model.addMVar(num_kernel, name='m_factor', vtype=gp.GRB.INTEGER, lb=1)
-            n_factor = model.addMVar(num_kernel, name='n_factor', vtype=gp.GRB.INTEGER, lb=1)
+            Cycle = model.add_integer_vector(num_kernel, name='Cycle', lb=0)
+            m_factor = model.add_integer_vector(num_kernel, name='m_factor', lb=1)
+            n_factor = model.add_integer_vector(num_kernel, name='n_factor', lb=1)
         else:
-            FLOP_per_kernel = model.addMVar(num_kernel, name='FLOP_per_kernel', vtype=gp.GRB.INTEGER, lb=0)
+            FLOP_per_kernel = model.add_integer_vector(num_kernel, name='FLOP_per_kernel', lb=0)
 
         for i in range(num_kernel):
             if kernel_type[i] == KernelType.SIMD.value:
                 if dse.execution.compute_util == 0:
-                    model.addConstr(m_factor[i] * Par_lane[i] * VecWidth >= M_sharded[i])
-                    model.addConstr(Par_stage[i] == 1)
-                    model.addConstr(Cycle[i] == m_factor[i] * N[i])
+                    model.add_constraint(m_factor[i] * Par_lane[i] * VecWidth >= M_sharded[i])
+                    model.add_constraint(Par_stage[i] == 1)
+                    model.add_constraint(Cycle[i] == m_factor[i] * N[i])
                 else:
-                    model.addConstr(FLOP_per_kernel[i] == M_sharded[i] * N[i])
+                    model.add_constraint(FLOP_per_kernel[i] == M_sharded[i] * N[i])
                 
             elif kernel_type[i] == KernelType.SYSTOLIC.value:
                 if dse.execution.compute_util == 0:
-                    model.addConstr(m_factor[i] * Par_lane[i] * VecWidth >= M_sharded[i])
-                    model.addConstr(n_factor[i] * Par_stage[i] * StageWidth >= N[i])
+                    model.add_constraint(m_factor[i] * Par_lane[i] * VecWidth >= M_sharded[i])
+                    model.add_constraint(n_factor[i] * Par_stage[i] * StageWidth >= N[i])
 
-                    tmp = model.addVar(vtype=gp.GRB.INTEGER, lb=0)
-                    model.addConstr(tmp == m_factor[i] * n_factor[i])
-                    model.addConstr(Cycle[i] == tmp * K[i])
+                    tmp = model.add_integer_var(lb=0)
+                    model.add_constraint(tmp == m_factor[i] * n_factor[i])
+                    model.add_constraint(Cycle[i] == tmp * K[i])
                         
                 else:
-                    aaa = model.addVar(vtype=gp.GRB.INTEGER, lb=0)
-                    model.addConstr(aaa == 2 * M_sharded[i] * N[i])
-                    model.addConstr(FLOP_per_kernel[i] == aaa * K[i])
+                    aaa = model.add_integer_var(lb=0)
+                    model.add_constraint(aaa == 2 * M_sharded[i] * N[i])
+                    model.add_constraint(FLOP_per_kernel[i] == aaa * K[i])
                     
             else:
                 raise Exception('Wrong!')
@@ -1066,26 +989,25 @@ else:
         
         
         
-        compute_latency_per_partition = model.addMVar(C, name='compute_latency_per_partition', vtype=gp.GRB.CONTINUOUS, lb=0)
+        compute_latency_per_partition = model.add_continuous_vector(C, name='compute_latency_per_partition', lb=0)
         for i in range(C):
             if dse.execution.compute_util == 0:
-                t1 = model.addMVar(num_kernel, vtype=gp.GRB.INTEGER, lb=0)
-                t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
+                t1 = model.add_integer_vector(num_kernel, lb=0)
+                t2 = model.add_continuous_var()
                 for j in range(num_kernel):
-                    model.addConstr(t1[j] == Cycle[j] * A[j, i])
-                model.addConstr(t2 == gp.max_(t1[j] for j in range(num_kernel)))
-                model.addConstr(compute_latency_per_partition[i] == t2 / Freq)
+                    model.add_constraint(t1[j] == Cycle[j] * A[j, i])
+                model.add_constraint(t2 == max(t1[j] for j in range(num_kernel)))
+                model.add_constraint(compute_latency_per_partition[i] == t2 / Freq)
                 
             else:
-                t3 = model.addMVar(num_kernel, vtype=gp.GRB.INTEGER, lb=0)
-                t4 = model.addVar(vtype=gp.GRB.CONTINUOUS)
+                t3 = model.add_integer_vector(num_kernel, lb=0)
+                t4 = model.add_continuous_var()
                 for j in range(num_kernel):
-                    model.addConstr(t3[j] == FLOP_per_kernel[j] * A[j, i])
-                model.addConstr(t4 == t3 @ np.ones((num_kernel)))
+                    model.add_constraint(t3[j] == FLOP_per_kernel[j] * A[j, i])
+                model.add_constraint(t4 == t3 @ np.ones((num_kernel)))
                 
                 tmp = 1 / dse.execution.compute_util
-                model.addConstr(compute_latency_per_partition[i] == t4 * tmp / GFLOPS)
-            
+                model.add_constraint(compute_latency_per_partition[i] == t4 * tmp / GFLOPS)
             
             
             
@@ -1096,24 +1018,24 @@ else:
 
         for i in range(num_kernel):
             if outer[i] == 1:
-                model.addConstr(sharding[i, Dim.OUTER.value] == 0)
+                model.add_constraint(sharding[i, Dim.OUTER.value] == 0)
             if M[i] == 1:
-                model.addConstr(sharding[i, Dim.M.value] == 0)
+                model.add_constraint(sharding[i, Dim.M.value] == 0)
             if K[i] == 1:
-                model.addConstr(sharding[i, Dim.K.value] == 0)
+                model.add_constraint(sharding[i, Dim.K.value] == 0)
             if N[i] == 1:
-                model.addConstr(sharding[i, Dim.N.value] == 0)
-            model.addConstr(np.ones((5)) @ sharding[i, :] == 1)
+                model.add_constraint(sharding[i, Dim.N.value] == 0)
+            model.add_constraint(binary_sum(sharding[i, :]) == 1)
                 
             # don't shard the tile dim
             if tiling[i] == Dim.OUTER.value+1:
-                model.addConstr(sharding[i, Dim.OUTER.value] == 0)
+                model.add_constraint(sharding[i, Dim.OUTER.value] == 0)
             elif tiling[i] == Dim.M.value+1:
-                model.addConstr(sharding[i, Dim.M.value] == 0)
+                model.add_constraint(sharding[i, Dim.M.value] == 0)
             elif tiling[i] == Dim.K.value+1:
-                model.addConstr(sharding[i, Dim.K.value] == 0)
+                model.add_constraint(sharding[i, Dim.K.value] == 0)
             elif tiling[i] == Dim.N.value+1:
-                model.addConstr(sharding[i, Dim.N.value] == 0)
+                model.add_constraint(sharding[i, Dim.N.value] == 0)
             else:
                 raise Exception('Wrong!')
             
@@ -1122,32 +1044,32 @@ else:
             if weight_tensor_size[i] == -1: # no weights
                 pass
             else:
-                model.addConstr(sharding[i, Dim.NO_DIM.value] == 0)
+                model.add_constraint(sharding[i, Dim.NO_DIM.value] == 0)
 
 
 
             # if K is sharded
-            model.addConstr((sharding[i, Dim.K.value] == 1) >> (communication_type[i] == Communication.ALL_REDUCE.value))
-            model.addConstr((sharding[i, Dim.K.value] == 1) >> (communication_size[i] == output_tensor_size[i]))
+            model.add_constraint((sharding[i, Dim.K.value] == 1) >> (communication_type[i] == Communication.ALL_REDUCE.value))
+            model.add_constraint((sharding[i, Dim.K.value] == 1) >> (communication_size[i] == output_tensor_size[i]))
 
             # if K is not sharded
-            model.addConstr((sharding[i, Dim.K.value] == 0) >> (communication_type[i] == Communication.NO_COMMUNICATION.value))
-            model.addConstr((sharding[i, Dim.K.value] == 0) >> (communication_size[i] == 0))
+            model.add_constraint((sharding[i, Dim.K.value] == 0) >> (communication_type[i] == Communication.NO_COMMUNICATION.value))
+            model.add_constraint((sharding[i, Dim.K.value] == 0) >> (communication_size[i] == 0))
 
             if outer[i] > 1:
-                model.addConstr(sharding[i, Dim.OUTER.value] == 1)
+                model.add_constraint(sharding[i, Dim.OUTER.value] == 1)
 
 
 
 
             
 
-        # RR, RS, SR
-        upstream_sharding = model.addMVar((num_edge, 3), name='upstream_sharding', vtype=gp.GRB.BINARY)
-        downstream_sharding = model.addMVar((num_edge, 3), name='downstream_sharding', vtype=gp.GRB.BINARY)
+
+        upstream_sharding = model.add_binary_matrix(num_edge, 3, name='upstream_sharding')
+        downstream_sharding = model.add_binary_matrix(num_edge, 3, name='downstream_sharding')
         for i in range(num_edge):
-            model.addConstr(np.ones((3)) @ upstream_sharding[i, :] == 1)
-            model.addConstr(np.ones((3)) @ downstream_sharding[i, :] == 1)
+            model.add_constraint(binary_sum(upstream_sharding[i, :]) == 1)
+            model.add_constraint(binary_sum(downstream_sharding[i, :]) == 1)
             
             upstream_node_idx = node_dict[startIdx[i]]
             downstream_node_idx = node_dict[endIdx[i]]
@@ -1156,52 +1078,52 @@ else:
             
             
             # upsteam 
-            model.addConstr((sharding[upstream_node_idx, Dim.OUTER.value] == 1) >> (upstream_sharding[i, Tensor.SR.value] == 1)) # shard outer
-            model.addConstr((sharding[upstream_node_idx, Dim.M.value] == 1) >> (upstream_sharding[i, Tensor.SR.value] == 1)) # shard M
-            model.addConstr((sharding[upstream_node_idx, Dim.K.value] == 1) >> (upstream_sharding[i, Tensor.RR.value] == 1)) # shard K
-            model.addConstr((sharding[upstream_node_idx, Dim.N.value] == 1) >> (upstream_sharding[i, Tensor.RS.value] == 1)) # shard N
-            model.addConstr((sharding[upstream_node_idx, Dim.NO_DIM.value] == 1) >> (upstream_sharding[i, Tensor.RR.value] == 1)) # no sharding
+            model.add_constraint((sharding[upstream_node_idx, Dim.OUTER.value] == 1) >> (upstream_sharding[i, Tensor.SR.value] == 1)) # shard outer
+            model.add_constraint((sharding[upstream_node_idx, Dim.M.value] == 1) >> (upstream_sharding[i, Tensor.SR.value] == 1)) # shard M
+            model.add_constraint((sharding[upstream_node_idx, Dim.K.value] == 1) >> (upstream_sharding[i, Tensor.RR.value] == 1)) # shard K
+            model.add_constraint((sharding[upstream_node_idx, Dim.N.value] == 1) >> (upstream_sharding[i, Tensor.RS.value] == 1)) # shard N
+            model.add_constraint((sharding[upstream_node_idx, Dim.NO_DIM.value] == 1) >> (upstream_sharding[i, Tensor.RR.value] == 1)) # no sharding
 
 
 
             # downstream
             if tiling[downstream_node_idx] == Dim.K.value+1: # for weight update kernels
-                model.addConstr((sharding[downstream_node_idx, Dim.OUTER.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1))
-                model.addConstr((sharding[downstream_node_idx, Dim.M.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1))
-                model.addConstr((sharding[downstream_node_idx, Dim.K.value] == 1) >> (downstream_sharding[i, Tensor.RS.value] == 1))
-                model.addConstr((sharding[downstream_node_idx, Dim.N.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1))
-                model.addConstr((sharding[downstream_node_idx, Dim.NO_DIM.value] == 1) >> (downstream_sharding[i, Tensor.RR.value] == 1))
+                model.add_constraint((sharding[downstream_node_idx, Dim.OUTER.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1))
+                model.add_constraint((sharding[downstream_node_idx, Dim.M.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1))
+                model.add_constraint((sharding[downstream_node_idx, Dim.K.value] == 1) >> (downstream_sharding[i, Tensor.RS.value] == 1))
+                model.add_constraint((sharding[downstream_node_idx, Dim.N.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1))
+                model.add_constraint((sharding[downstream_node_idx, Dim.NO_DIM.value] == 1) >> (downstream_sharding[i, Tensor.RR.value] == 1))
             
             else:
                 if kernel_type[downstream_node_idx] == KernelType.SIMD.value:
-                    model.addConstr((sharding[downstream_node_idx, Dim.OUTER.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1)) # shard outer
-                    model.addConstr((sharding[downstream_node_idx, Dim.M.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1)) # shard M
-                    model.addConstr((sharding[downstream_node_idx, Dim.K.value] == 1) >> (downstream_sharding[i, Tensor.RR.value] == 1)) # shard K
-                    model.addConstr((sharding[downstream_node_idx, Dim.N.value] == 1) >> (downstream_sharding[i, Tensor.RS.value] == 1)) # shard N
-                    model.addConstr((sharding[downstream_node_idx, Dim.NO_DIM.value] == 1) >> (downstream_sharding[i, Tensor.RR.value] == 1)) # no sharding
+                    model.add_constraint((sharding[downstream_node_idx, Dim.OUTER.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1)) # shard outer
+                    model.add_constraint((sharding[downstream_node_idx, Dim.M.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1)) # shard M
+                    model.add_constraint((sharding[downstream_node_idx, Dim.K.value] == 1) >> (downstream_sharding[i, Tensor.RR.value] == 1)) # shard K
+                    model.add_constraint((sharding[downstream_node_idx, Dim.N.value] == 1) >> (downstream_sharding[i, Tensor.RS.value] == 1)) # shard N
+                    model.add_constraint((sharding[downstream_node_idx, Dim.NO_DIM.value] == 1) >> (downstream_sharding[i, Tensor.RR.value] == 1)) # no sharding
 
                 else:
                     if weight_tensor_size[downstream_node_idx] != -1: # weight is present, this edge represents outer,K,N
-                        model.addConstr((sharding[downstream_node_idx, Dim.OUTER.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1)) # shard outer
-                        model.addConstr((sharding[downstream_node_idx, Dim.M.value] == 1) >> (downstream_sharding[i, Tensor.RR.value] == 1)) # shard M
-                        model.addConstr((sharding[downstream_node_idx, Dim.K.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1)) # shard K
-                        model.addConstr((sharding[downstream_node_idx, Dim.N.value] == 1) >> (downstream_sharding[i, Tensor.RS.value] == 1)) # shard N
-                        model.addConstr((sharding[downstream_node_idx, Dim.NO_DIM.value] == 1) >> (downstream_sharding[i, Tensor.RR.value] == 1)) # no sharding
+                        model.add_constraint((sharding[downstream_node_idx, Dim.OUTER.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1)) # shard outer
+                        model.add_constraint((sharding[downstream_node_idx, Dim.M.value] == 1) >> (downstream_sharding[i, Tensor.RR.value] == 1)) # shard M
+                        model.add_constraint((sharding[downstream_node_idx, Dim.K.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1)) # shard K
+                        model.add_constraint((sharding[downstream_node_idx, Dim.N.value] == 1) >> (downstream_sharding[i, Tensor.RS.value] == 1)) # shard N
+                        model.add_constraint((sharding[downstream_node_idx, Dim.NO_DIM.value] == 1) >> (downstream_sharding[i, Tensor.RR.value] == 1)) # no sharding
 
                     else: # weight is not present
                         if tensor_size[i] == input_tensor_1_size[downstream_node_idx]: # if the edge represent tensor 1
-                            model.addConstr((sharding[downstream_node_idx, Dim.OUTER.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1)) # shard outer
-                            model.addConstr((sharding[downstream_node_idx, Dim.M.value] == 1) >> (downstream_sharding[i, Tensor.RR.value] == 1)) # shard M
-                            model.addConstr((sharding[downstream_node_idx, Dim.K.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1)) # shard K
-                            model.addConstr((sharding[downstream_node_idx, Dim.N.value] == 1) >> (downstream_sharding[i, Tensor.RS.value] == 1)) # shard N
-                            model.addConstr((sharding[downstream_node_idx, Dim.NO_DIM.value] == 1) >> (downstream_sharding[i, Tensor.RR.value] == 1)) # no sharding
+                            model.add_constraint((sharding[downstream_node_idx, Dim.OUTER.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1)) # shard outer
+                            model.add_constraint((sharding[downstream_node_idx, Dim.M.value] == 1) >> (downstream_sharding[i, Tensor.RR.value] == 1)) # shard M
+                            model.add_constraint((sharding[downstream_node_idx, Dim.K.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1)) # shard K
+                            model.add_constraint((sharding[downstream_node_idx, Dim.N.value] == 1) >> (downstream_sharding[i, Tensor.RS.value] == 1)) # shard N
+                            model.add_constraint((sharding[downstream_node_idx, Dim.NO_DIM.value] == 1) >> (downstream_sharding[i, Tensor.RR.value] == 1)) # no sharding
 
                         elif tensor_size[i] == input_tensor_2_size[downstream_node_idx]: # if the edge represent tensor 2
-                            model.addConstr((sharding[downstream_node_idx, Dim.OUTER.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1)) # shard outer
-                            model.addConstr((sharding[downstream_node_idx, Dim.M.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1)) # shard M
-                            model.addConstr((sharding[downstream_node_idx, Dim.K.value] == 1) >> (downstream_sharding[i, Tensor.RS.value] == 1)) # shard K
-                            model.addConstr((sharding[downstream_node_idx, Dim.N.value] == 1) >> (downstream_sharding[i, Tensor.RR.value] == 1)) # shard N
-                            model.addConstr((sharding[downstream_node_idx, Dim.NO_DIM.value] == 1) >> (downstream_sharding[i, Tensor.RR.value] == 1)) # no sharding
+                            model.add_constraint((sharding[downstream_node_idx, Dim.OUTER.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1)) # shard outer
+                            model.add_constraint((sharding[downstream_node_idx, Dim.M.value] == 1) >> (downstream_sharding[i, Tensor.SR.value] == 1)) # shard M
+                            model.add_constraint((sharding[downstream_node_idx, Dim.K.value] == 1) >> (downstream_sharding[i, Tensor.RS.value] == 1)) # shard K
+                            model.add_constraint((sharding[downstream_node_idx, Dim.N.value] == 1) >> (downstream_sharding[i, Tensor.RR.value] == 1)) # shard N
+                            model.add_constraint((sharding[downstream_node_idx, Dim.NO_DIM.value] == 1) >> (downstream_sharding[i, Tensor.RR.value] == 1)) # no sharding
 
                         else:
                             raise Exception('Wrong!')
@@ -1219,13 +1141,13 @@ else:
         matrix_commu_type = np.array(matrix_commu_type)
         matrix_commu_size = np.array(matrix_commu_size)
 
-        edge_communication_type = model.addMVar((num_edge), name='edge_communication_type', vtype=gp.GRB.CONTINUOUS, lb=0)
-        edge_communication_size = model.addMVar((num_edge), name='edge_communication_size', vtype=gp.GRB.CONTINUOUS, lb=0)
-        buffer_size = model.addMVar((num_edge), name='buffer_size', vtype=gp.GRB.CONTINUOUS, lb=0)
+        edge_communication_type = model.add_continuous_vector(num_edge, name='edge_communication_type', lb=0)
+        edge_communication_size = model.add_continuous_vector(num_edge, name='edge_communication_size', lb=0)
+        buffer_size = model.add_continuous_vector(num_edge, name='buffer_size', lb=0)
         for i in range(num_edge):
-            model.addConstr(edge_communication_type[i] == upstream_sharding[i, :] @ matrix_commu_type @ downstream_sharding[i, :])
-            model.addConstr(edge_communication_size[i] == upstream_sharding[i, :] @ matrix_commu_size @ downstream_sharding[i, :] * tensor_size[i])
-            model.addConstr(buffer_size[i] == tensor_size[i])
+            model.add_constraint(edge_communication_type[i] == upstream_sharding[i, :] @ matrix_commu_type @ downstream_sharding[i, :])
+            model.add_constraint(edge_communication_size[i] == upstream_sharding[i, :] @ matrix_commu_size @ downstream_sharding[i, :] * tensor_size[i])
+            model.add_constraint(buffer_size[i] == tensor_size[i])
 
 
 
@@ -1239,78 +1161,74 @@ else:
 
 
 
-
-
-
-        # network communication
-        Network_Latency_ALL_REDUCE_node = model.addMVar(C, name='Network_Latency_ALL_REDUCE_node', vtype=gp.GRB.CONTINUOUS, lb=0)
+        Network_Latency_ALL_REDUCE_node = model.add_continuous_vector(C, name='Network_Latency_ALL_REDUCE_node', lb=0)
         for i in range(C):
-            t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            model.addConstr(t1 == A[:, i] @ communication_size)
-            model.addConstr(t2 == ALL_REDUCE_ratio)
-            model.addConstr(Network_Latency_ALL_REDUCE_node[i] == t1*t2)
+            t1 = model.add_continuous_var()
+            t2 = model.add_continuous_var()
+            model.add_constraint(t1 == A[:, i] @ communication_size)
+            model.add_constraint(t2 == ALL_REDUCE_ratio)
+            model.add_constraint(Network_Latency_ALL_REDUCE_node[i] == t1*t2)
 
 
-        Network_Latency_ALL_TO_ALL_node = model.addMVar(C, name='Network_Latency_ALL_TO_ALL_node', vtype=gp.GRB.CONTINUOUS, lb=0)
+        Network_Latency_ALL_TO_ALL_node = model.add_continuous_vector(C, name='Network_Latency_ALL_TO_ALL_node', lb=0)
         for i in range(C):
-            t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            model.addConstr(t1 == A[:, i] @ communication_size)
-            model.addConstr(t2 == ALL_TO_ALL_ratio)
-            model.addConstr(Network_Latency_ALL_TO_ALL_node[i] == t1*t2)
+            t1 = model.add_continuous_var()
+            t2 = model.add_continuous_var()
+            model.add_constraint(t1 == A[:, i] @ communication_size)
+            model.add_constraint(t2 == ALL_TO_ALL_ratio)
+            model.add_constraint(Network_Latency_ALL_TO_ALL_node[i] == t1*t2)
 
 
-        Network_Latency_ALL_GATHER_node = model.addMVar(C, name='Network_Latency_ALL_GATHER_node', vtype=gp.GRB.CONTINUOUS, lb=0)
+        Network_Latency_ALL_GATHER_node = model.add_continuous_vector(C, name='Network_Latency_ALL_GATHER_node', lb=0)
         for i in range(C):
-            t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            model.addConstr(t1 == A[:, i] @ communication_size)
-            model.addConstr(t2 == ALL_GATHER_ratio)
-            model.addConstr(Network_Latency_ALL_GATHER_node[i] == t1*t2)
+            t1 = model.add_continuous_var()
+            t2 = model.add_continuous_var()
+            model.add_constraint(t1 == A[:, i] @ communication_size)
+            model.add_constraint(t2 == ALL_GATHER_ratio)
+            model.add_constraint(Network_Latency_ALL_GATHER_node[i] == t1*t2)
 
 
 
 
 
 
-        Network_Latency_ALL_REDUCE_edge = model.addMVar(C, name='Network_Latency_ALL_REDUCE_edge', vtype=gp.GRB.CONTINUOUS, lb=0)
+        Network_Latency_ALL_REDUCE_edge = model.add_continuous_vector(C, name='Network_Latency_ALL_REDUCE_edge', lb=0)
         for i in range(C):
-            t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            model.addConstr(t1 == H[:, i] @ edge_communication_size)
-            model.addConstr(t2 == ALL_REDUCE_ratio)
-            model.addConstr(Network_Latency_ALL_REDUCE_edge[i] == t1*t2)
+            t1 = model.add_continuous_var()
+            t2 = model.add_continuous_var()
+            model.add_constraint(t1 == H[:, i] @ edge_communication_size)
+            model.add_constraint(t2 == ALL_REDUCE_ratio)
+            model.add_constraint(Network_Latency_ALL_REDUCE_edge[i] == t1*t2)
 
 
-        Network_Latency_ALL_TO_ALL_edge = model.addMVar(C, name='Network_Latency_ALL_TO_ALL_edge', vtype=gp.GRB.CONTINUOUS, lb=0)
+        Network_Latency_ALL_TO_ALL_edge = model.add_continuous_vector(C, name='Network_Latency_ALL_TO_ALL_edge', lb=0)
         for i in range(C):
-            t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            model.addConstr(t1 == H[:, i] @ edge_communication_size)
-            model.addConstr(t2 == ALL_TO_ALL_ratio)
-            model.addConstr(Network_Latency_ALL_TO_ALL_edge[i] == t1*t2)
+            t1 = model.add_continuous_var()
+            t2 = model.add_continuous_var()
+            model.add_constraint(t1 == H[:, i] @ edge_communication_size)
+            model.add_constraint(t2 == ALL_TO_ALL_ratio)
+            model.add_constraint(Network_Latency_ALL_TO_ALL_edge[i] == t1*t2)
 
-        Network_Latency_ALL_GATHER_edge = model.addMVar(C, name='Network_Latency_ALL_GATHER_edge', vtype=gp.GRB.CONTINUOUS, lb=0)
+        Network_Latency_ALL_GATHER_edge = model.add_continuous_vector(C, name='Network_Latency_ALL_GATHER_edge', lb=0)
         for i in range(C):
-            t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            model.addConstr(t1 == H[:, i] @ edge_communication_size)
-            model.addConstr(t2 == ALL_GATHER_ratio)
-            model.addConstr(Network_Latency_ALL_GATHER_edge[i] == t1*t2)
+            t1 = model.add_continuous_var()
+            t2 = model.add_continuous_var()
+            model.add_constraint(t1 == H[:, i] @ edge_communication_size)
+            model.add_constraint(t2 == ALL_GATHER_ratio)
+            model.add_constraint(Network_Latency_ALL_GATHER_edge[i] == t1*t2)
 
 
 
-        p2p_communication_latency_per_partition = model.addMVar((C), name='p2p_communication_latency_per_partition', vtype=gp.GRB.CONTINUOUS, lb=0)
+        p2p_communication_latency_per_partition = model.add_continuous_vector(C, name='p2p_communication_latency_per_partition', lb=0)
         
         for i in range(C):
-            model.addConstr(p2p_communication_latency_per_partition[i] * Link_BW_PP >= L[:, i] @ buffer_size)
+            model.add_constraint(p2p_communication_latency_per_partition[i] * Link_BW_PP >= L[:, i] @ buffer_size)
 
             
         
-        latency_per_partition = model.addMVar((C), name='latency_per_partition', vtype=gp.GRB.CONTINUOUS, lb=0)
+        latency_per_partition = model.add_continuous_vector(C, name='latency_per_partition', lb=0)
         for i in range(C): 
-            model.addConstr(latency_per_partition[i] == Network_Latency_ALL_REDUCE_node[i]
+            model.add_constraint(latency_per_partition[i] == Network_Latency_ALL_REDUCE_node[i]
                                                       + Network_Latency_ALL_TO_ALL_node[i]
                                                       + Network_Latency_ALL_GATHER_node[i]
                                                       + Network_Latency_ALL_REDUCE_edge[i]
@@ -1324,23 +1242,18 @@ else:
 
 
 
+        total_latency = model.add_continuous_var(name='total_latency', lb=0)
+        model.add_constraint(total_latency == max(latency_per_partition[i] for i in range(C)))
+
+
+
+        model.set_objective_minimize(total_latency)
+        model.solve()
 
 
 
 
-
-        total_latency = model.addVar(name='total_latency', vtype=gp.GRB.CONTINUOUS, lb=0)
-        model.addConstr(total_latency == gp.max_(latency_per_partition[i] for i in range(C)))
-
-
-
-        model.setObjective(total_latency, gp.GRB.MINIMIZE)
-        model.optimize()
-
-
-
-
-    # get variable values from gurobi program
+    # get variable values from HiGHS program
     sharding = []
     communication_size = []
     communication_type = []
@@ -1349,26 +1262,26 @@ else:
     latency_per_partition = []
     A = []
 
-    for v in model.getVars():
-        print(v.varName, v.x)
+    for v in model.get_solution():
+        print(v.varName, v.value)
 
         if v.varName.startswith('sharding'):
-            sharding.append(v.x)
+            sharding.append(v.value)
         if v.varName.startswith('communication_size'):
-            communication_size.append(v.x)
+            communication_size.append(v.value)
         if v.varName.startswith('communication_type'):
-            communication_type.append(v.x)
+            communication_type.append(v.value)
 
         if v.varName.startswith('edge_communication_size'):
-            edge_communication_size.append(v.x)
+            edge_communication_size.append(v.value)
         if v.varName.startswith('edge_communication_type'):
-            edge_communication_type.append(v.x)
+            edge_communication_type.append(v.value)
 
         if v.varName.startswith('latency_per_partition'):
-            latency_per_partition.append(v.x)
+            latency_per_partition.append(v.value)
 
         if v.varName.startswith('A['):
-            A.append(v.x)
+            A.append(v.value)
 
 
 
@@ -1535,4 +1448,4 @@ for connection in dse.dataflow_graph.connections:
     graph.add_edge(pydot_edge)
 
 
-graph.write_png('./'+name+'/'+'dataflow_graph_sharded.png') 
+graph.write_png('./'+name+'/'+'dataflow_graph_sharded.png')

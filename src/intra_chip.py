@@ -1,6 +1,6 @@
 import h5py
-import gurobipy as gp
 import argparse
+from highspy import Highs  # Assumes HiGHS Python API
 import numpy as np
 import setup_pb2
 import pprint
@@ -595,162 +595,149 @@ start = time.time()
 
 
 
-model = gp.Model()
-model.params.NonConvex = 2
-
-
-if dse.gurobi.thread == 0:
-    model.Params.Threads = os.cpu_count()
-else:
-    model.Params.Threads = dse.gurobi.thread
-
-if dse.gurobi.gap == 0:
-    model.params.MIPGap = 0.001
-else:
-    model.params.MIPGap = dse.gurobi.gap
-
-if dse.gurobi.time == 0:
-    pass
-else:
-    model.params.TimeLimit = dse.gurobi.time
+model = Highs()
+# HiGHS does not require setting NonConvex; adjust thread, gap, and time parameters as needed:
+# model.set_parameter('threads', dse.gurobi.thread if dse.gurobi.thread != 0 else os.cpu_count())
+# model.set_parameter('mip_gap', 0.001 if dse.gurobi.gap==0 else dse.gurobi.gap)
+# model.set_parameter('time_limit', dse.gurobi.time) if dse.gurobi.time != 0 else None
 
 
 
 
 
 # SP/TP/PP/DP
-SP = model.addVar(name='SP', vtype=gp.GRB.INTEGER, lb=1)
-TP = model.addVar(name='TP', vtype=gp.GRB.INTEGER, lb=1)
-PP = model.addVar(name='PP', vtype=gp.GRB.INTEGER, lb=1)
-DP = model.addVar(name='DP', vtype=gp.GRB.INTEGER, lb=1)
+SP = model.add_variable(name='SP', vtype='integer', lb=1)
+TP = model.add_variable(name='TP', vtype='integer', lb=1)
+PP = model.add_variable(name='PP', vtype='integer', lb=1)
+DP = model.add_variable(name='DP', vtype='integer', lb=1)
 
-num_copy = model.addVar(name='num_copy', vtype=gp.GRB.INTEGER, lb=1)
-num_chips_per_copy = model.addVar(name='num_chips_per_copy', vtype=gp.GRB.INTEGER, lb=1)
-model.addConstr(num_copy * num_chips_per_copy == num_chip)
+num_copy = model.add_variable(name='num_copy', vtype='integer', lb=1)
+num_chips_per_copy = model.add_variable(name='num_chips_per_copy', vtype='integer', lb=1)
+model.add_constraint(num_copy * num_chips_per_copy == num_chip)
 
 
 if dse.execution.WhichOneof('workload_variant') == 'fft':
-    Shape = model.addMVar(len(topology), name='Shape', vtype=gp.GRB.INTEGER, lb=1)
+    Shape = model.add_matrix_variable(len(topology), name='Shape', vtype='integer', lb=1)
     
-    model.addConstr(TP == 1)
-    model.addConstr(PP == 1)
-    model.addConstr(DP == 1)
+    model.add_constraint(TP == 1)
+    model.add_constraint(PP == 1)
+    model.add_constraint(DP == 1)
 
-    Link_BW = model.addMVar(len(topology), name='Link_BW', vtype=gp.GRB.CONTINUOUS, lb=0)
+    Link_BW = model.add_matrix_variable(len(topology), name='Link_BW', vtype='continuous', lb=0)
     for i in range(len(topology)):
-        model.addConstr(Link_BW[i] == link_bw[i])
+        model.add_constraint(Link_BW[i] == link_bw[i])
         
-    FFT_DRAM_SIZE = model.addVar(name='FFT_DRAM_SIZE', vtype=gp.GRB.CONTINUOUS, lb=0)
+    FFT_DRAM_SIZE = model.add_variable(name='FFT_DRAM_SIZE', vtype='continuous', lb=0)
     side = int(length**0.5)
-    model.addConstr(FFT_DRAM_SIZE * num_chips_per_copy >= length * word)
+    model.add_constraint(FFT_DRAM_SIZE * num_chips_per_copy >= length * word)
     
     if len(topology) == 1:
-        model.addConstr(Shape[0] == num_chips_per_copy)
-        model.addConstr(Shape[0] == dimension[0])
+        model.add_constraint(Shape[0] == num_chips_per_copy)
+        model.add_constraint(Shape[0] == dimension[0])
         
     elif len(topology) == 2:
-        model.addConstr(Shape[0] * Shape[1] == num_chips_per_copy)
-        model.addConstr(Shape[0] == dimension[0])  
-        model.addConstr(Shape[1] == dimension[1])
+        model.add_constraint(Shape[0] * Shape[1] == num_chips_per_copy)
+        model.add_constraint(Shape[0] == dimension[0])  
+        model.add_constraint(Shape[1] == dimension[1])
 
     elif len(topology) == 3:        
-        tmp = model.addVar(vtype=gp.GRB.INTEGER, lb=1)
-        model.addConstr(Shape[0] * Shape[1] == tmp)
-        model.addConstr(tmp * Shape[2] == num_chips_per_copy)
-        model.addConstr(Shape[0] == dimension[0])  
-        model.addConstr(Shape[1] == dimension[1])
-        model.addConstr(Shape[2] == dimension[2])        
+        tmp = model.add_variable(vtype='integer', lb=1)
+        model.add_constraint(Shape[0] * Shape[1] == tmp)
+        model.add_constraint(tmp * Shape[2] == num_chips_per_copy)
+        model.add_constraint(Shape[0] == dimension[0])  
+        model.add_constraint(Shape[1] == dimension[1])
+        model.add_constraint(Shape[2] == dimension[2])        
         
     else:
         raise Exception('False')
-    model.addConstr(num_copy == dse.execution.fft.num_copy)
+    model.add_constraint(num_copy == dse.execution.fft.num_copy)
     
     
 elif dse.execution.WhichOneof('workload_variant') == 'hpl':
-    Shape = model.addMVar(len(topology), name='Shape', vtype=gp.GRB.INTEGER, lb=0)
+    Shape = model.add_matrix_variable(len(topology), name='Shape', vtype='integer', lb=0)
     
-    model.addConstr(TP == 1)
-    model.addConstr(PP == 1)
-    model.addConstr(DP == 1)
+    model.add_constraint(TP == 1)
+    model.add_constraint(PP == 1)
+    model.add_constraint(DP == 1)
 
-    Link_BW = model.addMVar(len(topology), name='Link_BW', vtype=gp.GRB.CONTINUOUS, lb=0)
+    Link_BW = model.add_matrix_variable(len(topology), name='Link_BW', vtype='continuous', lb=0)
     for i in range(len(topology)):
-        model.addConstr(Link_BW[i] == link_bw[i])
+        model.add_constraint(Link_BW[i] == link_bw[i])
     
-    HPL_DRAM_SIZE = model.addVar(name='HPL_DRAM_SIZE', vtype=gp.GRB.CONTINUOUS, lb=0)
-    model.addConstr(HPL_DRAM_SIZE * num_chips_per_copy >= n * n * word)
+    HPL_DRAM_SIZE = model.add_variable(name='HPL_DRAM_SIZE', vtype='continuous', lb=0)
+    model.add_constraint(HPL_DRAM_SIZE * num_chips_per_copy >= n * n * word)
     
-    HPL_sharding_factor_X = model.addVar(name='HPL_sharding_factor_X', vtype=gp.GRB.INTEGER, lb=1)
-    HPL_sharding_factor_Y = model.addVar(name='HPL_sharding_factor_Y', vtype=gp.GRB.INTEGER, lb=1)
+    HPL_sharding_factor_X = model.add_variable(name='HPL_sharding_factor_X', vtype='integer', lb=1)
+    HPL_sharding_factor_Y = model.add_variable(name='HPL_sharding_factor_Y', vtype='integer', lb=1)
     
     if len(topology) == 1:
-        model.addConstr(HPL_sharding_factor_X == 1)
-        model.addConstr(HPL_sharding_factor_Y == Shape[0])
-        model.addConstr(Shape[0] == num_chips_per_copy)
+        model.add_constraint(HPL_sharding_factor_X == 1)
+        model.add_constraint(HPL_sharding_factor_Y == Shape[0])
+        model.add_constraint(Shape[0] == num_chips_per_copy)
         
-        model.addConstr(Shape[0] == dimension[0])
+        model.add_constraint(Shape[0] == dimension[0])
         
     elif len(topology) == 2:
-        model.addConstr(HPL_sharding_factor_X == Shape[0])
-        model.addConstr(HPL_sharding_factor_Y == Shape[1])
-        model.addConstr(Shape[0] * Shape[1] == num_chips_per_copy)
+        model.add_constraint(HPL_sharding_factor_X == Shape[0])
+        model.add_constraint(HPL_sharding_factor_Y == Shape[1])
+        model.add_constraint(Shape[0] * Shape[1] == num_chips_per_copy)
         
-        model.addConstr(Shape[0] == dimension[0])
-        model.addConstr(Shape[1] == dimension[1])
+        model.add_constraint(Shape[0] == dimension[0])
+        model.add_constraint(Shape[1] == dimension[1])
             
     elif len(topology) == 3:
-        model.addConstr(HPL_sharding_factor_X == Shape[0] * Shape[1])
-        model.addConstr(HPL_sharding_factor_Y == Shape[2])
-        tmp = model.addVar(vtype=gp.GRB.INTEGER, lb=1)
-        model.addConstr(Shape[0] * Shape[1] == tmp)
-        model.addConstr(tmp * Shape[2] == num_chips_per_copy)
+        model.add_constraint(HPL_sharding_factor_X == Shape[0] * Shape[1])
+        model.add_constraint(HPL_sharding_factor_Y == Shape[2])
+        tmp = model.add_variable(vtype='integer', lb=1)
+        model.add_constraint(Shape[0] * Shape[1] == tmp)
+        model.add_constraint(tmp * Shape[2] == num_chips_per_copy)
         
-        model.addConstr(Shape[0] == dimension[0])
-        model.addConstr(Shape[1] == dimension[1])
-        model.addConstr(Shape[2] == dimension[2])        
+        model.add_constraint(Shape[0] == dimension[0])
+        model.add_constraint(Shape[1] == dimension[1])
+        model.add_constraint(Shape[2] == dimension[2])        
 
     else:
         raise Exception('Wrong')
-    model.addConstr(num_copy == dse.execution.hpl.num_copy)
+    model.add_constraint(num_copy == dse.execution.hpl.num_copy)
     
     
     
 elif dse.execution.WhichOneof('workload_variant') == 'dlrm':
-    sharded_table_size = model.addVar(name='sharded_table', vtype=gp.GRB.CONTINUOUS, lb=0)
-    model.addConstr(sharded_table_size * num_chips_per_copy >= table_size)
+    sharded_table_size = model.add_variable(name='sharded_table', vtype='continuous', lb=0)
+    model.add_constraint(sharded_table_size * num_chips_per_copy >= table_size)
 
-    Shape = model.addMVar(len(topology), name='Shape', vtype=gp.GRB.INTEGER, lb=0)
+    Shape = model.add_matrix_variable(len(topology), name='Shape', vtype='integer', lb=0)
     if len(topology) == 1:
-        model.addConstr(Shape[0] == dimension[0])
-        model.addConstr(Shape[0] == num_chips_per_copy)
+        model.add_constraint(Shape[0] == dimension[0])
+        model.add_constraint(Shape[0] == num_chips_per_copy)
         
     elif len(topology) == 2:
-        model.addConstr(Shape[0] == dimension[0])
-        model.addConstr(Shape[1] == dimension[1])
-        model.addConstr(Shape[0] * Shape[1] == num_chips_per_copy)
+        model.add_constraint(Shape[0] == dimension[0])
+        model.add_constraint(Shape[1] == dimension[1])
+        model.add_constraint(Shape[0] * Shape[1] == num_chips_per_copy)
         
     elif len(topology) == 3:
-        model.addConstr(Shape[0] == dimension[0])
-        model.addConstr(Shape[1] == dimension[1])
-        model.addConstr(Shape[2] == dimension[2])     
-        tmp = model.addVar(vtype=gp.GRB.INTEGER, lb=1)
-        model.addConstr(Shape[0] * Shape[1] == tmp)
-        model.addConstr(tmp * Shape[2] == num_chips_per_copy)
+        model.add_constraint(Shape[0] == dimension[0])
+        model.add_constraint(Shape[1] == dimension[1])
+        model.add_constraint(Shape[2] == dimension[2])     
+        tmp = model.add_variable(vtype='integer', lb=1)
+        model.add_constraint(Shape[0] * Shape[1] == tmp)
+        model.add_constraint(tmp * Shape[2] == num_chips_per_copy)
     
     else:
         raise Exception('Wrong')
-    model.addConstr(num_copy == dse.execution.dlrm.num_copy)
+    model.add_constraint(num_copy == dse.execution.dlrm.num_copy)
     
-    model.addConstr(TP == 1)
-    model.addConstr(PP == 1)
-    model.addConstr(DP == num_chips_per_copy)  
+    model.add_constraint(TP == 1)
+    model.add_constraint(PP == 1)
+    model.add_constraint(DP == num_chips_per_copy)  
 
-    Link_BW = model.addMVar(len(topology), name='Link_BW', vtype=gp.GRB.CONTINUOUS, lb=0)
+    Link_BW = model.add_matrix_variable(len(topology), name='Link_BW', vtype='continuous', lb=0)
     for i in range(len(topology)):
-        model.addConstr(Link_BW[i] == link_bw[i])      
+        model.add_constraint(Link_BW[i] == link_bw[i])      
             
-    Link_BW_DP = model.addVar(name='Link_BW_DP', vtype=gp.GRB.CONTINUOUS, lb=0)
-    model.addConstr(Link_BW_DP == gp.min_(Link_BW[i] for i in range(len(topology))))
+    Link_BW_DP = model.add_variable(name='Link_BW_DP', vtype='continuous', lb=0)
+    model.add_constraint(Link_BW_DP == highspy.min_(Link_BW[i] for i in range(len(topology))))
     
     
     
@@ -764,390 +751,390 @@ elif dse.execution.WhichOneof('workload_variant') == 'llm':
 
 
 
-    ALL_REDUCE_ratio = model.addVar(name='ALL_REDUCE_ratio', vtype=gp.GRB.CONTINUOUS, lb=0)
-    ALL_TO_ALL_ratio = model.addVar(name='ALL_TO_ALL_ratio', vtype=gp.GRB.CONTINUOUS, lb=0)
-    ALL_GATHER_ratio = model.addVar(name='ALL_GATHER_ratio', vtype=gp.GRB.CONTINUOUS, lb=0)
-    ALL_REDUCE_PERIODIC_ratio = model.addVar(name='ALL_REDUCE_PERIODIC_ratio', vtype=gp.GRB.CONTINUOUS, lb=0)
+    ALL_REDUCE_ratio = model.add_variable(name='ALL_REDUCE_ratio', vtype='continuous', lb=0)
+    ALL_TO_ALL_ratio = model.add_variable(name='ALL_TO_ALL_ratio', vtype='continuous', lb=0)
+    ALL_GATHER_ratio = model.add_variable(name='ALL_GATHER_ratio', vtype='continuous', lb=0)
+    ALL_REDUCE_PERIODIC_ratio = model.add_variable(name='ALL_REDUCE_PERIODIC_ratio', vtype='continuous', lb=0)
 
 
-    ALL_REDUCE_ratio_sp = model.addVar(name='ALL_REDUCE_ratio_sp', vtype=gp.GRB.CONTINUOUS, lb=0)
-    ALL_GATHER_ratio_sp = model.addVar(name='ALL_GATHER_ratio_sp', vtype=gp.GRB.CONTINUOUS, lb=0)
+    ALL_REDUCE_ratio_sp = model.add_variable(name='ALL_REDUCE_ratio_sp', vtype='continuous', lb=0)
+    ALL_GATHER_ratio_sp = model.add_variable(name='ALL_GATHER_ratio_sp', vtype='continuous', lb=0)
 
 
-    P2P_ratio = model.addVar(name='P2P_ratio', vtype=gp.GRB.CONTINUOUS, lb=0)
+    P2P_ratio = model.add_variable(name='P2P_ratio', vtype='continuous', lb=0)
     
     if len(topology) == 1: # 1D
-        Shape = model.addMVar(1, name='Shape', vtype=gp.GRB.INTEGER, lb=0)
-        model.addConstr(Shape[0] == num_chip)
+        Shape = model.add_matrix_variable(1, name='Shape', vtype='integer', lb=0)
+        model.add_constraint(Shape[0] == num_chip)
         
-        Link_BW = model.addMVar(1, name='Link_BW', vtype=gp.GRB.CONTINUOUS, lb=0)
+        Link_BW = model.add_matrix_variable(1, name='Link_BW', vtype='continuous', lb=0)
         for i in range(len(topology)):
-            model.addConstr(Link_BW[i] == link_bw[i])  
+            model.add_constraint(Link_BW[i] == link_bw[i])  
             
-        Link_BW_TP = model.addVar(name='Link_BW_TP', vtype=gp.GRB.CONTINUOUS, lb=0)
-        Link_BW_PP = model.addVar(name='Link_BW_PP', vtype=gp.GRB.CONTINUOUS, lb=0)
-        Link_BW_DP = model.addVar(name='Link_BW_DP', vtype=gp.GRB.CONTINUOUS, lb=0)    
+        Link_BW_TP = model.add_variable(name='Link_BW_TP', vtype='continuous', lb=0)
+        Link_BW_PP = model.add_variable(name='Link_BW_PP', vtype='continuous', lb=0)
+        Link_BW_DP = model.add_variable(name='Link_BW_DP', vtype='continuous', lb=0)    
         
         if par[0] == 'TP':
-            model.addConstr(TP == num_chip)
-            model.addConstr(PP == 1)
-            model.addConstr(DP == 1)   
+            model.add_constraint(TP == num_chip)
+            model.add_constraint(PP == 1)
+            model.add_constraint(DP == 1)   
 
-            model.addConstr(Link_BW_TP == Link_BW[0])
+            model.add_constraint(Link_BW_TP == Link_BW[0])
             
-            aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            model.addConstr(aaa == TP * Link_BW_TP)
+            aaa = model.add_variable(vtype='continuous')
+            model.add_constraint(aaa == TP * Link_BW_TP)
             if topology[0] == BasicTopology.R.value:
                 if dse.execution.separate_rs_ag_for_ar:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == (TP - 1)*2)
+                    model.add_constraint(ALL_REDUCE_ratio * aaa == (TP - 1)*2)
                 else:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == TP - 1)
-                model.addConstr(ALL_TO_ALL_ratio * Link_BW_TP * 8 == TP * TP)
-                model.addConstr(ALL_GATHER_ratio * aaa == TP - 1)
+                    model.add_constraint(ALL_REDUCE_ratio * aaa == TP - 1)
+                model.add_constraint(ALL_TO_ALL_ratio * Link_BW_TP * 8 == TP * TP)
+                model.add_constraint(ALL_GATHER_ratio * aaa == TP - 1)
             elif topology[0] == BasicTopology.FC.value:
                 if dse.execution.separate_rs_ag_for_ar:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == 2)
+                    model.add_constraint(ALL_REDUCE_ratio * aaa == 2)
                 else:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == 1)
-                model.addConstr(ALL_TO_ALL_ratio * Link_BW_TP == 1)
-                model.addConstr(ALL_GATHER_ratio * aaa == 1)
+                    model.add_constraint(ALL_REDUCE_ratio * aaa == 1)
+                model.add_constraint(ALL_TO_ALL_ratio * Link_BW_TP == 1)
+                model.add_constraint(ALL_GATHER_ratio * aaa == 1)
             elif topology[0] == BasicTopology.SW.value:
                 if dse.execution.separate_rs_ag_for_ar:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == (TP - 1)*2)
+                    model.add_constraint(ALL_REDUCE_ratio * aaa == (TP - 1)*2)
                 else:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == TP - 1)
-                model.addConstr(ALL_TO_ALL_ratio * Link_BW_TP * 4 == TP)
-                model.addConstr(ALL_GATHER_ratio * aaa == TP - 1)
+                    model.add_constraint(ALL_REDUCE_ratio * aaa == TP - 1)
+                model.add_constraint(ALL_TO_ALL_ratio * Link_BW_TP * 4 == TP)
+                model.add_constraint(ALL_GATHER_ratio * aaa == TP - 1)
             else:
                 raise Exception('Wrong!')
                 
-            model.addConstr(ALL_REDUCE_PERIODIC_ratio == 0)
-            model.addConstr(P2P_ratio == 0)
+            model.add_constraint(ALL_REDUCE_PERIODIC_ratio == 0)
+            model.add_constraint(P2P_ratio == 0)
             
         elif par[0] == 'PP':
-            model.addConstr(TP == 1)
-            model.addConstr(PP == num_chip)
-            model.addConstr(DP == 1)   
+            model.add_constraint(TP == 1)
+            model.add_constraint(PP == num_chip)
+            model.add_constraint(DP == 1)   
 
-            model.addConstr(Link_BW_PP == Link_BW[0])
+            model.add_constraint(Link_BW_PP == Link_BW[0])
             
-            model.addConstr(ALL_REDUCE_ratio == 0)
-            model.addConstr(ALL_TO_ALL_ratio == 0)
-            model.addConstr(ALL_GATHER_ratio == 0)
-            model.addConstr(ALL_REDUCE_PERIODIC_ratio == 0)
-            model.addConstr(P2P_ratio * Link_BW_PP == 1)
+            model.add_constraint(ALL_REDUCE_ratio == 0)
+            model.add_constraint(ALL_TO_ALL_ratio == 0)
+            model.add_constraint(ALL_GATHER_ratio == 0)
+            model.add_constraint(ALL_REDUCE_PERIODIC_ratio == 0)
+            model.add_constraint(P2P_ratio * Link_BW_PP == 1)
             
         elif par[0] == 'DP':
-            model.addConstr(TP == 1)
-            model.addConstr(PP == 1)
-            model.addConstr(DP == num_chip)   
+            model.add_constraint(TP == 1)
+            model.add_constraint(PP == 1)
+            model.add_constraint(DP == num_chip)   
 
-            model.addConstr(Link_BW_DP == Link_BW[0])
+            model.add_constraint(Link_BW_DP == Link_BW[0])
             
-            model.addConstr(ALL_REDUCE_ratio == 0)
-            model.addConstr(ALL_TO_ALL_ratio == 0)
-            model.addConstr(ALL_GATHER_ratio == 0)
+            model.add_constraint(ALL_REDUCE_ratio == 0)
+            model.add_constraint(ALL_TO_ALL_ratio == 0)
+            model.add_constraint(ALL_GATHER_ratio == 0)
 
-            bbb = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            model.addConstr(bbb == DP * Link_BW_DP)
+            bbb = model.add_variable(vtype='continuous')
+            model.add_constraint(bbb == DP * Link_BW_DP)
             if topology[0] == BasicTopology.R.value:
                 if dse.execution.separate_rs_ag_for_ar:
-                    model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == (DP - 1)*2)
+                    model.add_constraint(ALL_REDUCE_PERIODIC_ratio * bbb == (DP - 1)*2)
                 else:
-                    model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
+                    model.add_constraint(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
             elif topology[0] == BasicTopology.FC.value:
-                model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == 1)
+                model.add_constraint(ALL_REDUCE_PERIODIC_ratio * bbb == 1)
             elif topology[0] == BasicTopology.SW.value:
                 if dse.execution.separate_rs_ag_for_ar:
-                    model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == (DP - 1)*2)
+                    model.add_constraint(ALL_REDUCE_PERIODIC_ratio * bbb == (DP - 1)*2)
                 else:
-                    model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
+                    model.add_constraint(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
             else:
                 raise Exception('Wrong!')
             
-            model.addConstr(P2P_ratio == 0)
+            model.add_constraint(P2P_ratio == 0)
             
         else:
             raise Exception('Wrong!')
             
     elif len(topology) == 2: # 2D
-        Shape = model.addMVar(2, name='Shape', vtype=gp.GRB.INTEGER, lb=1)
+        Shape = model.add_matrix_variable(2, name='Shape', vtype='integer', lb=1)
         if dimension[0] == 0:
             pass
         else:
-            model.addConstr(Shape[0] == dimension[0])
+            model.add_constraint(Shape[0] == dimension[0])
         
         if dimension[1] == 0:
             pass
         else:
-            model.addConstr(Shape[1] == dimension[1])
+            model.add_constraint(Shape[1] == dimension[1])
             
-        model.addConstr(Shape[0] * Shape[1] == num_chip)
+        model.add_constraint(Shape[0] * Shape[1] == num_chip)
         
-        Link_BW = model.addMVar(2, name='Link_BW', vtype=gp.GRB.CONTINUOUS, lb=0)
+        Link_BW = model.add_matrix_variable(2, name='Link_BW', vtype='continuous', lb=0)
         for i in range(len(topology)):
-            model.addConstr(Link_BW[i] == link_bw[i])
+            model.add_constraint(Link_BW[i] == link_bw[i])
             
-        Link_BW_TP = model.addVar(name='Link_BW_TP', vtype=gp.GRB.CONTINUOUS, lb=0)
-        Link_BW_PP = model.addVar(name='Link_BW_PP', vtype=gp.GRB.CONTINUOUS, lb=0)
-        Link_BW_DP = model.addVar(name='Link_BW_DP', vtype=gp.GRB.CONTINUOUS, lb=0)
+        Link_BW_TP = model.add_variable(name='Link_BW_TP', vtype='continuous', lb=0)
+        Link_BW_PP = model.add_variable(name='Link_BW_PP', vtype='continuous', lb=0)
+        Link_BW_DP = model.add_variable(name='Link_BW_DP', vtype='continuous', lb=0)
         
         if par[0] == 'TP' and par[1] == 'PP':
-            model.addConstr(TP == Shape[0])
-            model.addConstr(PP == Shape[1])
-            model.addConstr(DP == 1)
+            model.add_constraint(TP == Shape[0])
+            model.add_constraint(PP == Shape[1])
+            model.add_constraint(DP == 1)
 
-            model.addConstr(Link_BW_TP == Link_BW[0])
-            model.addConstr(Link_BW_PP == Link_BW[1])
+            model.add_constraint(Link_BW_TP == Link_BW[0])
+            model.add_constraint(Link_BW_PP == Link_BW[1])
             
-            aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            model.addConstr(aaa == TP * Link_BW_TP)
+            aaa = model.add_variable(vtype='continuous')
+            model.add_constraint(aaa == TP * Link_BW_TP)
             if topology[0] == BasicTopology.R.value:
                 if dse.execution.separate_rs_ag_for_ar:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == (TP - 1)*2)
+                    model.add_constraint(ALL_REDUCE_ratio * aaa == (TP - 1)*2)
                 else:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == TP - 1)
-                model.addConstr(ALL_TO_ALL_ratio * Link_BW_TP * 8 == TP * TP)
-                model.addConstr(ALL_GATHER_ratio * aaa == TP - 1)
+                    model.add_constraint(ALL_REDUCE_ratio * aaa == TP - 1)
+                model.add_constraint(ALL_TO_ALL_ratio * Link_BW_TP * 8 == TP * TP)
+                model.add_constraint(ALL_GATHER_ratio * aaa == TP - 1)
             elif topology[0] == BasicTopology.FC.value:
                 if dse.execution.separate_rs_ag_for_ar:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == 2)
+                    model.add_constraint(ALL_REDUCE_ratio * aaa == 2)
                 else:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == 1)
-                model.addConstr(ALL_TO_ALL_ratio * Link_BW_TP == 1)
-                model.addConstr(ALL_GATHER_ratio * aaa == 1)
+                    model.add_constraint(ALL_REDUCE_ratio * aaa == 1)
+                model.add_constraint(ALL_TO_ALL_ratio * Link_BW_TP == 1)
+                model.add_constraint(ALL_GATHER_ratio * aaa == 1)
             elif topology[0] == BasicTopology.SW.value:
                 if dse.execution.separate_rs_ag_for_ar:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == (TP - 1)*2)
+                    model.add_constraint(ALL_REDUCE_ratio * aaa == (TP - 1)*2)
                 else:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == TP - 1)
-                model.addConstr(ALL_TO_ALL_ratio * Link_BW_TP * 4 == TP)
-                model.addConstr(ALL_GATHER_ratio * aaa == TP - 1)
+                    model.add_constraint(ALL_REDUCE_ratio * aaa == TP - 1)
+                model.add_constraint(ALL_TO_ALL_ratio * Link_BW_TP * 4 == TP)
+                model.add_constraint(ALL_GATHER_ratio * aaa == TP - 1)
             else:
                 raise Exception('Wrong!')
             
-            model.addConstr(ALL_REDUCE_PERIODIC_ratio == 0)
-            model.addConstr(P2P_ratio * Link_BW_PP == 1)
+            model.add_constraint(ALL_REDUCE_PERIODIC_ratio == 0)
+            model.add_constraint(P2P_ratio * Link_BW_PP == 1)
             
         elif par[0] == 'TP' and par[1] == 'DP':
-            model.addConstr(TP == Shape[0])
-            model.addConstr(PP == 1)
-            model.addConstr(DP == Shape[1])
+            model.add_constraint(TP == Shape[0])
+            model.add_constraint(PP == 1)
+            model.add_constraint(DP == Shape[1])
 
-            model.addConstr(Link_BW_TP == Link_BW[0])
-            model.addConstr(Link_BW_DP == Link_BW[1])
+            model.add_constraint(Link_BW_TP == Link_BW[0])
+            model.add_constraint(Link_BW_DP == Link_BW[1])
 
-            aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            model.addConstr(aaa == TP * Link_BW_TP)
+            aaa = model.add_variable(vtype='continuous')
+            model.add_constraint(aaa == TP * Link_BW_TP)
             if topology[0] == BasicTopology.R.value:
                 if dse.execution.separate_rs_ag_for_ar:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == (TP - 1)*2)
+                    model.add_constraint(ALL_REDUCE_ratio * aaa == (TP - 1)*2)
                 else:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == TP - 1)
-                model.addConstr(ALL_TO_ALL_ratio * Link_BW_TP * 8 == TP * TP)
-                model.addConstr(ALL_GATHER_ratio * aaa == TP - 1)
+                    model.add_constraint(ALL_REDUCE_ratio * aaa == TP - 1)
+                model.add_constraint(ALL_TO_ALL_ratio * Link_BW_TP * 8 == TP * TP)
+                model.add_constraint(ALL_GATHER_ratio * aaa == TP - 1)
             elif topology[0] == BasicTopology.FC.value:
                 if dse.execution.separate_rs_ag_for_ar:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == 2)
+                    model.add_constraint(ALL_REDUCE_ratio * aaa == 2)
                 else:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == 1)
-                model.addConstr(ALL_TO_ALL_ratio * Link_BW_TP == 1)
-                model.addConstr(ALL_GATHER_ratio * aaa == 1)
+                    model.add_constraint(ALL_REDUCE_ratio * aaa == 1)
+                model.add_constraint(ALL_TO_ALL_ratio * Link_BW_TP == 1)
+                model.add_constraint(ALL_GATHER_ratio * aaa == 1)
             elif topology[0] == BasicTopology.SW.value:
                 if dse.execution.separate_rs_ag_for_ar:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == (TP - 1)*2)
+                    model.add_constraint(ALL_REDUCE_ratio * aaa == (TP - 1)*2)
                 else:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == TP - 1)
-                model.addConstr(ALL_TO_ALL_ratio * Link_BW_TP * 4 == TP)
-                model.addConstr(ALL_GATHER_ratio * aaa == TP - 1)
+                    model.add_constraint(ALL_REDUCE_ratio * aaa == TP - 1)
+                model.add_constraint(ALL_TO_ALL_ratio * Link_BW_TP * 4 == TP)
+                model.add_constraint(ALL_GATHER_ratio * aaa == TP - 1)
             else:
                 raise Exception('Wrong!')
                 
-            bbb = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            model.addConstr(bbb == DP * Link_BW_DP)
+            bbb = model.add_variable(vtype='continuous')
+            model.add_constraint(bbb == DP * Link_BW_DP)
             if topology[1] == BasicTopology.R.value:
                 if dse.execution.separate_rs_ag_for_ar:
-                    model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == (DP - 1)*2)
+                    model.add_constraint(ALL_REDUCE_PERIODIC_ratio * bbb == (DP - 1)*2)
                 else:
-                    model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
+                    model.add_constraint(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
             elif topology[1] == BasicTopology.FC.value:
-                model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == 1)
+                model.add_constraint(ALL_REDUCE_PERIODIC_ratio * bbb == 1)
             elif topology[1] == BasicTopology.SW.value:
                 if dse.execution.separate_rs_ag_for_ar:
-                    model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == (DP - 1)*2)
+                    model.add_constraint(ALL_REDUCE_PERIODIC_ratio * bbb == (DP - 1)*2)
                 else:
-                    model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
+                    model.add_constraint(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
             else:
                 raise Exception('Wrong!')
             
-            model.addConstr(P2P_ratio == 0)
+            model.add_constraint(P2P_ratio == 0)
                 
         elif par[0] == 'PP' and par[1] == 'DP':
-            model.addConstr(TP == 1)
-            model.addConstr(PP == Shape[0])
-            model.addConstr(DP == Shape[1])
+            model.add_constraint(TP == 1)
+            model.add_constraint(PP == Shape[0])
+            model.add_constraint(DP == Shape[1])
 
-            model.addConstr(Link_BW_PP == Link_BW[0])
-            model.addConstr(Link_BW_DP == Link_BW[1])
+            model.add_constraint(Link_BW_PP == Link_BW[0])
+            model.add_constraint(Link_BW_DP == Link_BW[1])
             
-            model.addConstr(ALL_REDUCE_ratio == 0)
-            model.addConstr(ALL_TO_ALL_ratio == 0)
-            model.addConstr(ALL_GATHER_ratio == 0)
+            model.add_constraint(ALL_REDUCE_ratio == 0)
+            model.add_constraint(ALL_TO_ALL_ratio == 0)
+            model.add_constraint(ALL_GATHER_ratio == 0)
 
-            bbb = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            model.addConstr(bbb == DP * Link_BW_DP)
+            bbb = model.add_variable(vtype='continuous')
+            model.add_constraint(bbb == DP * Link_BW_DP)
             if topology[1] == BasicTopology.R.value:
                 if dse.execution.separate_rs_ag_for_ar:
-                    model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == (DP - 1)*2)
+                    model.add_constraint(ALL_REDUCE_PERIODIC_ratio * bbb == (DP - 1)*2)
                 else:
-                    model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
+                    model.add_constraint(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
             elif topology[1] == BasicTopology.FC.value:
-                model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == 1)
+                model.add_constraint(ALL_REDUCE_PERIODIC_ratio * bbb == 1)
             elif topology[1] == BasicTopology.SW.value:
                 if dse.execution.separate_rs_ag_for_ar:
-                    model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == (DP - 1)*2)
+                    model.add_constraint(ALL_REDUCE_PERIODIC_ratio * bbb == (DP - 1)*2)
                 else:
-                    model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
+                    model.add_constraint(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
             else:
                 raise Exception('Wrong!')
                 
-            model.addConstr(P2P_ratio * Link_BW_PP == 1)
+            model.add_constraint(P2P_ratio * Link_BW_PP == 1)
             
         else:    
             raise Exception('Wrong!')
             
     elif len(topology) == 3: # 3D
-        Shape = model.addMVar(3, name='Shape', vtype=gp.GRB.INTEGER, lb=1)
+        Shape = model.add_matrix_variable(3, name='Shape', vtype='integer', lb=1)
         if dimension[0] == 0:
             pass
         else:
-            model.addConstr(Shape[0] == dimension[0])
+            model.add_constraint(Shape[0] == dimension[0])
         
         if dimension[1] == 0:
             pass
         else:
-            model.addConstr(Shape[1] == dimension[1])
+            model.add_constraint(Shape[1] == dimension[1])
         
         if dimension[2] == 0:
             pass
         else:
-            model.addConstr(Shape[2] == dimension[2])
+            model.add_constraint(Shape[2] == dimension[2])
             
-        aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
-        model.addConstr(aaa == Shape[0] * Shape[1])
-        model.addConstr(aaa * Shape[2] == num_chip)
+        aaa = model.add_variable(vtype='continuous')
+        model.add_constraint(aaa == Shape[0] * Shape[1])
+        model.add_constraint(aaa * Shape[2] == num_chip)
         
         
-        Link_BW = model.addMVar(3, name='Link_BW', vtype=gp.GRB.CONTINUOUS, lb=0)
+        Link_BW = model.add_matrix_variable(3, name='Link_BW', vtype='continuous', lb=0)
         for i in range(len(topology)):
-            model.addConstr(Link_BW[i] == link_bw[i])  
+            model.add_constraint(Link_BW[i] == link_bw[i])  
 
-        Link_BW_TP = model.addVar(name='Link_BW_TP', vtype=gp.GRB.CONTINUOUS, lb=0)
-        Link_BW_PP = model.addVar(name='Link_BW_PP', vtype=gp.GRB.CONTINUOUS, lb=0)
-        Link_BW_DP = model.addVar(name='Link_BW_DP', vtype=gp.GRB.CONTINUOUS, lb=0)
+        Link_BW_TP = model.add_variable(name='Link_BW_TP', vtype='continuous', lb=0)
+        Link_BW_PP = model.add_variable(name='Link_BW_PP', vtype='continuous', lb=0)
+        Link_BW_DP = model.add_variable(name='Link_BW_DP', vtype='continuous', lb=0)
         
         if par[0] == 'TP' and par[1] == 'PP' and par[2] == 'DP':
-            model.addConstr(TP == Shape[0])
-            model.addConstr(PP == Shape[1])
-            model.addConstr(DP == Shape[2])
+            model.add_constraint(TP == Shape[0])
+            model.add_constraint(PP == Shape[1])
+            model.add_constraint(DP == Shape[2])
             
-            model.addConstr(Link_BW_TP == Link_BW[0])
-            model.addConstr(Link_BW_PP == Link_BW[1])
-            model.addConstr(Link_BW_DP == Link_BW[2])
+            model.add_constraint(Link_BW_TP == Link_BW[0])
+            model.add_constraint(Link_BW_PP == Link_BW[1])
+            model.add_constraint(Link_BW_DP == Link_BW[2])
             
             
 
-            aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            model.addConstr(aaa == TP * Link_BW_TP)
+            aaa = model.add_variable(vtype='continuous')
+            model.add_constraint(aaa == TP * Link_BW_TP)
             if topology[0] == BasicTopology.R.value:
-                model.addConstr(ALL_TO_ALL_ratio * Link_BW_TP * 8 == TP * TP)
-                model.addConstr(ALL_GATHER_ratio * aaa == TP - 1)
+                model.add_constraint(ALL_TO_ALL_ratio * Link_BW_TP * 8 == TP * TP)
+                model.add_constraint(ALL_GATHER_ratio * aaa == TP - 1)
             elif topology[0] == BasicTopology.FC.value:
-                model.addConstr(ALL_TO_ALL_ratio * Link_BW_TP == 1)
-                model.addConstr(ALL_GATHER_ratio * aaa == 1)
+                model.add_constraint(ALL_TO_ALL_ratio * Link_BW_TP == 1)
+                model.add_constraint(ALL_GATHER_ratio * aaa == 1)
             elif topology[0] == BasicTopology.SW.value:
-                model.addConstr(ALL_TO_ALL_ratio * Link_BW_TP * 4 == TP)
-                model.addConstr(ALL_GATHER_ratio * aaa == TP - 1)
+                model.add_constraint(ALL_TO_ALL_ratio * Link_BW_TP * 4 == TP)
+                model.add_constraint(ALL_GATHER_ratio * aaa == TP - 1)
             else:
                 raise Exception('Wrong!')
             
 
 
             if dse.system.HBD == 0: # not set
-                aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
-                model.addConstr(aaa == TP * Link_BW_TP)
+                aaa = model.add_variable(vtype='continuous')
+                model.add_constraint(aaa == TP * Link_BW_TP)
                 if topology[0] == BasicTopology.R.value:
                     if dse.execution.separate_rs_ag_for_ar:
-                        model.addConstr(ALL_REDUCE_ratio * aaa == (TP - 1)*2)
+                        model.add_constraint(ALL_REDUCE_ratio * aaa == (TP - 1)*2)
                     else:
-                        model.addConstr(ALL_REDUCE_ratio * aaa == TP - 1)
+                        model.add_constraint(ALL_REDUCE_ratio * aaa == TP - 1)
                 elif topology[0] == BasicTopology.FC.value:
                     if dse.execution.separate_rs_ag_for_ar:
-                        model.addConstr(ALL_REDUCE_ratio * aaa == 2)
+                        model.add_constraint(ALL_REDUCE_ratio * aaa == 2)
                     else:
-                        model.addConstr(ALL_REDUCE_ratio * aaa == 1)
+                        model.add_constraint(ALL_REDUCE_ratio * aaa == 1)
                 elif topology[0] == BasicTopology.SW.value:
                     if dse.execution.separate_rs_ag_for_ar:
-                        model.addConstr(ALL_REDUCE_ratio * aaa == (TP - 1)*2)
+                        model.add_constraint(ALL_REDUCE_ratio * aaa == (TP - 1)*2)
                     else:
-                        model.addConstr(ALL_REDUCE_ratio * aaa == TP - 1)
+                        model.add_constraint(ALL_REDUCE_ratio * aaa == TP - 1)
                 else:
                     raise Exception('Wrong!')
                                
-                bbb = model.addVar(vtype=gp.GRB.CONTINUOUS)
-                model.addConstr(bbb == DP * Link_BW_DP)
+                bbb = model.add_variable(vtype='continuous')
+                model.add_constraint(bbb == DP * Link_BW_DP)
                 if topology[2] == BasicTopology.R.value:
                     if dse.execution.separate_rs_ag_for_ar:
-                        model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == (DP - 1)*2)
+                        model.add_constraint(ALL_REDUCE_PERIODIC_ratio * bbb == (DP - 1)*2)
                     else:
-                        model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
+                        model.add_constraint(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
                 elif topology[2] == BasicTopology.FC.value:
-                    model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == 1)
+                    model.add_constraint(ALL_REDUCE_PERIODIC_ratio * bbb == 1)
                 elif topology[2] == BasicTopology.SW.value:
                     if dse.execution.separate_rs_ag_for_ar:
-                        model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == (DP - 1)*2)
+                        model.add_constraint(ALL_REDUCE_PERIODIC_ratio * bbb == (DP - 1)*2)
                     else:
-                        model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
+                        model.add_constraint(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
                 else:
                     raise Exception('Wrong!')
                 
             else:
                 # for TP
                 if dse.system.HBD >= dimension[0]:
-                    model.addConstr(ALL_REDUCE_ratio * dimension[0] * Link_BW[0] == dimension[0] - 1)
+                    model.add_constraint(ALL_REDUCE_ratio * dimension[0] * Link_BW[0] == dimension[0] - 1)
 
                 else:
                     # fast domain: HBD (x), Link_BW[0]
                     # slow domain: dimension[0]/HBD (y), Link_BW[1]
                     is_TP_hierarchical = True
                     
-                    ALL_REDUCE_ratio_fast = model.addVar(name='ALL_REDUCE_ratio_fast', vtype=gp.GRB.CONTINUOUS, lb=0)
-                    ALL_REDUCE_ratio_slow = model.addVar(name='ALL_REDUCE_ratio_slow', vtype=gp.GRB.CONTINUOUS, lb=0)
+                    ALL_REDUCE_ratio_fast = model.add_variable(name='ALL_REDUCE_ratio_fast', vtype='continuous', lb=0)
+                    ALL_REDUCE_ratio_slow = model.add_variable(name='ALL_REDUCE_ratio_slow', vtype='continuous', lb=0)
                     
-                    model.addConstr(ALL_REDUCE_ratio_fast * dse.system.HBD * Link_BW[0] >= dse.system.HBD - 1)
-                    model.addConstr(ALL_REDUCE_ratio_slow * dimension[0] * Link_BW[1] >= dimension[0]/dse.system.HBD - 1)
+                    model.add_constraint(ALL_REDUCE_ratio_fast * dse.system.HBD * Link_BW[0] >= dse.system.HBD - 1)
+                    model.add_constraint(ALL_REDUCE_ratio_slow * dimension[0] * Link_BW[1] >= dimension[0]/dse.system.HBD - 1)
                 
                 
                 # for DP
                 if dse.system.HBD >= dimension[2]:
-                    model.addConstr(ALL_REDUCE_PERIODIC_ratio * dimension[2] * Link_BW[0] == dimension[2] - 1)
+                    model.add_constraint(ALL_REDUCE_PERIODIC_ratio * dimension[2] * Link_BW[0] == dimension[2] - 1)
                     
                 else:
                     # fast domain: HBD (x), Link_BW[0]
                     # slow domain: dimension[2]/HBD (y), Link_BW[2]
                     is_DP_hierarchical = True
                     
-                    ALL_REDUCE_PERIODIC_ratio_fast = model.addVar(name='ALL_REDUCE_PERIODIC_ratio_fast', vtype=gp.GRB.CONTINUOUS, lb=0)
-                    ALL_REDUCE_PERIODIC_ratio_slow = model.addVar(name='ALL_REDUCE_PERIODIC_ratio_slow', vtype=gp.GRB.CONTINUOUS, lb=0)
+                    ALL_REDUCE_PERIODIC_ratio_fast = model.add_variable(name='ALL_REDUCE_PERIODIC_ratio_fast', vtype='continuous', lb=0)
+                    ALL_REDUCE_PERIODIC_ratio_slow = model.add_variable(name='ALL_REDUCE_PERIODIC_ratio_slow', vtype='continuous', lb=0)
                     
-                    model.addConstr(ALL_REDUCE_PERIODIC_ratio_fast * dse.system.HBD * Link_BW[0] >= dse.system.HBD - 1)
-                    model.addConstr(ALL_REDUCE_PERIODIC_ratio_slow * dimension[2] * Link_BW[2] >= dimension[2]/dse.system.HBD - 1)
+                    model.add_constraint(ALL_REDUCE_PERIODIC_ratio_fast * dse.system.HBD * Link_BW[0] >= dse.system.HBD - 1)
+                    model.add_constraint(ALL_REDUCE_PERIODIC_ratio_slow * dimension[2] * Link_BW[2] >= dimension[2]/dse.system.HBD - 1)
                 
                 
                 
                 
             
-            model.addConstr(P2P_ratio * Link_BW_PP == 1)
+            model.add_constraint(P2P_ratio * Link_BW_PP == 1)
             
         else:
             raise Exception('Wrong!')
@@ -1157,106 +1144,106 @@ elif dse.execution.WhichOneof('workload_variant') == 'llm':
 
 
 
-        Shape = model.addMVar(4, name='Shape', vtype=gp.GRB.INTEGER, lb=1)
+        Shape = model.add_matrix_variable(4, name='Shape', vtype='integer', lb=1)
         if dimension[0] == 0:
             pass
         else:
-            model.addConstr(Shape[0] == dimension[0])
+            model.add_constraint(Shape[0] == dimension[0])
         
         if dimension[1] == 0:
             pass
         else:
-            model.addConstr(Shape[1] == dimension[1])
+            model.add_constraint(Shape[1] == dimension[1])
         
         if dimension[2] == 0:
             pass
         else:
-            model.addConstr(Shape[2] == dimension[2])
+            model.add_constraint(Shape[2] == dimension[2])
 
         if dimension[3] == 0:
             pass
         else:
-            model.addConstr(Shape[3] == dimension[3])
+            model.add_constraint(Shape[3] == dimension[3])
             
-        aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
-        bbb = model.addVar(vtype=gp.GRB.CONTINUOUS)
-        model.addConstr(aaa == Shape[0] * Shape[1])
-        model.addConstr(bbb == Shape[2] * Shape[3])
-        model.addConstr(aaa * bbb == num_chip)
+        aaa = model.add_variable(vtype='continuous')
+        bbb = model.add_variable(vtype='continuous')
+        model.add_constraint(aaa == Shape[0] * Shape[1])
+        model.add_constraint(bbb == Shape[2] * Shape[3])
+        model.add_constraint(aaa * bbb == num_chip)
         
         
-        Link_BW = model.addMVar(4, name='Link_BW', vtype=gp.GRB.CONTINUOUS, lb=0)
+        Link_BW = model.add_matrix_variable(4, name='Link_BW', vtype='continuous', lb=0)
         for i in range(len(topology)):
-            model.addConstr(Link_BW[i] == link_bw[i])  
+            model.add_constraint(Link_BW[i] == link_bw[i])  
 
-        Link_BW_SP = model.addVar(name='Link_BW_SP', vtype=gp.GRB.CONTINUOUS, lb=0)
-        Link_BW_TP = model.addVar(name='Link_BW_TP', vtype=gp.GRB.CONTINUOUS, lb=0)
-        Link_BW_PP = model.addVar(name='Link_BW_PP', vtype=gp.GRB.CONTINUOUS, lb=0)
-        Link_BW_DP = model.addVar(name='Link_BW_DP', vtype=gp.GRB.CONTINUOUS, lb=0)
+        Link_BW_SP = model.add_variable(name='Link_BW_SP', vtype='continuous', lb=0)
+        Link_BW_TP = model.add_variable(name='Link_BW_TP', vtype='continuous', lb=0)
+        Link_BW_PP = model.add_variable(name='Link_BW_PP', vtype='continuous', lb=0)
+        Link_BW_DP = model.add_variable(name='Link_BW_DP', vtype='continuous', lb=0)
         
         if par[0] == 'SP' and par[1] == 'TP' and par[2] == 'PP' and par[3] == 'DP':
-            model.addConstr(SP == Shape[0])
-            model.addConstr(TP == Shape[1])
-            model.addConstr(PP == Shape[2])
-            model.addConstr(DP == Shape[3])
+            model.add_constraint(SP == Shape[0])
+            model.add_constraint(TP == Shape[1])
+            model.add_constraint(PP == Shape[2])
+            model.add_constraint(DP == Shape[3])
             
-            model.addConstr(Link_BW_SP == Link_BW[0])
-            model.addConstr(Link_BW_TP == Link_BW[1])
-            model.addConstr(Link_BW_PP == Link_BW[2])
-            model.addConstr(Link_BW_DP == Link_BW[3])
+            model.add_constraint(Link_BW_SP == Link_BW[0])
+            model.add_constraint(Link_BW_TP == Link_BW[1])
+            model.add_constraint(Link_BW_PP == Link_BW[2])
+            model.add_constraint(Link_BW_DP == Link_BW[3])
             
             
 
-            aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            model.addConstr(aaa == TP * Link_BW_TP)
+            aaa = model.add_variable(vtype='continuous')
+            model.add_constraint(aaa == TP * Link_BW_TP)
             if topology[1] == BasicTopology.R.value:
-                model.addConstr(ALL_TO_ALL_ratio * Link_BW_TP * 8 == TP * TP)
-                model.addConstr(ALL_GATHER_ratio * aaa == TP - 1)
+                model.add_constraint(ALL_TO_ALL_ratio * Link_BW_TP * 8 == TP * TP)
+                model.add_constraint(ALL_GATHER_ratio * aaa == TP - 1)
             elif topology[1] == BasicTopology.FC.value:
-                model.addConstr(ALL_TO_ALL_ratio * Link_BW_TP == 1)
-                model.addConstr(ALL_GATHER_ratio * aaa == 1)
+                model.add_constraint(ALL_TO_ALL_ratio * Link_BW_TP == 1)
+                model.add_constraint(ALL_GATHER_ratio * aaa == 1)
             elif topology[1] == BasicTopology.SW.value:
-                model.addConstr(ALL_TO_ALL_ratio * Link_BW_TP * 4 == TP)
-                model.addConstr(ALL_GATHER_ratio * aaa == TP - 1)
+                model.add_constraint(ALL_TO_ALL_ratio * Link_BW_TP * 4 == TP)
+                model.add_constraint(ALL_GATHER_ratio * aaa == TP - 1)
             else:
                 raise Exception('Wrong!')
             
 
 
-            aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            model.addConstr(aaa == TP * Link_BW_TP)
+            aaa = model.add_variable(vtype='continuous')
+            model.add_constraint(aaa == TP * Link_BW_TP)
             if topology[1] == BasicTopology.R.value:
                 if dse.execution.separate_rs_ag_for_ar:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == (TP - 1)*2)
+                    model.add_constraint(ALL_REDUCE_ratio * aaa == (TP - 1)*2)
                 else:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == TP - 1)
+                    model.add_constraint(ALL_REDUCE_ratio * aaa == TP - 1)
             elif topology[1] == BasicTopology.FC.value:
                 if dse.execution.separate_rs_ag_for_ar:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == 2)
+                    model.add_constraint(ALL_REDUCE_ratio * aaa == 2)
                 else:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == 1)
+                    model.add_constraint(ALL_REDUCE_ratio * aaa == 1)
             elif topology[1] == BasicTopology.SW.value:
                 if dse.execution.separate_rs_ag_for_ar:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == (TP - 1)*2)
+                    model.add_constraint(ALL_REDUCE_ratio * aaa == (TP - 1)*2)
                 else:
-                    model.addConstr(ALL_REDUCE_ratio * aaa == TP - 1)
+                    model.add_constraint(ALL_REDUCE_ratio * aaa == TP - 1)
             else:
                 raise Exception('Wrong!')
                             
-            bbb = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            model.addConstr(bbb == DP * Link_BW_DP)
+            bbb = model.add_variable(vtype='continuous')
+            model.add_constraint(bbb == DP * Link_BW_DP)
             if topology[3] == BasicTopology.R.value:
                 if dse.execution.separate_rs_ag_for_ar:
-                    model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == (DP - 1)*2)
+                    model.add_constraint(ALL_REDUCE_PERIODIC_ratio * bbb == (DP - 1)*2)
                 else:
-                    model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
+                    model.add_constraint(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
             elif topology[3] == BasicTopology.FC.value:
-                model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == 1)
+                model.add_constraint(ALL_REDUCE_PERIODIC_ratio * bbb == 1)
             elif topology[3] == BasicTopology.SW.value:
                 if dse.execution.separate_rs_ag_for_ar:
-                    model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == (DP - 1)*2)
+                    model.add_constraint(ALL_REDUCE_PERIODIC_ratio * bbb == (DP - 1)*2)
                 else:
-                    model.addConstr(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
+                    model.add_constraint(ALL_REDUCE_PERIODIC_ratio * bbb == DP - 1)
             else:
                 raise Exception('Wrong!')
             
@@ -1271,42 +1258,42 @@ elif dse.execution.WhichOneof('workload_variant') == 'llm':
 
 
 
-            aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            model.addConstr(aaa == SP * Link_BW_SP)
+            aaa = model.add_variable(vtype='continuous')
+            model.add_constraint(aaa == SP * Link_BW_SP)
             if topology[0] == BasicTopology.R.value:
-                model.addConstr(ALL_GATHER_ratio_sp * aaa == SP - 1)
+                model.add_constraint(ALL_GATHER_ratio_sp * aaa == SP - 1)
             elif topology[0] == BasicTopology.FC.value:
-                model.addConstr(ALL_GATHER_ratio_sp * aaa == 1)
+                model.add_constraint(ALL_GATHER_ratio_sp * aaa == 1)
             elif topology[0] == BasicTopology.SW.value:
-                model.addConstr(ALL_GATHER_ratio_sp * aaa == SP - 1)
+                model.add_constraint(ALL_GATHER_ratio_sp * aaa == SP - 1)
             else:
                 raise Exception('Wrong!')
             
 
 
-            aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            model.addConstr(aaa == SP * Link_BW_SP)
+            aaa = model.add_variable(vtype='continuous')
+            model.add_constraint(aaa == SP * Link_BW_SP)
             if topology[0] == BasicTopology.R.value:
                 if dse.execution.separate_rs_ag_for_ar:
-                    model.addConstr(ALL_REDUCE_ratio_sp * aaa == (SP - 1)*2)
+                    model.add_constraint(ALL_REDUCE_ratio_sp * aaa == (SP - 1)*2)
                 else:
-                    model.addConstr(ALL_REDUCE_ratio_sp * aaa == SP - 1)
+                    model.add_constraint(ALL_REDUCE_ratio_sp * aaa == SP - 1)
             elif topology[0] == BasicTopology.FC.value:
                 if dse.execution.separate_rs_ag_for_ar:
-                    model.addConstr(ALL_REDUCE_ratio_sp * aaa == 2)
+                    model.add_constraint(ALL_REDUCE_ratio_sp * aaa == 2)
                 else:
-                    model.addConstr(ALL_REDUCE_ratio_sp * aaa == 1)
+                    model.add_constraint(ALL_REDUCE_ratio_sp * aaa == 1)
             elif topology[0] == BasicTopology.SW.value:
                 if dse.execution.separate_rs_ag_for_ar:
-                    model.addConstr(ALL_REDUCE_ratio_sp * aaa == (SP - 1)*2)
+                    model.add_constraint(ALL_REDUCE_ratio_sp * aaa == (SP - 1)*2)
                 else:
-                    model.addConstr(ALL_REDUCE_ratio_sp * aaa == SP - 1)
+                    model.add_constraint(ALL_REDUCE_ratio_sp * aaa == SP - 1)
             else:
                 raise Exception('Wrong!')
 
 
                 
-            model.addConstr(P2P_ratio * Link_BW_PP == 1)
+            model.add_constraint(P2P_ratio * Link_BW_PP == 1)
 
         else:
             raise Exception('Wrong!')
@@ -1322,25 +1309,25 @@ elif dse.execution.WhichOneof('workload_variant') == 'llm':
         raise Exception('Wrong!')
     
     
-    model.addConstr(num_copy == 1)
+    model.add_constraint(num_copy == 1)
     
     
     
     
 
 
-layer_per_stage = model.addVar(name='layer_per_stage', vtype=gp.GRB.INTEGER, lb=1)
-layers = model.addVar(name='layers', vtype=gp.GRB.INTEGER, lb=1)
+layer_per_stage = model.add_variable(name='layer_per_stage', vtype='integer', lb=1)
+layers = model.add_variable(name='layers', vtype='integer', lb=1)
 
 if dse.execution.WhichOneof('workload_variant') == 'llm':
     if dse.execution.llm.num_layer_in_graph == 0:
         raise Exception("Wrong!")
     elif dse.execution.llm.num_layer_in_graph == 1:
         tmp = int(dse.execution.llm.num_layer)
-        model.addConstr(layers == tmp)
+        model.add_constraint(layers == tmp)
     else:
-        model.addConstr(layers == PP)
-model.addConstr(layer_per_stage * PP >= layers)
+        model.add_constraint(layers == PP)
+model.add_constraint(layer_per_stage * PP >= layers)
 
 
 
@@ -1351,23 +1338,23 @@ model.addConstr(layer_per_stage * PP >= layers)
 
 
 # tiling
-tile_size = model.addVar(name='tile_size', vtype=gp.GRB.INTEGER, lb=1)
-num_tile = model.addVar(name='num_tile', vtype=gp.GRB.INTEGER, lb=1)
+tile_size = model.add_variable(name='tile_size', vtype='integer', lb=1)
+num_tile = model.add_variable(name='num_tile', vtype='integer', lb=1)
 
 if dse.execution.WhichOneof('workload_variant') == 'llm':    
     if dse.execution.llm.tile_size == 0:
         pass
     else:
-        model.addConstr(tile_size == dse.execution.llm.tile_size)
+        model.add_constraint(tile_size == dse.execution.llm.tile_size)
 
     if len(dimension) == 4:
         sp_dim = dimension[0]
         seq_len = seq_len // sp_dim
     
-    model.addConstr(tile_size * num_tile >= seq_len)
+    model.add_constraint(tile_size * num_tile >= seq_len)
     
 elif dse.execution.WhichOneof('workload_variant') == 'dlrm' or dse.execution.WhichOneof('workload_variant') == 'hpl' or dse.execution.WhichOneof('workload_variant') == 'fft':
-    model.addConstr(num_tile == 1)
+    model.add_constraint(num_tile == 1)
     
 else:
     raise Exception('Wrong!')
@@ -1376,24 +1363,24 @@ else:
 
 
 # sharding kernels
-shard_M = model.addMVar(num_node, name='shard_M', vtype=gp.GRB.INTEGER, lb=0)
-shard_K = model.addMVar(num_node, name='shard_K', vtype=gp.GRB.INTEGER, lb=0)
-shard_N = model.addMVar(num_node, name='shard_N', vtype=gp.GRB.INTEGER, lb=0)
+shard_M = model.add_matrix_variable(num_node, name='shard_M', vtype='integer', lb=0)
+shard_K = model.add_matrix_variable(num_node, name='shard_K', vtype='integer', lb=0)
+shard_N = model.add_matrix_variable(num_node, name='shard_N', vtype='integer', lb=0)
 
 if dse.execution.WhichOneof('workload_variant') == 'hpl':
     for i in range(num_node):
-        model.addConstr(shard_M[i] * HPL_sharding_factor_X >= M[i])
-        model.addConstr(shard_K[i] * HPL_sharding_factor_Y >= K[i])
-        model.addConstr(shard_N[i] == N[i])
+        model.add_constraint(shard_M[i] * HPL_sharding_factor_X >= M[i])
+        model.add_constraint(shard_K[i] * HPL_sharding_factor_Y >= K[i])
+        model.add_constraint(shard_N[i] == N[i])
  
 elif dse.execution.WhichOneof('workload_variant') == 'fft':
-    model.addConstr(shard_M[0] == M[0])
-    model.addConstr(shard_K[0] == K[0])
-    model.addConstr(shard_N[0] * num_chips_per_copy >= N[0])  
+    model.add_constraint(shard_M[0] == M[0])
+    model.add_constraint(shard_K[0] == K[0])
+    model.add_constraint(shard_N[0] * num_chips_per_copy >= N[0])  
      
-    model.addConstr(shard_M[1] == M[1])
-    model.addConstr(shard_K[1] == K[1])
-    model.addConstr(shard_N[1] * num_chips_per_copy >= N[1])
+    model.add_constraint(shard_M[1] == M[1])
+    model.add_constraint(shard_K[1] == K[1])
+    model.add_constraint(shard_N[1] * num_chips_per_copy >= N[1])
     
 else:
     for i in range(num_node):
@@ -1402,87 +1389,87 @@ else:
                 raise Exception('Wrong!')
             
             elif tiling[i] == Dim.K_DIM.value:
-                model.addConstr(shard_M[i] * TP >= M[i])
-                model.addConstr(shard_K[i] * num_tile >= K[i])
-                model.addConstr(shard_N[i] >= N[i])
+                model.add_constraint(shard_M[i] * TP >= M[i])
+                model.add_constraint(shard_K[i] * num_tile >= K[i])
+                model.add_constraint(shard_N[i] >= N[i])
                 
             elif tiling[i] == Dim.N_DIM.value:
-                model.addConstr(shard_M[i] * TP >= M[i])
-                model.addConstr(shard_K[i] >= K[i])
-                model.addConstr(shard_N[i] * num_tile >= N[i])
+                model.add_constraint(shard_M[i] * TP >= M[i])
+                model.add_constraint(shard_K[i] >= K[i])
+                model.add_constraint(shard_N[i] * num_tile >= N[i])
             
             elif tiling[i] == Dim.NO_DIM.value:    
-                model.addConstr(shard_M[i] * TP >= M[i])
-                model.addConstr(shard_K[i] >= K[i])
-                model.addConstr(shard_N[i] >= N[i])
+                model.add_constraint(shard_M[i] * TP >= M[i])
+                model.add_constraint(shard_K[i] >= K[i])
+                model.add_constraint(shard_N[i] >= N[i])
                 
             else:
                 raise Exception('Wrong!')
      
         elif sharding[i] == Dim.K_DIM.value:
             if tiling[i] == Dim.OUTER_DIM.value or tiling[i] == Dim.M_DIM.value:
-                model.addConstr(shard_M[i] * num_tile >= M[i])
-                model.addConstr(shard_K[i] * TP >= K[i])
-                model.addConstr(shard_N[i] >= N[i])
+                model.add_constraint(shard_M[i] * num_tile >= M[i])
+                model.add_constraint(shard_K[i] * TP >= K[i])
+                model.add_constraint(shard_N[i] >= N[i])
             
             elif tiling[i] == Dim.K_DIM.value:
                 raise Exception('Wrong!')
                 
             elif tiling[i] == Dim.N_DIM.value:
-                model.addConstr(shard_M[i] >= M[i])
-                model.addConstr(shard_K[i] * TP >= K[i])
-                model.addConstr(shard_N[i] * num_tile >= N[i])
+                model.add_constraint(shard_M[i] >= M[i])
+                model.add_constraint(shard_K[i] * TP >= K[i])
+                model.add_constraint(shard_N[i] * num_tile >= N[i])
                 
             elif tiling[i] == Dim.NO_DIM.value:    
-                model.addConstr(shard_M[i] >= M[i])
-                model.addConstr(shard_K[i] * TP >= K[i])
-                model.addConstr(shard_N[i] >= N[i])
+                model.add_constraint(shard_M[i] >= M[i])
+                model.add_constraint(shard_K[i] * TP >= K[i])
+                model.add_constraint(shard_N[i] >= N[i])
             
             else:
                 raise Exception('Wrong!')
             
         elif sharding[i] == Dim.N_DIM.value:
             if tiling[i] == Dim.OUTER_DIM.value or tiling[i] == Dim.M_DIM.value:
-                model.addConstr(shard_M[i] * num_tile >= M[i])
-                model.addConstr(shard_K[i] >= K[i])
-                model.addConstr(shard_N[i] * TP >= N[i])
+                model.add_constraint(shard_M[i] * num_tile >= M[i])
+                model.add_constraint(shard_K[i] >= K[i])
+                model.add_constraint(shard_N[i] * TP >= N[i])
             
             elif tiling[i] == Dim.K_DIM.value:
-                model.addConstr(shard_M[i] >= M[i])
-                model.addConstr(shard_K[i] * num_tile >= K[i])
-                model.addConstr(shard_N[i] * TP >= N[i])
+                model.add_constraint(shard_M[i] >= M[i])
+                model.add_constraint(shard_K[i] * num_tile >= K[i])
+                model.add_constraint(shard_N[i] * TP >= N[i])
                 
             elif tiling[i] == Dim.N_DIM.value:
                 raise Exception('Wrong!')
                 
             elif tiling[i] == Dim.NO_DIM.value:    
-                model.addConstr(shard_M[i] >= M[i])
-                model.addConstr(shard_K[i] >= K[i])
-                model.addConstr(shard_N[i] * TP >= N[i])
+                model.add_constraint(shard_M[i] >= M[i])
+                model.add_constraint(shard_K[i] >= K[i])
+                model.add_constraint(shard_N[i] * TP >= N[i])
                 
             else:
                 raise Exception('Wrong!')
             
         elif sharding[i] == Dim.NO_DIM.value:
             if tiling[i] == Dim.OUTER_DIM.value or tiling[i] == Dim.M_DIM.value:
-                model.addConstr(shard_M[i] * num_tile >= M[i])
-                model.addConstr(shard_K[i] >= K[i])
-                model.addConstr(shard_N[i] >= N[i])
+                model.add_constraint(shard_M[i] * num_tile >= M[i])
+                model.add_constraint(shard_K[i] >= K[i])
+                model.add_constraint(shard_N[i] >= N[i])
             
             elif tiling[i] == Dim.K_DIM.value:
-                model.addConstr(shard_M[i] >= M[i])
-                model.addConstr(shard_K[i] * num_tile >= K[i])
-                model.addConstr(shard_N[i] >= N[i])
+                model.add_constraint(shard_M[i] >= M[i])
+                model.add_constraint(shard_K[i] * num_tile >= K[i])
+                model.add_constraint(shard_N[i] >= N[i])
                 
             elif tiling[i] == Dim.N_DIM.value:
-                model.addConstr(shard_M[i] >= M[i])
-                model.addConstr(shard_K[i] >= K[i])
-                model.addConstr(shard_N[i] * num_tile >= N[i])
+                model.add_constraint(shard_M[i] >= M[i])
+                model.add_constraint(shard_K[i] >= K[i])
+                model.add_constraint(shard_N[i] * num_tile >= N[i])
             
             elif tiling[i] == Dim.NO_DIM.value:    
-                model.addConstr(shard_M[i] >= M[i])
-                model.addConstr(shard_K[i] >= K[i])
-                model.addConstr(shard_N[i] >= N[i])
+                model.add_constraint(shard_M[i] >= M[i])
+                model.add_constraint(shard_K[i] >= K[i])
+                model.add_constraint(shard_N[i] >= N[i])
             
             else:
                 raise Exception('Wrong!')
@@ -1493,34 +1480,34 @@ else:
 
 
 # sharding intermediate buffers
-shard_intermediate_buffer_size = model.addMVar(num_edge, name='shard_intermediate_buffer_size', vtype=gp.GRB.CONTINUOUS, lb=0)
+shard_intermediate_buffer_size = model.add_matrix_variable(num_edge, name='shard_intermediate_buffer_size', vtype='continuous', lb=0)
 for i in range(num_edge):
     upstream_node_idx = node_dict[startIdx[i]]
     if zero_out[i]:
-        model.addConstr(shard_intermediate_buffer_size[i] == 0)
+        model.add_constraint(shard_intermediate_buffer_size[i] == 0)
     else:
-        model.addConstr(shard_intermediate_buffer_size[i] == shard_M[upstream_node_idx] * shard_N[upstream_node_idx] * word)
+        model.add_constraint(shard_intermediate_buffer_size[i] == shard_M[upstream_node_idx] * shard_N[upstream_node_idx] * word)
 
 # sharding initiation buffers (weights)
-shard_initiation_buffer_size = model.addMVar(num_weight, name='shard_initiation_buffer_size', vtype=gp.GRB.CONTINUOUS, lb=0)
+shard_initiation_buffer_size = model.add_matrix_variable(num_weight, name='shard_initiation_buffer_size', vtype='continuous', lb=0)
 for i in range(num_weight):
     node_idx = node_dict[weight_dict[i]]
-    model.addConstr(shard_initiation_buffer_size[i] == shard_M[node_idx] * shard_K[node_idx] * word)
+    model.add_constraint(shard_initiation_buffer_size[i] == shard_M[node_idx] * shard_K[node_idx] * word)
 
 
 
 
-Micro_Batch_Size = model.addVar(name='Micro_Batch_Size', vtype=gp.GRB.INTEGER, lb=1)
+Micro_Batch_Size = model.add_variable(name='Micro_Batch_Size', vtype='integer', lb=1)
 
 if micro_batch_size == 0:
     pass
 else:
-    model.addConstr(Micro_Batch_Size == micro_batch_size)
+    model.add_constraint(Micro_Batch_Size == micro_batch_size)
     
-num_micro_batch_per_pipeline = model.addVar(name='num_micro_batch_per_pipeline', vtype=gp.GRB.INTEGER, lb=0)
-aaa = model.addVar(vtype=gp.GRB.INTEGER)
-model.addConstr(aaa == Micro_Batch_Size * DP)
-model.addConstr(num_micro_batch_per_pipeline * aaa == global_batch_size)
+num_micro_batch_per_pipeline = model.add_variable(name='num_micro_batch_per_pipeline', vtype='integer', lb=0)
+aaa = model.add_variable(vtype='integer')
+model.add_constraint(aaa == Micro_Batch_Size * DP)
+model.add_constraint(num_micro_batch_per_pipeline * aaa == global_batch_size)
 
 
 
@@ -1528,80 +1515,80 @@ model.addConstr(num_micro_batch_per_pipeline * aaa == global_batch_size)
 
 # sharding communication
 if dse.execution.WhichOneof('workload_variant') == 'llm':
-    ALL_REDUCE_communication_size_node = model.addMVar(num_node, name='ALL_REDUCE_communication_size_node', vtype=gp.GRB.CONTINUOUS, lb=0)
-    ALL_TO_ALL_communication_size_node = model.addMVar(num_node, name='ALL_TO_ALL_communication_size_node', vtype=gp.GRB.CONTINUOUS, lb=0)
-    ALL_GATHER_communication_size_node = model.addMVar(num_node, name='ALL_GATHER_communication_size_node', vtype=gp.GRB.CONTINUOUS, lb=0)
-    ALL_REDUCE_PERIODIC_communication_size_node = model.addMVar(num_node, name='ALL_REDUCE_PERIODIC_communication_size_node', vtype=gp.GRB.CONTINUOUS, lb=0)
+    ALL_REDUCE_communication_size_node = model.add_matrix_variable(num_node, name='ALL_REDUCE_communication_size_node', vtype='continuous', lb=0)
+    ALL_TO_ALL_communication_size_node = model.add_matrix_variable(num_node, name='ALL_TO_ALL_communication_size_node', vtype='continuous', lb=0)
+    ALL_GATHER_communication_size_node = model.add_matrix_variable(num_node, name='ALL_GATHER_communication_size_node', vtype='continuous', lb=0)
+    ALL_REDUCE_PERIODIC_communication_size_node = model.add_matrix_variable(num_node, name='ALL_REDUCE_PERIODIC_communication_size_node', vtype='continuous', lb=0)
 
-    ALL_REDUCE_communication_size_node_sp = model.addMVar(num_node, name='ALL_REDUCE_communication_size_node_sp', vtype=gp.GRB.CONTINUOUS, lb=0)
-    ALL_GATHER_communication_size_node_sp = model.addMVar(num_node, name='ALL_GATHER_communication_size_node_sp', vtype=gp.GRB.CONTINUOUS, lb=0)
+    ALL_REDUCE_communication_size_node_sp = model.add_matrix_variable(num_node, name='ALL_REDUCE_communication_size_node_sp', vtype='continuous', lb=0)
+    ALL_GATHER_communication_size_node_sp = model.add_matrix_variable(num_node, name='ALL_GATHER_communication_size_node_sp', vtype='continuous', lb=0)
 
 
     for i in range(num_node):
         if node_communication_type[i] == Communication.ALL_REDUCE.value:
-            model.addConstr(ALL_REDUCE_communication_size_node[i] == shard_M[i] * shard_N[i] * word)
+            model.add_constraint(ALL_REDUCE_communication_size_node[i] == shard_M[i] * shard_N[i] * word)
         else:
-            model.addConstr(ALL_REDUCE_communication_size_node[i] == 0)
+            model.add_constraint(ALL_REDUCE_communication_size_node[i] == 0)
         
         if node_communication_type[i] == Communication.ALL_TO_ALL.value:
-            model.addConstr(ALL_TO_ALL_communication_size_node[i] == shard_M[i] * shard_N[i] * word)
+            model.add_constraint(ALL_TO_ALL_communication_size_node[i] == shard_M[i] * shard_N[i] * word)
         else:
-            model.addConstr(ALL_TO_ALL_communication_size_node[i] == 0)
+            model.add_constraint(ALL_TO_ALL_communication_size_node[i] == 0)
 
         if node_communication_type[i] == Communication.ALL_GATHER.value:
-            model.addConstr(ALL_GATHER_communication_size_node[i] == shard_M[i] * shard_N[i] * word)
+            model.add_constraint(ALL_GATHER_communication_size_node[i] == shard_M[i] * shard_N[i] * word)
         else:
-            model.addConstr(ALL_GATHER_communication_size_node[i] == 0)
+            model.add_constraint(ALL_GATHER_communication_size_node[i] == 0)
 
         if node_communication_type[i] == Communication.ALL_REDUCE_PERIODIC.value:
-            aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            bbb = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            ccc = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            model.addConstr(aaa == shard_M[i] * shard_N[i] * word)
-            model.addConstr(ALL_REDUCE_PERIODIC_communication_size_node[i] * num_micro_batch_per_pipeline >= aaa)
+            aaa = model.add_variable(vtype='continuous')
+            bbb = model.add_variable(vtype='continuous')
+            ccc = model.add_variable(vtype='continuous')
+            model.add_constraint(aaa == shard_M[i] * shard_N[i] * word)
+            model.add_constraint(ALL_REDUCE_PERIODIC_communication_size_node[i] * num_micro_batch_per_pipeline >= aaa)
         else:
-            model.addConstr(ALL_REDUCE_PERIODIC_communication_size_node[i] == 0)
+            model.add_constraint(ALL_REDUCE_PERIODIC_communication_size_node[i] == 0)
 
         
 
 
 
         if node_communication_type_2[i] == Communication.ALL_REDUCE.value:
-            model.addConstr(ALL_REDUCE_communication_size_node_sp[i] == shard_M[i] * shard_N[i] * word)
+            model.add_constraint(ALL_REDUCE_communication_size_node_sp[i] == shard_M[i] * shard_N[i] * word)
         else:
-            model.addConstr(ALL_REDUCE_communication_size_node_sp[i] == 0)
+            model.add_constraint(ALL_REDUCE_communication_size_node_sp[i] == 0)
 
         if node_communication_type_2[i] == Communication.ALL_GATHER.value:
-            model.addConstr(ALL_GATHER_communication_size_node_sp[i] == shard_M[i] * shard_N[i] * word)
+            model.add_constraint(ALL_GATHER_communication_size_node_sp[i] == shard_M[i] * shard_N[i] * word)
         else:
-            model.addConstr(ALL_GATHER_communication_size_node_sp[i] == 0)
+            model.add_constraint(ALL_GATHER_communication_size_node_sp[i] == 0)
     
 
 
-    ALL_REDUCE_communication_size_edge = model.addMVar(num_edge, name='ALL_REDUCE_communication_size_edge', vtype=gp.GRB.CONTINUOUS, lb=0)
-    ALL_TO_ALL_communication_size_edge = model.addMVar(num_edge, name='ALL_TO_ALL_communication_size_edge', vtype=gp.GRB.CONTINUOUS, lb=0)
-    ALL_GATHER_communication_size_edge = model.addMVar(num_edge, name='ALL_GATHER_communication_size_edge', vtype=gp.GRB.CONTINUOUS, lb=0)
+    ALL_REDUCE_communication_size_edge = model.add_matrix_variable(num_edge, name='ALL_REDUCE_communication_size_edge', vtype='continuous', lb=0)
+    ALL_TO_ALL_communication_size_edge = model.add_matrix_variable(num_edge, name='ALL_TO_ALL_communication_size_edge', vtype='continuous', lb=0)
+    ALL_GATHER_communication_size_edge = model.add_matrix_variable(num_edge, name='ALL_GATHER_communication_size_edge', vtype='continuous', lb=0)
     
-    ALL_REDUCE_communication_size_edge_sp = model.addMVar(num_edge, name='ALL_REDUCE_communication_size_edge_sp', vtype=gp.GRB.CONTINUOUS, lb=0)
-    ALL_GATHER_communication_size_edge_sp = model.addMVar(num_edge, name='ALL_GATHER_communication_size_edge_sp', vtype=gp.GRB.CONTINUOUS, lb=0)
+    ALL_REDUCE_communication_size_edge_sp = model.add_matrix_variable(num_edge, name='ALL_REDUCE_communication_size_edge_sp', vtype='continuous', lb=0)
+    ALL_GATHER_communication_size_edge_sp = model.add_matrix_variable(num_edge, name='ALL_GATHER_communication_size_edge_sp', vtype='continuous', lb=0)
     
     for i in range(num_edge):
         start_node_idx = node_dict[startIdx[i]]
         
         if edge_communication_type[i] == Communication.ALL_REDUCE.value:
-            model.addConstr(ALL_REDUCE_communication_size_edge[i] == shard_M[start_node_idx] * shard_N[start_node_idx] * word)
+            model.add_constraint(ALL_REDUCE_communication_size_edge[i] == shard_M[start_node_idx] * shard_N[start_node_idx] * word)
         else:
-            model.addConstr(ALL_REDUCE_communication_size_edge[i] == 0)
+            model.add_constraint(ALL_REDUCE_communication_size_edge[i] == 0)
 
         if edge_communication_type[i] == Communication.ALL_TO_ALL.value:
-            model.addConstr(ALL_TO_ALL_communication_size_edge[i] == shard_M[start_node_idx] * shard_N[start_node_idx] * word)
+            model.add_constraint(ALL_TO_ALL_communication_size_edge[i] == shard_M[start_node_idx] * shard_N[start_node_idx] * word)
         else:
-            model.addConstr(ALL_TO_ALL_communication_size_edge[i] == 0)
+            model.add_constraint(ALL_TO_ALL_communication_size_edge[i] == 0)
 
         if edge_communication_type[i] == Communication.ALL_GATHER.value:
-            model.addConstr(ALL_GATHER_communication_size_edge[i] == shard_M[start_node_idx] * shard_N[start_node_idx] * word)
+            model.add_constraint(ALL_GATHER_communication_size_edge[i] == shard_M[start_node_idx] * shard_N[start_node_idx] * word)
         else:
-            model.addConstr(ALL_GATHER_communication_size_edge[i] == 0)
+            model.add_constraint(ALL_GATHER_communication_size_edge[i] == 0)
         
 
 
@@ -1609,86 +1596,86 @@ if dse.execution.WhichOneof('workload_variant') == 'llm':
         start_node_idx = node_dict[startIdx[i]]
         
         if edge_communication_type_2[i] == Communication.ALL_REDUCE.value:
-            model.addConstr(ALL_REDUCE_communication_size_edge_sp[i] == shard_M[start_node_idx] * shard_N[start_node_idx] * word)
+            model.add_constraint(ALL_REDUCE_communication_size_edge_sp[i] == shard_M[start_node_idx] * shard_N[start_node_idx] * word)
         else:
-            model.addConstr(ALL_REDUCE_communication_size_edge_sp[i] == 0)
+            model.add_constraint(ALL_REDUCE_communication_size_edge_sp[i] == 0)
 
         if edge_communication_type_2[i] == Communication.ALL_GATHER.value:
-            model.addConstr(ALL_GATHER_communication_size_edge_sp[i] == shard_M[start_node_idx] * shard_N[start_node_idx] * word)
+            model.add_constraint(ALL_GATHER_communication_size_edge_sp[i] == shard_M[start_node_idx] * shard_N[start_node_idx] * word)
             print('aaaaaa', start_node_idx, kernel_name, kernel_name[start_node_idx])
         else:
-            model.addConstr(ALL_GATHER_communication_size_edge_sp[i] == 0)
+            model.add_constraint(ALL_GATHER_communication_size_edge_sp[i] == 0)
 
 
 
 elif dse.execution.WhichOneof('workload_variant') == 'dlrm':
-    ALL_TO_ALL_communication_size_node = model.addMVar(num_node, name='ALL_TO_ALL_communication_size_node', vtype=gp.GRB.CONTINUOUS, lb=0)
-    ALL_REDUCE_PERIODIC_communication_size_node = model.addMVar(num_node, name='ALL_REDUCE_PERIODIC_communication_size_node', vtype=gp.GRB.CONTINUOUS, lb=0)
+    ALL_TO_ALL_communication_size_node = model.add_matrix_variable(num_node, name='ALL_TO_ALL_communication_size_node', vtype='continuous', lb=0)
+    ALL_REDUCE_PERIODIC_communication_size_node = model.add_matrix_variable(num_node, name='ALL_REDUCE_PERIODIC_communication_size_node', vtype='continuous', lb=0)
     
     for i in range(num_node):
         if node_communication_type[i] == Communication.ALL_TO_ALL.value:
-            aaa = model.addVar(vtype=gp.GRB.BINARY)
-            tmp = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            model.addConstr((aaa == 1) >> (num_chips_per_copy == 1))
-            model.addConstr((aaa == 0) >> (num_chips_per_copy >= 2))
-            model.addConstr((aaa == 1) >> (ALL_TO_ALL_communication_size_node[i] == 0))
-            model.addConstr(tmp == ALL_TO_ALL_communication_size_node[i] * num_chips_per_copy)
-            model.addConstr((aaa == 0) >> (tmp >= node_communication_size[i]))
+            aaa = model.add_variable(vtype='binary')
+            tmp = model.add_variable(vtype='continuous')
+            model.add_constraint((aaa == 1) >> (num_chips_per_copy == 1))
+            model.add_constraint((aaa == 0) >> (num_chips_per_copy >= 2))
+            model.add_constraint((aaa == 1) >> (ALL_TO_ALL_communication_size_node[i] == 0))
+            model.add_constraint(tmp == ALL_TO_ALL_communication_size_node[i] * num_chips_per_copy)
+            model.add_constraint((aaa == 0) >> (tmp >= node_communication_size[i]))
         else:
-            model.addConstr(ALL_TO_ALL_communication_size_node[i] == 0)
+            model.add_constraint(ALL_TO_ALL_communication_size_node[i] == 0)
         
         if node_communication_type[i] == Communication.ALL_REDUCE_PERIODIC.value:
-            aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            bbb = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            ccc = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            model.addConstr(aaa == shard_M[i] * shard_N[i] * word)
-            model.addConstr(ALL_REDUCE_PERIODIC_communication_size_node[i] * num_micro_batch_per_pipeline >= aaa)
+            aaa = model.add_variable(vtype='continuous')
+            bbb = model.add_variable(vtype='continuous')
+            ccc = model.add_variable(vtype='continuous')
+            model.add_constraint(aaa == shard_M[i] * shard_N[i] * word)
+            model.add_constraint(ALL_REDUCE_PERIODIC_communication_size_node[i] * num_micro_batch_per_pipeline >= aaa)
         else:
-            model.addConstr(ALL_REDUCE_PERIODIC_communication_size_node[i] == 0) 
+            model.add_constraint(ALL_REDUCE_PERIODIC_communication_size_node[i] == 0) 
     
 elif dse.execution.WhichOneof('workload_variant') == 'hpl':
-    BROADCAST_communication_size = model.addMVar(num_node, name='BROADCAST_communication_size', vtype=gp.GRB.CONTINUOUS, lb=0)
-    POINT_TO_POINT_communication_size = model.addMVar(num_node, name='POINT_TO_POINT_communication_size', vtype=gp.GRB.CONTINUOUS, lb=0)
+    BROADCAST_communication_size = model.add_matrix_variable(num_node, name='BROADCAST_communication_size', vtype='continuous', lb=0)
+    POINT_TO_POINT_communication_size = model.add_matrix_variable(num_node, name='POINT_TO_POINT_communication_size', vtype='continuous', lb=0)
     
     for i in range(num_node):
         if node_communication_type[i] == Communication.BROADCAST.value:
-            aaa = model.addVar(vtype=gp.GRB.BINARY)
-            tmp = model.addVar(vtype=gp.GRB.CONTINUOUS, lb=0)
-            model.addConstr((aaa == 1) >> (HPL_sharding_factor_X == 1))
-            model.addConstr((aaa == 0) >> (HPL_sharding_factor_X >= 2))
-            model.addConstr((aaa == 1) >> (BROADCAST_communication_size[i] == 0))
-            model.addConstr(tmp == BROADCAST_communication_size[i] * HPL_sharding_factor_X)
-            model.addConstr((aaa == 0) >> (tmp >= node_communication_size[i]))
+            aaa = model.add_variable(vtype='binary')
+            tmp = model.add_variable(vtype='continuous', lb=0)
+            model.add_constraint((aaa == 1) >> (HPL_sharding_factor_X == 1))
+            model.add_constraint((aaa == 0) >> (HPL_sharding_factor_X >= 2))
+            model.add_constraint((aaa == 1) >> (BROADCAST_communication_size[i] == 0))
+            model.add_constraint(tmp == BROADCAST_communication_size[i] * HPL_sharding_factor_X)
+            model.add_constraint((aaa == 0) >> (tmp >= node_communication_size[i]))
         else:
-            model.addConstr(BROADCAST_communication_size[i] == 0)
+            model.add_constraint(BROADCAST_communication_size[i] == 0)
             
         if node_communication_type_2[i] == Communication.POINT_TO_POINT.value:
-            aaa = model.addVar(vtype=gp.GRB.BINARY)
-            tmp = model.addVar(vtype=gp.GRB.CONTINUOUS, lb=0)
-            model.addConstr((aaa == 1) >> (HPL_sharding_factor_Y == 1))
-            model.addConstr((aaa == 0) >> (HPL_sharding_factor_Y >= 2))
-            model.addConstr((aaa == 1) >> (POINT_TO_POINT_communication_size[i] == 0))
-            model.addConstr(tmp == POINT_TO_POINT_communication_size[i] * HPL_sharding_factor_Y)
-            model.addConstr((aaa == 0) >> (tmp >= node_communication_size[i]))
+            aaa = model.add_variable(vtype='binary')
+            tmp = model.add_variable(vtype='continuous', lb=0)
+            model.add_constraint((aaa == 1) >> (HPL_sharding_factor_Y == 1))
+            model.add_constraint((aaa == 0) >> (HPL_sharding_factor_Y >= 2))
+            model.add_constraint((aaa == 1) >> (POINT_TO_POINT_communication_size[i] == 0))
+            model.add_constraint(tmp == POINT_TO_POINT_communication_size[i] * HPL_sharding_factor_Y)
+            model.add_constraint((aaa == 0) >> (tmp >= node_communication_size[i]))
         else:
-            model.addConstr(POINT_TO_POINT_communication_size[i] == 0)
+            model.add_constraint(POINT_TO_POINT_communication_size[i] == 0)
 
 elif dse.execution.WhichOneof('workload_variant') == 'fft':
-    ALL_TO_ALL_communication_size_node = model.addMVar(num_node, name='ALL_TO_ALL_communication_size_node', vtype=gp.GRB.CONTINUOUS, lb=0)
+    ALL_TO_ALL_communication_size_node = model.add_matrix_variable(num_node, name='ALL_TO_ALL_communication_size_node', vtype='continuous', lb=0)
     
     for i in range(num_node):
         if node_communication_type[i] == Communication.ALL_TO_ALL.value:
-            aaa = model.addVar(vtype=gp.GRB.BINARY)
-            tmp = model.addVar(vtype=gp.GRB.CONTINUOUS, lb=0)
-            tmp2 = model.addVar(vtype=gp.GRB.CONTINUOUS, lb=0)
-            model.addConstr(tmp == num_chips_per_copy * num_chips_per_copy)
-            model.addConstr(tmp2 == ALL_TO_ALL_communication_size_node[i] * tmp)
-            model.addConstr((aaa == 1) >> (num_chips_per_copy == 1))
-            model.addConstr((aaa == 0) >> (num_chips_per_copy >= 2))
-            model.addConstr((aaa == 1) >> (ALL_TO_ALL_communication_size_node[i] == 0))
-            model.addConstr((aaa == 0) >> (tmp2 >= node_communication_size[i]))
+            aaa = model.add_variable(vtype='binary')
+            tmp = model.add_variable(vtype='continuous', lb=0)
+            tmp2 = model.add_variable(vtype='continuous', lb=0)
+            model.add_constraint(tmp == num_chips_per_copy * num_chips_per_copy)
+            model.add_constraint(tmp2 == ALL_TO_ALL_communication_size_node[i] * tmp)
+            model.add_constraint((aaa == 1) >> (num_chips_per_copy == 1))
+            model.add_constraint((aaa == 0) >> (num_chips_per_copy >= 2))
+            model.add_constraint((aaa == 1) >> (ALL_TO_ALL_communication_size_node[i] == 0))
+            model.add_constraint((aaa == 0) >> (tmp2 >= node_communication_size[i]))
         else:
-            model.addConstr(ALL_TO_ALL_communication_size_node[i] == 0)
+            model.add_constraint(ALL_TO_ALL_communication_size_node[i] == 0)
               
 else:
     raise Exception('Wrong!')
@@ -1719,32 +1706,32 @@ else:
     C = dse.execution.num_config
 
     
-Config = model.addMVar(num_node, name='Config', vtype=gp.GRB.INTEGER, lb=0)
+Config = model.add_matrix_variable(num_node, name='Config', vtype='integer', lb=0)
 
-A = model.addMVar((num_node, C), name='A', vtype=gp.GRB.BINARY) # kernel to config
-B = model.addMVar((num_edge, C), name='B', vtype=gp.GRB.BINARY) # on-chip buffer to config
-D = model.addMVar((num_edge, C), name='D', vtype=gp.GRB.BINARY) # off-chip buffer to config
+A = model.add_matrix_variable((num_node, C), name='A', vtype='binary') # kernel to config
+B = model.add_matrix_variable((num_edge, C), name='B', vtype='binary') # on-chip buffer to config
+D = model.add_matrix_variable((num_edge, C), name='D', vtype='binary') # off-chip buffer to config
 
-Z = model.addMVar((num_edge, C), name='Z', vtype=gp.GRB.BINARY) # on/off-chip buffer to config
+Z = model.add_matrix_variable((num_edge, C), name='Z', vtype='binary') # on/off-chip buffer to config
 
-E = model.addMVar((num_edge, C), name='E', vtype=gp.GRB.BINARY) # DRAM buffer to config
-H = model.addMVar((num_edge, C), name='H', vtype=gp.GRB.BINARY) # buffer placement based on upstream kernel placement
+E = model.add_matrix_variable((num_edge, C), name='E', vtype='binary') # DRAM buffer to config
+H = model.add_matrix_variable((num_edge, C), name='H', vtype='binary') # buffer placement based on upstream kernel placement
 
-F = model.addMVar((num_weight, C), name='F', vtype=gp.GRB.BINARY) # initiation buffer to config
+F = model.add_matrix_variable((num_weight, C), name='F', vtype='binary') # initiation buffer to config
 
 if dse.execution.execution_style == Execution_Style.KERNEL_BY_KERNEL.value:
     for i in range(len(configs)):
-        model.addConstr(Config[i] == i)
+        model.add_constraint(Config[i] == i)
     
 elif dse.execution.execution_style == Execution_Style.DATAFLOW.value:
     if C == num_node:
         for i in range(len(configs)):
-            model.addConstr(Config[i] == i)
+            model.add_constraint(Config[i] == i)
 
     else:
         for i in range(len(configs)):
             if configs[i] != -1:
-                model.addConstr(Config[i] == configs[i])
+                model.add_constraint(Config[i] == configs[i])
         
         if first_bwd_kernel != -1: # if config is not specified for dataflow or there is backward pass for training
             if C % 2 == 0:
@@ -1758,9 +1745,9 @@ elif dse.execution.execution_style == Execution_Style.DATAFLOW.value:
             
             for i in range(num_node):
                 if fwd_bwd[i] == FWD_BWD.FWD.value:
-                    model.addConstr(Config[i] <= fwd_idx)
+                    model.add_constraint(Config[i] <= fwd_idx)
                 elif fwd_bwd[i] == FWD_BWD.BWD.value:
-                    model.addConstr(Config[i] >= bwd_idx)
+                    model.add_constraint(Config[i] >= bwd_idx)
                 else:
                     raise Exception('Wrong!')
         
@@ -1773,26 +1760,26 @@ else:
 
 # kernel assignment   
 for i in range(num_node):
-    model.addConstr(A[i, :] @ np.ones((C)) == 1)
+    model.add_constraint(A[i, :] @ np.ones((C)) == 1)
     
     
 t2 = np.zeros((C))
 for i in range(C):
     t2[i] = i
 for i in range(num_node):
-    model.addConstr(A[i, :] @ t2 == Config[i])
+    model.add_constraint(A[i, :] @ t2 == Config[i])
 
 
 for i in range(num_edge):
-    model.addConstr(Config[node_dict[startIdx[i]]] <= Config[node_dict[endIdx[i]]])
+    model.add_constraint(Config[node_dict[startIdx[i]]] <= Config[node_dict[endIdx[i]]])
 
 
             
  
 if dse.execution.execution_style == Execution_Style.KERNEL_BY_KERNEL.value:
     for i in range(C):
-        model.addConstr(np.ones((num_node)) @ A[:, i] >= 1)
-    model.addConstr(C == num_node)
+        model.add_constraint(np.ones((num_node)) @ A[:, i] >= 1)
+    model.add_constraint(C == num_node)
         
 elif dse.execution.execution_style == Execution_Style.DATAFLOW.value:
     pass
@@ -1814,24 +1801,24 @@ for i in range(len(num_input_set)):
 for i in range(len(num_input_set)):
     for j in range(i, len(num_input_set)):
         if (num_input_set[i] == False and num_input_set[j] == True) or (num_input_set[i] == True and num_input_set[j] == False):
-            b = model.addVar(vtype=gp.GRB.BINARY)
-            model.addConstr(Config[i] <= Config[j] - 1 + large_number * (1 - b))
-            model.addConstr(Config[i] >= Config[j] + 1 - large_number * b)
+            b = model.add_variable(vtype='binary')
+            model.add_constraint(Config[i] <= Config[j] - 1 + large_number * (1 - b))
+            model.add_constraint(Config[i] >= Config[j] + 1 - large_number * b)
 
 
 
 
 
-num_input_per_config = model.addMVar(C, name='num_input_per_config', vtype=gp.GRB.INTEGER)
+num_input_per_config = model.add_matrix_variable(C, name='num_input_per_config', vtype='integer')
 for i in range(C):
-    aaa = model.addMVar(num_node, vtype=gp.GRB.CONTINUOUS)
+    aaa = model.add_matrix_variable(num_node, vtype='continuous')
     for j in range(num_node):
-        model.addConstr(aaa[j] == num_input[j] * A[j, i])
-    model.addConstr(num_input_per_config[i] == gp.max_(aaa[k] for k in range(num_node)))
+        model.add_constraint(aaa[j] == num_input[j] * A[j, i])
+    model.add_constraint(num_input_per_config[i] == highspy.max_(aaa[k] for k in range(num_node)))
 
 
 
-num_tile_per_config = model.addMVar(C, name='num_tile_per_config', vtype=gp.GRB.INTEGER)
+num_tile_per_config = model.add_matrix_variable(C, name='num_tile_per_config', vtype='integer')
 if flag:
     tmp = np.zeros((num_node))
     for i in range(len(num_input_set)):
@@ -1840,38 +1827,38 @@ if flag:
         else:
             tmp[i] = 0
 
-    zzzz = model.addMVar(C, name='zzzz', vtype=gp.GRB.INTEGER)
+    zzzz = model.add_matrix_variable(C, name='zzzz', vtype='integer')
     for i in range(C):
-        model.addConstr(zzzz[i] == tmp @ A[:, i])
+        model.add_constraint(zzzz[i] == tmp @ A[:, i])
                         
-        aaa = model.addVar(vtype=gp.GRB.BINARY)
-        model.addConstr((aaa == 1) >> (zzzz[i] >= 1))
-        model.addConstr((aaa == 0) >> (zzzz[i] <= 0))
+        aaa = model.add_variable(vtype='binary')
+        model.add_constraint((aaa == 1) >> (zzzz[i] >= 1))
+        model.add_constraint((aaa == 0) >> (zzzz[i] <= 0))
         
-        model.addConstr((aaa == 1) >> (num_tile_per_config[i] == 1))
-        model.addConstr((aaa == 0) >> (num_tile_per_config[i] == num_tile))             
+        model.add_constraint((aaa == 1) >> (num_tile_per_config[i] == 1))
+        model.add_constraint((aaa == 0) >> (num_tile_per_config[i] == num_tile))             
 
 else:
     for i in range(C):
-        model.addConstr(num_tile_per_config[i] == num_tile)
+        model.add_constraint(num_tile_per_config[i] == num_tile)
 
 # compute resources
 if dse.execution.compute_util == 0:
-    Par_lane = model.addMVar((num_node), name='Par_lane', vtype=gp.GRB.INTEGER, lb=1)
-    Par_stage = model.addMVar((num_node), name='Par_stage', vtype=gp.GRB.INTEGER, lb=1)
+    Par_lane = model.add_matrix_variable((num_node), name='Par_lane', vtype='integer', lb=1)
+    Par_stage = model.add_matrix_variable((num_node), name='Par_stage', vtype='integer', lb=1)
 else:
     pass
 
-Par_total = model.addMVar((num_node), name='Par_total', vtype=gp.GRB.INTEGER, lb=1)
+Par_total = model.add_matrix_variable((num_node), name='Par_total', vtype='integer', lb=1)
 
 if dse.execution.compute_util == 0:
     for i in range(num_node):
-        model.addConstr(Par_lane[i] * Par_stage[i] == Par_total[i])
+        model.add_constraint(Par_lane[i] * Par_stage[i] == Par_total[i])
 else:
     pass
     
 for i in range(C):
-    model.addConstr(Par_total @ A[:, i] <= Core)   
+    model.add_constraint(Par_total @ A[:, i] <= Core)   
 
 
 
@@ -1882,29 +1869,29 @@ for i in range(num_edge):
     end_node_idx = node_dict[endIdx[i]]
     
     for j in range(C):
-        t1 = model.addVar(vtype=gp.GRB.BINARY)
-        t2 = model.addVar(vtype=gp.GRB.BINARY)
-        t3 = model.addVar(vtype=gp.GRB.BINARY)
-        t4 = model.addVar(vtype=gp.GRB.BINARY)
-        t5 = model.addVar(vtype=gp.GRB.BINARY)
+        t1 = model.add_variable(vtype='binary')
+        t2 = model.add_variable(vtype='binary')
+        t3 = model.add_variable(vtype='binary')
+        t4 = model.add_variable(vtype='binary')
+        t5 = model.add_variable(vtype='binary')
 
-        model.addConstr(t1 == gp.and_(A[start_node_idx, j], A[end_node_idx, j]))
-        model.addConstr(t2 == gp.or_(A[start_node_idx, j], A[end_node_idx, j]))
-        model.addConstr(t3 == 1 - t1)
-        model.addConstr(t4 == gp.and_(t3, t2))
-        model.addConstr(t5 == A[start_node_idx, j])
+        model.add_constraint(t1 == highspy.and_(A[start_node_idx, j], A[end_node_idx, j]))
+        model.add_constraint(t2 == highspy.or_(A[start_node_idx, j], A[end_node_idx, j]))
+        model.add_constraint(t3 == 1 - t1)
+        model.add_constraint(t4 == highspy.and_(t3, t2))
+        model.add_constraint(t5 == A[start_node_idx, j])
 
-        model.addConstr((t1 == 1) >> (B[i, j] == 1))
-        model.addConstr((t1 == 0) >> (B[i, j] == 0))
+        model.add_constraint((t1 == 1) >> (B[i, j] == 1))
+        model.add_constraint((t1 == 0) >> (B[i, j] == 0))
         
-        model.addConstr((t4 == 1) >> (D[i, j] == 1))
-        model.addConstr((t4 == 0) >> (D[i, j] == 0))
+        model.add_constraint((t4 == 1) >> (D[i, j] == 1))
+        model.add_constraint((t4 == 0) >> (D[i, j] == 0))
         
-        model.addConstr((t2 == 1) >> (Z[i, j] == 1))
-        model.addConstr((t2 == 0) >> (Z[i, j] == 0))
+        model.add_constraint((t2 == 1) >> (Z[i, j] == 1))
+        model.add_constraint((t2 == 0) >> (Z[i, j] == 0))
 
-        model.addConstr((t5 == 1) >> (H[i, j] == 1))
-        model.addConstr((t5 == 0) >> (H[i, j] == 0))
+        model.add_constraint((t5 == 1) >> (H[i, j] == 1))
+        model.add_constraint((t5 == 0) >> (H[i, j] == 0))
 
 
 
@@ -1924,38 +1911,38 @@ for i in range(num_edge):
     start_node_idx = node_dict[startIdx[i]]
     end_node_idx = node_dict[endIdx[i]]
     
-    tmp1 = model.addMVar((C), vtype=gp.GRB.BINARY)
-    tmp2 = model.addMVar((C), vtype=gp.GRB.BINARY)
+    tmp1 = model.add_matrix_variable((C), vtype='binary')
+    tmp2 = model.add_matrix_variable((C), vtype='binary')
 
-    model.addConstr(tmp1 == A[start_node_idx, :] @ ls)
-    model.addConstr(tmp2 == A[end_node_idx, :] @ lt)
+    model.add_constraint(tmp1 == A[start_node_idx, :] @ ls)
+    model.add_constraint(tmp2 == A[end_node_idx, :] @ lt)
     
     for j in range(C):
-        t1 = model.addVar(vtype=gp.GRB.BINARY)
-        t2 = model.addVar(vtype=gp.GRB.BINARY)
-        t3 = model.addVar(vtype=gp.GRB.BINARY)
-        t4 = model.addVar(vtype=gp.GRB.BINARY)
-        t5 = model.addVar(vtype=gp.GRB.BINARY)
-        t6 = model.addVar(vtype=gp.GRB.BINARY)
-        t7 = model.addVar(vtype=gp.GRB.BINARY)
-        t8 = model.addVar(vtype=gp.GRB.BINARY)
-        t9 = model.addVar(vtype=gp.GRB.BINARY)
+        t1 = model.add_variable(vtype='binary')
+        t2 = model.add_variable(vtype='binary')
+        t3 = model.add_variable(vtype='binary')
+        t4 = model.add_variable(vtype='binary')
+        t5 = model.add_variable(vtype='binary')
+        t6 = model.add_variable(vtype='binary')
+        t7 = model.add_variable(vtype='binary')
+        t8 = model.add_variable(vtype='binary')
+        t9 = model.add_variable(vtype='binary')
 
-        model.addConstr(t1 == gp.and_(tmp1[j], tmp2[j]))
-        model.addConstr(t2 == gp.or_(tmp1[j], tmp2[j]))
-        model.addConstr(t3 == 1 - t1)
-        model.addConstr(t4 == gp.and_(t2, t3))
+        model.add_constraint(t1 == highspy.and_(tmp1[j], tmp2[j]))
+        model.add_constraint(t2 == highspy.or_(tmp1[j], tmp2[j]))
+        model.add_constraint(t3 == 1 - t1)
+        model.add_constraint(t4 == highspy.and_(t2, t3))
         
-        model.addConstr(t5 == gp.and_(A[start_node_idx, j], A[end_node_idx, j]))
+        model.add_constraint(t5 == highspy.and_(A[start_node_idx, j], A[end_node_idx, j]))
         
-        model.addConstr(t6 == gp.and_(t4, t5))
-        model.addConstr(t7 == gp.or_(t4, t5))
-        model.addConstr(t8 == 1 - t6)
-        model.addConstr(t9 == gp.and_(t7, t8))
+        model.add_constraint(t6 == highspy.and_(t4, t5))
+        model.add_constraint(t7 == highspy.or_(t4, t5))
+        model.add_constraint(t8 == 1 - t6)
+        model.add_constraint(t9 == highspy.and_(t7, t8))
         
         
-        model.addConstr((t9 == 1) >> (E[i, j] == 1))
-        model.addConstr((t9 == 0) >> (E[i, j] == 0))
+        model.add_constraint((t9 == 1) >> (E[i, j] == 1))
+        model.add_constraint((t9 == 0) >> (E[i, j] == 0))
         
         
         
@@ -1964,8 +1951,8 @@ for i in range(num_weight):
     node_idx = node_dict[weight_dict[i]]
     
     for j in range(C):
-        model.addConstr((A[node_idx, j] == 1) >> (F[i, j] == 1))
-        model.addConstr((A[node_idx, j] == 0) >> (F[i, j] == 0))
+        model.add_constraint((A[node_idx, j] == 1) >> (F[i, j] == 1))
+        model.add_constraint((A[node_idx, j] == 0) >> (F[i, j] == 0))
 
 
 
@@ -1986,9 +1973,9 @@ if dse.system.accelerator.pmu == 0:
     p_and_r_flag = False
     
     # SRAM cap
-    shard_intermediate_buffer_size_depth_original = model.addMVar(num_edge, name='shard_intermediate_buffer_size_depth_original', vtype=gp.GRB.INTEGER, lb=0)
-    shard_intermediate_buffer_size_depth_two = model.addMVar(num_edge, name='shard_intermediate_buffer_size_depth_two', vtype=gp.GRB.INTEGER, lb=0)
-    shard_initiation_buffer_size_depth_one = model.addMVar(num_weight, name='shard_initiation_buffer_size_depth_one', vtype=gp.GRB.INTEGER, lb=0)
+    shard_intermediate_buffer_size_depth_original = model.add_matrix_variable(num_edge, name='shard_intermediate_buffer_size_depth_original', vtype='integer', lb=0)
+    shard_intermediate_buffer_size_depth_two = model.add_matrix_variable(num_edge, name='shard_intermediate_buffer_size_depth_two', vtype='integer', lb=0)
+    shard_initiation_buffer_size_depth_one = model.add_matrix_variable(num_weight, name='shard_initiation_buffer_size_depth_one', vtype='integer', lb=0)
 
 
     # output edge dict: map node idx to output edge idx
@@ -2006,55 +1993,55 @@ if dse.system.accelerator.pmu == 0:
 
     tiled_kernel_list = []
     tiled_edge_list = []
-    tiling_factor = model.addMVar(num_node, name='tiling_factor', vtype=gp.GRB.INTEGER, lb=1)  
+    tiling_factor = model.add_matrix_variable(num_node, name='tiling_factor', vtype='integer', lb=1)  
     for i in range(num_weight):
         node_idx = node_dict[weight_dict[i]]
         tiled_kernel_list.append(node_idx)
         
         if skip_weight[node_idx]:
-            model.addConstr(shard_initiation_buffer_size_depth_one[i] == 0)
+            model.add_constraint(shard_initiation_buffer_size_depth_one[i] == 0)
         else:
-            model.addConstr(shard_initiation_buffer_size_depth_one[i] * tiling_factor[node_idx] == shard_initiation_buffer_size[i] * 1)
+            model.add_constraint(shard_initiation_buffer_size_depth_one[i] * tiling_factor[node_idx] == shard_initiation_buffer_size[i] * 1)
         
         if node_idx in downstream_edge_dict.keys():
             for downstream_tensor_idx in downstream_edge_dict[node_idx]:
-                model.addConstr(shard_intermediate_buffer_size_depth_original[downstream_tensor_idx] * tiling_factor[node_idx] == shard_intermediate_buffer_size[i] * depth[i])
-                model.addConstr(shard_intermediate_buffer_size_depth_two[downstream_tensor_idx] * tiling_factor[node_idx] == shard_intermediate_buffer_size[i] * 2)
+                model.add_constraint(shard_intermediate_buffer_size_depth_original[downstream_tensor_idx] * tiling_factor[node_idx] == shard_intermediate_buffer_size[i] * depth[i])
+                model.add_constraint(shard_intermediate_buffer_size_depth_two[downstream_tensor_idx] * tiling_factor[node_idx] == shard_intermediate_buffer_size[i] * 2)
                 tiled_edge_list.append(downstream_tensor_idx)
         
     for i in range(num_node):
         if i not in tiled_kernel_list:
-            model.addConstr(tiling_factor[i] == 1)
+            model.add_constraint(tiling_factor[i] == 1)
 
     for i in range(num_node):
-        aaa = model.addVar(vtype=gp.GRB.BINARY)
-        model.addConstr((aaa == 1) >> (tiling_factor[i] >= 2))
-        model.addConstr((aaa == 0) >> (tiling_factor[i] == 1))
-        model.addConstr((aaa == 1) >> (Par_total[i] == Core))  # enforce the kernel takes an entire config
+        aaa = model.add_variable(vtype='binary')
+        model.add_constraint((aaa == 1) >> (tiling_factor[i] >= 2))
+        model.add_constraint((aaa == 0) >> (tiling_factor[i] == 1))
+        model.add_constraint((aaa == 1) >> (Par_total[i] == Core))  # enforce the kernel takes an entire config
 
     for i in range(num_edge):
         if i not in tiled_edge_list:
-            model.addConstr(shard_intermediate_buffer_size_depth_original[i] == shard_intermediate_buffer_size[i] * depth[i])
-            model.addConstr(shard_intermediate_buffer_size_depth_two[i] == shard_intermediate_buffer_size[i] * 2)
+            model.add_constraint(shard_intermediate_buffer_size_depth_original[i] == shard_intermediate_buffer_size[i] * depth[i])
+            model.add_constraint(shard_intermediate_buffer_size_depth_two[i] == shard_intermediate_buffer_size[i] * 2)
 
 
 
 
 
-    SRAM_Per_Config_extra = model.addMVar(C, name='SRAM_Per_Config_extra', vtype=gp.GRB.CONTINUOUS, lb=0)
-    SRAM_Per_Config_total = model.addMVar(C, name='SRAM_Per_Config_total', vtype=gp.GRB.CONTINUOUS, lb=0)
-    SRAM_Per_Config_intermediate_dram = model.addMVar(C, name='SRAM_Per_Config_intermediate_dram', vtype=gp.GRB.CONTINUOUS, lb=0)
-    SRAM_Per_Config_intermediate_onchip = model.addMVar(C, name='SRAM_Per_Config_intermediate_onchip', vtype=gp.GRB.CONTINUOUS, lb=0)
-    SRAM_Per_Config_initiation = model.addMVar(C, name='SRAM_Per_Config_initiation', vtype=gp.GRB.CONTINUOUS, lb=0)
+    SRAM_Per_Config_extra = model.add_matrix_variable(C, name='SRAM_Per_Config_extra', vtype='continuous', lb=0)
+    SRAM_Per_Config_total = model.add_matrix_variable(C, name='SRAM_Per_Config_total', vtype='continuous', lb=0)
+    SRAM_Per_Config_intermediate_dram = model.add_matrix_variable(C, name='SRAM_Per_Config_intermediate_dram', vtype='continuous', lb=0)
+    SRAM_Per_Config_intermediate_onchip = model.add_matrix_variable(C, name='SRAM_Per_Config_intermediate_onchip', vtype='continuous', lb=0)
+    SRAM_Per_Config_initiation = model.add_matrix_variable(C, name='SRAM_Per_Config_initiation', vtype='continuous', lb=0)
     for i in range(C):
-        model.addConstr(SRAM_Per_Config_extra[i] == A[:, i] @ np.array(sram_extra))
-        model.addConstr(SRAM_Per_Config_intermediate_dram[i] == shard_intermediate_buffer_size_depth_two @ D[:, i])       
-        model.addConstr(SRAM_Per_Config_intermediate_onchip[i] == shard_intermediate_buffer_size_depth_original @ B[:, i])
-        model.addConstr(SRAM_Per_Config_initiation[i] == shard_initiation_buffer_size_depth_one @ F[:, i])
-        model.addConstr(SRAM_Per_Config_total[i] == SRAM_Per_Config_extra[i] + SRAM_Per_Config_intermediate_dram[i] + SRAM_Per_Config_intermediate_onchip[i] + SRAM_Per_Config_initiation[i])
+        model.add_constraint(SRAM_Per_Config_extra[i] == A[:, i] @ np.array(sram_extra))
+        model.add_constraint(SRAM_Per_Config_intermediate_dram[i] == shard_intermediate_buffer_size_depth_two @ D[:, i])       
+        model.add_constraint(SRAM_Per_Config_intermediate_onchip[i] == shard_intermediate_buffer_size_depth_original @ B[:, i])
+        model.add_constraint(SRAM_Per_Config_initiation[i] == shard_initiation_buffer_size_depth_one @ F[:, i])
+        model.add_constraint(SRAM_Per_Config_total[i] == SRAM_Per_Config_extra[i] + SRAM_Per_Config_intermediate_dram[i] + SRAM_Per_Config_intermediate_onchip[i] + SRAM_Per_Config_initiation[i])
         
         if dse.execution.WhichOneof('workload_variant') == 'llm':
-            model.addConstr(SRAM_Per_Config_total[i] <= sram_cap)
+            model.add_constraint(SRAM_Per_Config_total[i] <= sram_cap)
 
 
 
@@ -2063,14 +2050,14 @@ if dse.system.accelerator.pmu == 0:
 
 
 
-    tiling_per_config = model.addMVar(C, name='tiling_per_config', vtype=gp.GRB.INTEGER)
+    tiling_per_config = model.add_matrix_variable(C, name='tiling_per_config', vtype='integer')
     for i in range(C):
-        tmp = model.addMVar(num_node, vtype=gp.GRB.INTEGER)
+        tmp = model.add_matrix_variable(num_node, vtype='integer')
 
         for j in range(num_node):
-            model.addConstr(tmp[j] == A[j, i] * tiling_factor[j])
+            model.add_constraint(tmp[j] == A[j, i] * tiling_factor[j])
         
-        model.addConstr(tiling_per_config[i] == gp.max_(tmp[j] for j in range(num_node)))
+        model.add_constraint(tiling_per_config[i] == highspy.max_(tmp[j] for j in range(num_node)))
 
     
 
@@ -2146,9 +2133,9 @@ else:
     
     
     # SRAM cap
-    shard_intermediate_buffer_size_depth_original = model.addMVar(num_edge, name='shard_intermediate_buffer_size_depth_original', vtype=gp.GRB.INTEGER, lb=0)
-    shard_intermediate_buffer_size_depth_two = model.addMVar(num_edge, name='shard_intermediate_buffer_size_depth_two', vtype=gp.GRB.INTEGER, lb=0)
-    shard_initiation_buffer_size_depth_one = model.addMVar(num_weight, name='shard_initiation_buffer_size_depth_one', vtype=gp.GRB.INTEGER, lb=0)
+    shard_intermediate_buffer_size_depth_original = model.add_matrix_variable(num_edge, name='shard_intermediate_buffer_size_depth_original', vtype='integer', lb=0)
+    shard_intermediate_buffer_size_depth_two = model.add_matrix_variable(num_edge, name='shard_intermediate_buffer_size_depth_two', vtype='integer', lb=0)
+    shard_initiation_buffer_size_depth_one = model.add_matrix_variable(num_weight, name='shard_initiation_buffer_size_depth_one', vtype='integer', lb=0)
 
 
     
@@ -2157,82 +2144,82 @@ else:
 
     tiled_kernel_list = []
     tiled_edge_list = []
-    tiling_factor = model.addMVar(num_node, name='tiling_factor', vtype=gp.GRB.INTEGER, lb=1)  
+    tiling_factor = model.add_matrix_variable(num_node, name='tiling_factor', vtype='integer', lb=1)  
     for i in range(num_weight):
         node_idx = node_dict[weight_dict[i]]
         tiled_kernel_list.append(node_idx)
         
-        model.addConstr(shard_initiation_buffer_size_depth_one[i] * tiling_factor[node_idx] == shard_initiation_buffer_size[i] * 1)
+        model.add_constraint(shard_initiation_buffer_size_depth_one[i] * tiling_factor[node_idx] == shard_initiation_buffer_size[i] * 1)
         
         if node_idx in downstream_edge_dict.keys():
             for downstream_tensor_idx in downstream_edge_dict[node_idx]:
-                model.addConstr(shard_intermediate_buffer_size_depth_original[downstream_tensor_idx] * tiling_factor[node_idx] == shard_intermediate_buffer_size[i] * depth[i])
-                model.addConstr(shard_intermediate_buffer_size_depth_two[downstream_tensor_idx] * tiling_factor[node_idx] == shard_intermediate_buffer_size[i] * 2)
+                model.add_constraint(shard_intermediate_buffer_size_depth_original[downstream_tensor_idx] * tiling_factor[node_idx] == shard_intermediate_buffer_size[i] * depth[i])
+                model.add_constraint(shard_intermediate_buffer_size_depth_two[downstream_tensor_idx] * tiling_factor[node_idx] == shard_intermediate_buffer_size[i] * 2)
                 tiled_edge_list.append(downstream_tensor_idx)
         
     for i in range(num_node):
         if i not in tiled_kernel_list:
-            model.addConstr(tiling_factor[i] == 1)
+            model.add_constraint(tiling_factor[i] == 1)
 
     for i in range(num_node):
-        aaa = model.addVar(vtype=gp.GRB.BINARY)
-        model.addConstr((aaa == 1) >> (tiling_factor[i] >= 2))
-        model.addConstr((aaa == 0) >> (tiling_factor[i] == 1))
-        model.addConstr((aaa == 1) >> (Par_total[i] == Core))  # enforce the kernel takes an entire config
+        aaa = model.add_variable(vtype='binary')
+        model.add_constraint((aaa == 1) >> (tiling_factor[i] >= 2))
+        model.add_constraint((aaa == 0) >> (tiling_factor[i] == 1))
+        model.add_constraint((aaa == 1) >> (Par_total[i] == Core))  # enforce the kernel takes an entire config
 
     for i in range(num_edge):
         if i not in tiled_edge_list:
-            model.addConstr(shard_intermediate_buffer_size_depth_original[i] == shard_intermediate_buffer_size[i] * depth[i])
-            model.addConstr(shard_intermediate_buffer_size_depth_two[i] == shard_intermediate_buffer_size[i] * 2)
+            model.add_constraint(shard_intermediate_buffer_size_depth_original[i] == shard_intermediate_buffer_size[i] * depth[i])
+            model.add_constraint(shard_intermediate_buffer_size_depth_two[i] == shard_intermediate_buffer_size[i] * 2)
 
 
 
 
 
 
-    SRAM_Per_Config_total = model.addMVar(C, name='SRAM_Per_Config_total', vtype=gp.GRB.CONTINUOUS, lb=0)
-    SRAM_Per_Config_intermediate_dram = model.addMVar(C, name='SRAM_Per_Config_intermediate_dram', vtype=gp.GRB.CONTINUOUS, lb=0)
-    SRAM_Per_Config_intermediate_onchip = model.addMVar(C, name='SRAM_Per_Config_intermediate_onchip', vtype=gp.GRB.CONTINUOUS, lb=0)
-    SRAM_Per_Config_initiation = model.addMVar(C, name='SRAM_Per_Config_initiation', vtype=gp.GRB.CONTINUOUS, lb=0)
+    SRAM_Per_Config_total = model.add_matrix_variable(C, name='SRAM_Per_Config_total', vtype='continuous', lb=0)
+    SRAM_Per_Config_intermediate_dram = model.add_matrix_variable(C, name='SRAM_Per_Config_intermediate_dram', vtype='continuous', lb=0)
+    SRAM_Per_Config_intermediate_onchip = model.add_matrix_variable(C, name='SRAM_Per_Config_intermediate_onchip', vtype='continuous', lb=0)
+    SRAM_Per_Config_initiation = model.add_matrix_variable(C, name='SRAM_Per_Config_initiation', vtype='continuous', lb=0)
 
-    PMU_used_intermediate = model.addMVar((num_edge), name='PMU_used_intermediate', vtype=gp.GRB.INTEGER, lb=0)
-    PMU_used_initiation = model.addMVar((num_weight), name='PMU_used_initiation', vtype=gp.GRB.INTEGER, lb=0)
-    PMU_used_per_config = model.addMVar((C), name='PMU_used_per_config', vtype=gp.GRB.INTEGER, lb=0)
+    PMU_used_intermediate = model.add_matrix_variable((num_edge), name='PMU_used_intermediate', vtype='integer', lb=0)
+    PMU_used_initiation = model.add_matrix_variable((num_weight), name='PMU_used_initiation', vtype='integer', lb=0)
+    PMU_used_per_config = model.add_matrix_variable((C), name='PMU_used_per_config', vtype='integer', lb=0)
     for i in range(C):
         for j in range(num_edge):
-            model.addConstr(PMU_used_intermediate[j] * dse.system.accelerator.pmu_cap >= shard_intermediate_buffer_size_depth_two[j] * D[j, i])
-            model.addConstr(PMU_used_intermediate[j] * dse.system.accelerator.pmu_cap >= shard_intermediate_buffer_size_depth_original[j] * B[j, i])
+            model.add_constraint(PMU_used_intermediate[j] * dse.system.accelerator.pmu_cap >= shard_intermediate_buffer_size_depth_two[j] * D[j, i])
+            model.add_constraint(PMU_used_intermediate[j] * dse.system.accelerator.pmu_cap >= shard_intermediate_buffer_size_depth_original[j] * B[j, i])
                 
             if lane_stage_type[j] == 'lane':
-                model.addConstr(PMU_used_intermediate[j] * LaneWidth >= Par_lane[node_dict[endIdx[j]]] * LaneWidth)
+                model.add_constraint(PMU_used_intermediate[j] * LaneWidth >= Par_lane[node_dict[endIdx[j]]] * LaneWidth)
             elif lane_stage_type[j] == 'stage':
-                model.addConstr(PMU_used_intermediate[j] * LaneWidth >= Par_stage[node_dict[endIdx[j]]] * StageWidth)
+                model.add_constraint(PMU_used_intermediate[j] * LaneWidth >= Par_stage[node_dict[endIdx[j]]] * StageWidth)
             else:
                 raise Exception('Wrong!')
         
         for j in range(num_weight):
-            model.addConstr(PMU_used_initiation[j] * dse.system.accelerator.pmu_cap >= shard_initiation_buffer_size_depth_one[j] * F[j, i])
-            model.addConstr(PMU_used_initiation[j] * LaneWidth >= Par_lane[node_dict[weight_dict[j]]] * LaneWidth)
+            model.add_constraint(PMU_used_initiation[j] * dse.system.accelerator.pmu_cap >= shard_initiation_buffer_size_depth_one[j] * F[j, i])
+            model.add_constraint(PMU_used_initiation[j] * LaneWidth >= Par_lane[node_dict[weight_dict[j]]] * LaneWidth)
         
     
-        model.addConstr(PMU_used_per_config[i] == PMU_used_intermediate @ Z[:, i] + PMU_used_initiation @ F[:, i])
-        model.addConstr(PMU_used_per_config[i] <= dse.system.accelerator.pmu)
+        model.add_constraint(PMU_used_per_config[i] == PMU_used_intermediate @ Z[:, i] + PMU_used_initiation @ F[:, i])
+        model.add_constraint(PMU_used_per_config[i] <= dse.system.accelerator.pmu)
 
     # downstream edge
     for i in range(num_node):
         if i in downstream_edge_dict.keys():
             for j in downstream_edge_dict[i]:
                 if node_type[i] == 'gemm_input1_weight':
-                    model.addConstr(PMU_used_intermediate[j] * LaneWidth * shard_K[i] >= Par_lane[i] * Par_stage[i] * LaneWidth * StageWidth)
+                    model.add_constraint(PMU_used_intermediate[j] * LaneWidth * shard_K[i] >= Par_lane[i] * Par_stage[i] * LaneWidth * StageWidth)
                     
                 elif node_type[i] == 'gemm_input1_input2':
-                    model.addConstr(PMU_used_intermediate[j] * LaneWidth * shard_K[i] >= Par_lane[i] * Par_stage[i] * LaneWidth * StageWidth)
+                    model.add_constraint(PMU_used_intermediate[j] * LaneWidth * shard_K[i] >= Par_lane[i] * Par_stage[i] * LaneWidth * StageWidth)
                     
                 elif node_type[i] == 'elementwise_input1':
-                    model.addConstr(PMU_used_intermediate[j] * LaneWidth >= Par_lane[i] * LaneWidth)
+                    model.add_constraint(PMU_used_intermediate[j] * LaneWidth >= Par_lane[i] * LaneWidth)
                     
                 elif node_type[i] == 'elementwise_input1_input2':
-                    model.addConstr(PMU_used_intermediate[j] * LaneWidth >= Par_lane[i] * LaneWidth)
+                    model.add_constraint(PMU_used_intermediate[j] * LaneWidth >= Par_lane[i] * LaneWidth)
                     
                 else:
                     raise Exception('Wrong!')
@@ -2240,9 +2227,9 @@ else:
 
 
 
-    tiling_per_config = model.addMVar(C, name='tiling_per_config', vtype=gp.GRB.INTEGER)
+    tiling_per_config = model.add_matrix_variable(C, name='tiling_per_config', vtype='integer')
     for i in range(C):
-        model.addConstr(tiling_per_config[i] == A[:, i] @ tiling_factor)
+        model.add_constraint(tiling_per_config[i] == A[:, i] @ tiling_factor)
 
 
 
@@ -2258,14 +2245,14 @@ else:
     
     
 # dram cap
-dram_bytes_per_config_intermediate = model.addMVar(C, name='dram_bytes_per_config_intermediate', vtype=gp.GRB.CONTINUOUS, lb=0)
-dram_bytes_per_config_initiation = model.addMVar(C, name='dram_bytes_per_config_initiation', vtype=gp.GRB.CONTINUOUS, lb=0)
+dram_bytes_per_config_intermediate = model.add_matrix_variable(C, name='dram_bytes_per_config_intermediate', vtype='continuous', lb=0)
+dram_bytes_per_config_initiation = model.add_matrix_variable(C, name='dram_bytes_per_config_initiation', vtype='continuous', lb=0)
 for i in range(C):
-    aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    # model.addConstr(aaa == (shard_intermediate_buffer_size @ D[:, i]))
-    model.addConstr(aaa == (shard_intermediate_buffer_size @ E[:, i]))
-    model.addConstr(dram_bytes_per_config_intermediate[i] == aaa * num_tile_per_config[i])
-    model.addConstr(dram_bytes_per_config_initiation[i] == shard_initiation_buffer_size @ F[:, i])
+    aaa = model.add_variable(vtype='continuous')
+    # model.add_constraint(aaa == (shard_intermediate_buffer_size @ D[:, i]))
+    model.add_constraint(aaa == (shard_intermediate_buffer_size @ E[:, i]))
+    model.add_constraint(dram_bytes_per_config_intermediate[i] == aaa * num_tile_per_config[i])
+    model.add_constraint(dram_bytes_per_config_initiation[i] == shard_initiation_buffer_size @ F[:, i])
 
 
 
@@ -2273,37 +2260,37 @@ for i in range(C):
 
 
 
-dram_bytes_extra = model.addVar(name='dram_bytes_extra', vtype=gp.GRB.CONTINUOUS, lb=0)
-model.addConstr(dram_bytes_extra == sum(dram_extra) * layer_per_stage)
+dram_bytes_extra = model.add_variable(name='dram_bytes_extra', vtype='continuous', lb=0)
+model.add_constraint(dram_bytes_extra == sum(dram_extra) * layer_per_stage)
 
 
-dram_bytes_initiation = model.addVar(name='dram_bytes_initiation', vtype=gp.GRB.CONTINUOUS, lb=0)
-dram_bytes_intermediate = model.addVar(name='dram_bytes_intermediate', vtype=gp.GRB.CONTINUOUS, lb=0)
-model.addConstr(dram_bytes_initiation == np.ones((C)) @ dram_bytes_per_config_initiation)
-model.addConstr(dram_bytes_intermediate == gp.max_(dram_bytes_per_config_intermediate[j] for j in range(C)))
-dram_bytes_total = model.addVar(name='dram_bytes_total', vtype=gp.GRB.CONTINUOUS, lb=0)
+dram_bytes_initiation = model.add_variable(name='dram_bytes_initiation', vtype='continuous', lb=0)
+dram_bytes_intermediate = model.add_variable(name='dram_bytes_intermediate', vtype='continuous', lb=0)
+model.add_constraint(dram_bytes_initiation == np.ones((C)) @ dram_bytes_per_config_initiation)
+model.add_constraint(dram_bytes_intermediate == highspy.max_(dram_bytes_per_config_intermediate[j] for j in range(C)))
+dram_bytes_total = model.add_variable(name='dram_bytes_total', vtype='continuous', lb=0)
 
 if dse.execution.WhichOneof('workload_variant') == 'llm':
-    weight = model.addVar(name='weight', vtype=gp.GRB.CONTINUOUS, lb=0)
-    activation = model.addVar(name='activation', vtype=gp.GRB.CONTINUOUS, lb=0)
+    weight = model.add_variable(name='weight', vtype='continuous', lb=0)
+    activation = model.add_variable(name='activation', vtype='continuous', lb=0)
     
-    model.addConstr(weight == dram_bytes_initiation * layer_per_stage)
-    model.addConstr(activation == dram_bytes_intermediate * Micro_Batch_Size)
-    model.addConstr(dram_bytes_total == weight + activation + dram_bytes_extra)
+    model.add_constraint(weight == dram_bytes_initiation * layer_per_stage)
+    model.add_constraint(activation == dram_bytes_intermediate * Micro_Batch_Size)
+    model.add_constraint(dram_bytes_total == weight + activation + dram_bytes_extra)
 
 elif dse.execution.WhichOneof('workload_variant') == 'hpl':
-    model.addConstr(dram_bytes_total == HPL_DRAM_SIZE + dram_bytes_extra)
+    model.add_constraint(dram_bytes_total == HPL_DRAM_SIZE + dram_bytes_extra)
 
 elif dse.execution.WhichOneof('workload_variant') == 'fft':
-    model.addConstr(dram_bytes_total == FFT_DRAM_SIZE + dram_bytes_extra)
+    model.add_constraint(dram_bytes_total == FFT_DRAM_SIZE + dram_bytes_extra)
 
 elif dse.execution.WhichOneof('workload_variant') == 'dlrm':
-    weight = model.addVar(name='weight', vtype=gp.GRB.CONTINUOUS, lb=0)
-    activation = model.addVar(name='activation', vtype=gp.GRB.CONTINUOUS, lb=0)
+    weight = model.add_variable(name='weight', vtype='continuous', lb=0)
+    activation = model.add_variable(name='activation', vtype='continuous', lb=0)
 
-    model.addConstr(weight == dram_bytes_initiation * layer_per_stage)
-    model.addConstr(activation == dram_bytes_intermediate * Micro_Batch_Size)
-    model.addConstr(dram_bytes_total == weight + activation + sharded_table_size + dram_bytes_extra)
+    model.add_constraint(weight == dram_bytes_initiation * layer_per_stage)
+    model.add_constraint(activation == dram_bytes_intermediate * Micro_Batch_Size)
+    model.add_constraint(dram_bytes_total == weight + activation + sharded_table_size + dram_bytes_extra)
 
 else:
     raise Exception('Wrong!')
@@ -2311,114 +2298,114 @@ else:
 
 
     
-model.addConstr(dram_bytes_total <= DRAM_Cap)  
-DRAM_BW = model.addVar(name='DRAM_BW', vtype=gp.GRB.CONTINUOUS, lb=0)
-model.addConstr(DRAM_BW == dse.system.memory.dram_bw)
+model.add_constraint(dram_bytes_total <= DRAM_Cap)  
+DRAM_BW = model.add_variable(name='DRAM_BW', vtype='continuous', lb=0)
+model.add_constraint(DRAM_BW == dse.system.memory.dram_bw)
 
 
 # compute cycle
 if dse.execution.compute_util == 0:
-    Cycle = model.addMVar(num_node, name='Cycle', vtype=gp.GRB.INTEGER, lb=0)
-    m_factor = model.addMVar(num_node, name='m_factor', vtype=gp.GRB.INTEGER, lb=1)
-    n_factor = model.addMVar(num_node, name='n_factor', vtype=gp.GRB.INTEGER, lb=1)
+    Cycle = model.add_matrix_variable(num_node, name='Cycle', vtype='integer', lb=0)
+    m_factor = model.add_matrix_variable(num_node, name='m_factor', vtype='integer', lb=1)
+    n_factor = model.add_matrix_variable(num_node, name='n_factor', vtype='integer', lb=1)
     
-    MMM = model.addMVar(num_node, name='MMM', vtype=gp.GRB.INTEGER, lb=1)
-    KKK = model.addMVar(num_node, name='KKK', vtype=gp.GRB.INTEGER, lb=1)
-    NNN = model.addMVar(num_node, name='NNN', vtype=gp.GRB.INTEGER, lb=1)
+    MMM = model.add_matrix_variable(num_node, name='MMM', vtype='integer', lb=1)
+    KKK = model.add_matrix_variable(num_node, name='KKK', vtype='integer', lb=1)
+    NNN = model.add_matrix_variable(num_node, name='NNN', vtype='integer', lb=1)
     
     SIMD_or_Systolic = []
 
 else:
-    FLOP_per_kernel = model.addMVar(num_node, name='FLOP_per_kernel', vtype=gp.GRB.INTEGER, lb=0)
+    FLOP_per_kernel = model.add_matrix_variable(num_node, name='FLOP_per_kernel', vtype='integer', lb=0)
 
 
 for i in range(num_node):
     if kernel_type[i] == KernelType.SIMD.value:
         if dse.execution.compute_util == 0:
-            model.addConstr(m_factor[i] * Par_lane[i] * LaneWidth >= shard_M[i])
-            model.addConstr(Par_stage[i] == 1)
-            model.addConstr(Cycle[i] == m_factor[i] * shard_N[i])
+            model.add_constraint(m_factor[i] * Par_lane[i] * LaneWidth >= shard_M[i])
+            model.add_constraint(Par_stage[i] == 1)
+            model.add_constraint(Cycle[i] == m_factor[i] * shard_N[i])
             
-            model.addConstr(MMM[i] == m_factor[i])
-            model.addConstr(KKK[i] == 1)
-            model.addConstr(NNN[i] == shard_N[i])
+            model.add_constraint(MMM[i] == m_factor[i])
+            model.add_constraint(KKK[i] == 1)
+            model.add_constraint(NNN[i] == shard_N[i])
             
             SIMD_or_Systolic.append('SIMD')
 
         else:
-            model.addConstr(FLOP_per_kernel[i] == shard_M[i] * shard_N[i])
+            model.add_constraint(FLOP_per_kernel[i] == shard_M[i] * shard_N[i])
         
     elif kernel_type[i] == KernelType.SYSTOLIC.value:
         if dse.execution.compute_util == 0:
             if use_effective_stage[i]:
-                model.addConstr(m_factor[i] * Par_lane[i] * LaneWidth >= shard_M[i])
-                model.addConstr(n_factor[i] * Par_stage[i] * dse.execution.effective_stage >= shard_K[i])
+                model.add_constraint(m_factor[i] * Par_lane[i] * LaneWidth >= shard_M[i])
+                model.add_constraint(n_factor[i] * Par_stage[i] * dse.execution.effective_stage >= shard_K[i])
 
-                tmp = model.addVar(vtype=gp.GRB.INTEGER, lb=0)
-                model.addConstr(tmp == m_factor[i] * n_factor[i])
-                model.addConstr(Cycle[i] == tmp * shard_N[i])
+                tmp = model.add_variable(vtype='integer', lb=0)
+                model.add_constraint(tmp == m_factor[i] * n_factor[i])
+                model.add_constraint(Cycle[i] == tmp * shard_N[i])
             
             else:
-                model.addConstr(m_factor[i] * Par_lane[i] * LaneWidth >= shard_M[i])
-                model.addConstr(n_factor[i] * Par_stage[i] * StageWidth >= shard_N[i])
+                model.add_constraint(m_factor[i] * Par_lane[i] * LaneWidth >= shard_M[i])
+                model.add_constraint(n_factor[i] * Par_stage[i] * StageWidth >= shard_N[i])
 
-                tmp = model.addVar(vtype=gp.GRB.INTEGER, lb=0)
-                model.addConstr(tmp == m_factor[i] * n_factor[i])
-                model.addConstr(Cycle[i] == tmp * shard_K[i])
+                tmp = model.add_variable(vtype='integer', lb=0)
+                model.add_constraint(tmp == m_factor[i] * n_factor[i])
+                model.add_constraint(Cycle[i] == tmp * shard_K[i])
             
-            model.addConstr(MMM[i] == m_factor[i])
-            model.addConstr(KKK[i] == shard_K[i])
-            model.addConstr(NNN[i] == n_factor[i])
+            model.add_constraint(MMM[i] == m_factor[i])
+            model.add_constraint(KKK[i] == shard_K[i])
+            model.add_constraint(NNN[i] == n_factor[i])
             
             SIMD_or_Systolic.append('Systolic')
             
         else:
-            aaa = model.addVar(vtype=gp.GRB.INTEGER, lb=0)
-            model.addConstr(aaa == 2 * shard_M[i] * shard_N[i])
-            model.addConstr(FLOP_per_kernel[i] == aaa * shard_K[i])
+            aaa = model.add_variable(vtype='integer', lb=0)
+            model.add_constraint(aaa == 2 * shard_M[i] * shard_N[i])
+            model.add_constraint(FLOP_per_kernel[i] == aaa * shard_K[i])
             
     else:
         raise Exception('Wrong!')
     
 
-Compute_Latency = model.addMVar(C, name='Compute_Latency', vtype=gp.GRB.CONTINUOUS, lb=0)
+Compute_Latency = model.add_matrix_variable(C, name='Compute_Latency', vtype='continuous', lb=0)
 for i in range(C):
     if dse.execution.compute_util == 0:
-        t1 = model.addMVar(num_node, vtype=gp.GRB.INTEGER, lb=0)
-        t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
+        t1 = model.add_matrix_variable(num_node, vtype='integer', lb=0)
+        t2 = model.add_variable(vtype='continuous')
         for j in range(num_node):
-            model.addConstr(t1[j] == Cycle[j] * A[j, i])
-        model.addConstr(t2 == gp.max_(t1[j] for j in range(num_node)))
+            model.add_constraint(t1[j] == Cycle[j] * A[j, i])
+        model.add_constraint(t2 == highspy.max_(t1[j] for j in range(num_node)))
 
-        model.addConstr(Compute_Latency[i] == t2 * num_tile_per_config[i] / Freq)
+        model.add_constraint(Compute_Latency[i] == t2 * num_tile_per_config[i] / Freq)
         
     else:
-        t3 = model.addMVar(num_node, vtype=gp.GRB.INTEGER, lb=0)
-        t4 = model.addVar(vtype=gp.GRB.CONTINUOUS)
+        t3 = model.add_matrix_variable(num_node, vtype='integer', lb=0)
+        t4 = model.add_variable(vtype='continuous')
         for j in range(num_node):
-            model.addConstr(t3[j] == FLOP_per_kernel[j] * A[j, i])
-        model.addConstr(t4 == t3 @ np.ones((num_node)))
+            model.add_constraint(t3[j] == FLOP_per_kernel[j] * A[j, i])
+        model.add_constraint(t4 == t3 @ np.ones((num_node)))
         
         tmp = 1 / dse.execution.compute_util
-        model.addConstr(Compute_Latency[i] == t4 * num_tile_per_config[i] * tmp / GFLOPS)
+        model.add_constraint(Compute_Latency[i] == t4 * num_tile_per_config[i] * tmp / GFLOPS)
 
 
 
 
 
-Memory_Latency = model.addMVar(C, name='Memory_Latency', vtype=gp.GRB.CONTINUOUS, lb=0)
-memory_latency = model.addMVar(C, name='memory_latency', vtype=gp.GRB.CONTINUOUS, lb=0)
-explicit_memory_latency = model.addMVar(C, name='explicit_memory_latency', vtype=gp.GRB.CONTINUOUS, lb=0)
+Memory_Latency = model.add_matrix_variable(C, name='Memory_Latency', vtype='continuous', lb=0)
+memory_latency = model.add_matrix_variable(C, name='memory_latency', vtype='continuous', lb=0)
+explicit_memory_latency = model.add_matrix_variable(C, name='explicit_memory_latency', vtype='continuous', lb=0)
 for i in range(C):
-    t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    model.addConstr(t1 == shard_intermediate_buffer_size @ D[:, i])
-    model.addConstr(t2 == num_tile_per_config[i] * tiling_per_config[i])
+    t1 = model.add_variable(vtype='continuous')
+    t2 = model.add_variable(vtype='continuous')
+    model.add_constraint(t1 == shard_intermediate_buffer_size @ D[:, i])
+    model.add_constraint(t2 == num_tile_per_config[i] * tiling_per_config[i])
 
-    model.addConstr(memory_latency[i] * DRAM_BW == t1 * t2)
-    model.addConstr(explicit_memory_latency[i] * DRAM_BW == memory_size @ A[:, i])
+    model.add_constraint(memory_latency[i] * DRAM_BW == t1 * t2)
+    model.add_constraint(explicit_memory_latency[i] * DRAM_BW == memory_size @ A[:, i])
 
-    model.addConstr(Memory_Latency[i] == memory_latency[i] + explicit_memory_latency[i])
+    model.add_constraint(Memory_Latency[i] == memory_latency[i] + explicit_memory_latency[i])
 
 
 
@@ -2444,47 +2431,47 @@ for i in range(C):
 
 
 
-Network_Latency = model.addMVar(C, name='Network_Latency', vtype=gp.GRB.CONTINUOUS, lb=0)
-p2p_latency = model.addVar(name='p2p_latency', vtype=gp.GRB.CONTINUOUS)
+Network_Latency = model.add_matrix_variable(C, name='Network_Latency', vtype='continuous', lb=0)
+p2p_latency = model.add_variable(name='p2p_latency', vtype='continuous')
 
 if dse.execution.WhichOneof('workload_variant') == 'llm':
 
 
     # TP
-    Network_Latency_ALL_REDUCE_node = model.addMVar(C, name='Network_Latency_ALL_REDUCE_node', vtype=gp.GRB.CONTINUOUS, lb=0)
+    Network_Latency_ALL_REDUCE_node = model.add_matrix_variable(C, name='Network_Latency_ALL_REDUCE_node', vtype='continuous', lb=0)
     if is_TP_hierarchical == True:
         for i in range(C):
-            t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            t3 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            model.addConstr(t1 == A[:, i] @ ALL_REDUCE_communication_size_node)
-            model.addConstr(t2 == ALL_REDUCE_ratio_fast * num_tile_per_config[i])
-            model.addConstr(t3 == ALL_REDUCE_ratio_slow * num_tile_per_config[i])
-            model.addConstr(Network_Latency_ALL_REDUCE_node[i] == t1*t2 + t1*t3) # reduce-scatter/all-gather
+            t1 = model.add_variable(vtype='continuous')
+            t2 = model.add_variable(vtype='continuous')
+            t3 = model.add_variable(vtype='continuous')
+            model.add_constraint(t1 == A[:, i] @ ALL_REDUCE_communication_size_node)
+            model.add_constraint(t2 == ALL_REDUCE_ratio_fast * num_tile_per_config[i])
+            model.add_constraint(t3 == ALL_REDUCE_ratio_slow * num_tile_per_config[i])
+            model.add_constraint(Network_Latency_ALL_REDUCE_node[i] == t1*t2 + t1*t3) # reduce-scatter/all-gather
         
     else:  
-        t3 = model.addMVar((num_node, C), vtype=gp.GRB.CONTINUOUS)
-        t4 = model.addMVar((num_node, C), vtype=gp.GRB.BINARY)
-        t5 = model.addMVar(C, vtype=gp.GRB.BINARY)
+        t3 = model.add_matrix_variable((num_node, C), vtype='continuous')
+        t4 = model.add_matrix_variable((num_node, C), vtype='binary')
+        t5 = model.add_matrix_variable(C, vtype='binary')
 
-        link_latency_allreduce_node = model.addMVar(C, name='link_latency_allreduce_node', vtype=gp.GRB.CONTINUOUS)
-        serialization_latency_allreduce_node = model.addMVar(C, name='serialization_latency_allreduce_node', vtype=gp.GRB.CONTINUOUS)
+        link_latency_allreduce_node = model.add_matrix_variable(C, name='link_latency_allreduce_node', vtype='continuous')
+        serialization_latency_allreduce_node = model.add_matrix_variable(C, name='serialization_latency_allreduce_node', vtype='continuous')
 
         for i in range(C):
-            t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
+            t1 = model.add_variable(vtype='continuous')
+            t2 = model.add_variable(vtype='continuous')
 
-            model.addConstr(t1 == A[:, i] @ ALL_REDUCE_communication_size_node)
-            model.addConstr(t2 == ALL_REDUCE_ratio * num_tile_per_config[i])
+            model.add_constraint(t1 == A[:, i] @ ALL_REDUCE_communication_size_node)
+            model.add_constraint(t2 == ALL_REDUCE_ratio * num_tile_per_config[i])
             
             for j in range(num_node):
-                model.addConstr(t3[j, i] == A[j, i] * ALL_REDUCE_communication_size_node[j])
+                model.add_constraint(t3[j, i] == A[j, i] * ALL_REDUCE_communication_size_node[j])
 
-                aaa = model.addVar(vtype=gp.GRB.BINARY)
-                model.addConstr((aaa == 1) >> (t3[j, i] >= 1))
-                model.addConstr((aaa == 0) >> (t3[j, i] <= 0))
-                model.addConstr((aaa == 1) >> (t4[j, i] == 1))
-                model.addConstr((aaa == 0) >> (t4[j, i] == 0))
+                aaa = model.add_variable(vtype='binary')
+                model.add_constraint((aaa == 1) >> (t3[j, i] >= 1))
+                model.add_constraint((aaa == 0) >> (t3[j, i] <= 0))
+                model.add_constraint((aaa == 1) >> (t4[j, i] == 1))
+                model.add_constraint((aaa == 0) >> (t4[j, i] == 0))
 
             
             if 'TP' in par:
@@ -2494,61 +2481,61 @@ if dse.execution.WhichOneof('workload_variant') == 'llm':
                     tmp = 1
 
                 if topology[par.index('TP')] == BasicTopology.R.value:
-                    model.addConstr(link_latency_allreduce_node[i] == t4[:, i].sum() * dse.system.accelerator.link_latency * tmp * (dimension[par.index('TP')]-1))
+                    model.add_constraint(link_latency_allreduce_node[i] == t4[:, i].sum() * dse.system.accelerator.link_latency * tmp * (dimension[par.index('TP')]-1))
                 elif topology[par.index('TP')] == BasicTopology.SW.value:
-                    model.addConstr(link_latency_allreduce_node[i] == t4[:, i].sum() * dse.system.accelerator.link_latency * tmp * (dimension[par.index('TP')]-1))
+                    model.add_constraint(link_latency_allreduce_node[i] == t4[:, i].sum() * dse.system.accelerator.link_latency * tmp * (dimension[par.index('TP')]-1))
                 elif topology[par.index('TP')] == BasicTopology.FC.value:
-                    model.addConstr(link_latency_allreduce_node[i] == t4[:, i].sum() * dse.system.accelerator.link_latency * tmp)
+                    model.add_constraint(link_latency_allreduce_node[i] == t4[:, i].sum() * dse.system.accelerator.link_latency * tmp)
             else:
-                model.addConstr(link_latency_allreduce_node[i] == 0)
+                model.add_constraint(link_latency_allreduce_node[i] == 0)
             
-            model.addConstr(serialization_latency_allreduce_node[i] == t1*t2)
-            model.addConstr(Network_Latency_ALL_REDUCE_node[i] == serialization_latency_allreduce_node[i] + link_latency_allreduce_node[i])
+            model.add_constraint(serialization_latency_allreduce_node[i] == t1*t2)
+            model.add_constraint(Network_Latency_ALL_REDUCE_node[i] == serialization_latency_allreduce_node[i] + link_latency_allreduce_node[i])
 
             
     # TP
-    Network_Latency_ALL_TO_ALL_node = model.addMVar(C, name='Network_Latency_ALL_TO_ALL_node', vtype=gp.GRB.CONTINUOUS, lb=0)
+    Network_Latency_ALL_TO_ALL_node = model.add_matrix_variable(C, name='Network_Latency_ALL_TO_ALL_node', vtype='continuous', lb=0)
     for i in range(C):
-        t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-        t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-        model.addConstr(t1 == A[:, i] @ ALL_TO_ALL_communication_size_node)
-        model.addConstr(t2 == ALL_TO_ALL_ratio * num_tile_per_config[i])
-        model.addConstr(Network_Latency_ALL_TO_ALL_node[i] == t1*t2)
+        t1 = model.add_variable(vtype='continuous')
+        t2 = model.add_variable(vtype='continuous')
+        model.add_constraint(t1 == A[:, i] @ ALL_TO_ALL_communication_size_node)
+        model.add_constraint(t2 == ALL_TO_ALL_ratio * num_tile_per_config[i])
+        model.add_constraint(Network_Latency_ALL_TO_ALL_node[i] == t1*t2)
 
     # TP
-    Network_Latency_ALL_GATHER_node = model.addMVar(C, name='Network_Latency_ALL_GATHER_node', vtype=gp.GRB.CONTINUOUS, lb=0)
+    Network_Latency_ALL_GATHER_node = model.add_matrix_variable(C, name='Network_Latency_ALL_GATHER_node', vtype='continuous', lb=0)
     for i in range(C):
-        t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-        t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-        model.addConstr(t1 == A[:, i] @ ALL_GATHER_communication_size_node)
-        model.addConstr(t2 == ALL_GATHER_ratio * num_tile_per_config[i])
-        model.addConstr(Network_Latency_ALL_GATHER_node[i] == t1*t2)
+        t1 = model.add_variable(vtype='continuous')
+        t2 = model.add_variable(vtype='continuous')
+        model.add_constraint(t1 == A[:, i] @ ALL_GATHER_communication_size_node)
+        model.add_constraint(t2 == ALL_GATHER_ratio * num_tile_per_config[i])
+        model.add_constraint(Network_Latency_ALL_GATHER_node[i] == t1*t2)
 
 
     # TP
-    Network_Latency_ALL_REDUCE_edge = model.addMVar(C, name='Network_Latency_ALL_REDUCE_edge', vtype=gp.GRB.CONTINUOUS, lb=0)
-    t3 = model.addMVar((num_edge, C), vtype=gp.GRB.CONTINUOUS)
-    t4 = model.addMVar((num_edge, C), vtype=gp.GRB.BINARY)
-    t5 = model.addMVar(C, vtype=gp.GRB.BINARY)
+    Network_Latency_ALL_REDUCE_edge = model.add_matrix_variable(C, name='Network_Latency_ALL_REDUCE_edge', vtype='continuous', lb=0)
+    t3 = model.add_matrix_variable((num_edge, C), vtype='continuous')
+    t4 = model.add_matrix_variable((num_edge, C), vtype='binary')
+    t5 = model.add_matrix_variable(C, vtype='binary')
 
-    link_latency_allreduce_edge = model.addMVar(C, name='link_latency_allreduce_edge', vtype=gp.GRB.CONTINUOUS)
-    serialization_latency_allreduce_edge = model.addMVar(C, name='serialization_latency_allreduce_edge', vtype=gp.GRB.CONTINUOUS)
+    link_latency_allreduce_edge = model.add_matrix_variable(C, name='link_latency_allreduce_edge', vtype='continuous')
+    serialization_latency_allreduce_edge = model.add_matrix_variable(C, name='serialization_latency_allreduce_edge', vtype='continuous')
 
     for i in range(C):
-        t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-        t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
+        t1 = model.add_variable(vtype='continuous')
+        t2 = model.add_variable(vtype='continuous')
         
-        model.addConstr(t1 == H[:, i] @ ALL_REDUCE_communication_size_edge)
-        model.addConstr(t2 == ALL_REDUCE_ratio * num_tile_per_config[i])
+        model.add_constraint(t1 == H[:, i] @ ALL_REDUCE_communication_size_edge)
+        model.add_constraint(t2 == ALL_REDUCE_ratio * num_tile_per_config[i])
 
         for j in range(num_edge):
-            model.addConstr(t3[j, i] == H[j, i] * ALL_REDUCE_communication_size_edge[j])
+            model.add_constraint(t3[j, i] == H[j, i] * ALL_REDUCE_communication_size_edge[j])
 
-            aaa = model.addVar(vtype=gp.GRB.BINARY)
-            model.addConstr((aaa == 1) >> (t3[j, i] >= 1))
-            model.addConstr((aaa == 0) >> (t3[j, i] <= 0))
-            model.addConstr((aaa == 1) >> (t4[j, i] == 1))
-            model.addConstr((aaa == 0) >> (t4[j, i] == 0))
+            aaa = model.add_variable(vtype='binary')
+            model.add_constraint((aaa == 1) >> (t3[j, i] >= 1))
+            model.add_constraint((aaa == 0) >> (t3[j, i] <= 0))
+            model.add_constraint((aaa == 1) >> (t4[j, i] == 1))
+            model.add_constraint((aaa == 0) >> (t4[j, i] == 0))
 
         if 'TP' in par:
             if dse.execution.separate_rs_ag_for_ar:
@@ -2557,40 +2544,40 @@ if dse.execution.WhichOneof('workload_variant') == 'llm':
                 tmp = 1
 
             if topology[par.index('TP')] == BasicTopology.R.value:
-                model.addConstr(link_latency_allreduce_edge[i] == t4[:, i].sum() * dse.system.accelerator.link_latency * tmp * (dimension[par.index('TP')]-1))
+                model.add_constraint(link_latency_allreduce_edge[i] == t4[:, i].sum() * dse.system.accelerator.link_latency * tmp * (dimension[par.index('TP')]-1))
             elif topology[par.index('TP')] == BasicTopology.SW.value:
-                model.addConstr(link_latency_allreduce_edge[i] == t4[:, i].sum() * dse.system.accelerator.link_latency * tmp * (dimension[par.index('TP')]-1))
+                model.add_constraint(link_latency_allreduce_edge[i] == t4[:, i].sum() * dse.system.accelerator.link_latency * tmp * (dimension[par.index('TP')]-1))
             elif topology[par.index('TP')] == BasicTopology.FC.value:
-                model.addConstr(link_latency_allreduce_edge[i] == t4[:, i].sum() * dse.system.accelerator.link_latency * tmp)
+                model.add_constraint(link_latency_allreduce_edge[i] == t4[:, i].sum() * dse.system.accelerator.link_latency * tmp)
         else:
-            model.addConstr(link_latency_allreduce_edge[i] == 0)
+            model.add_constraint(link_latency_allreduce_edge[i] == 0)
 
-        model.addConstr(serialization_latency_allreduce_edge[i] == t1*t2)
-        model.addConstr(Network_Latency_ALL_REDUCE_edge[i] == serialization_latency_allreduce_edge[i] + link_latency_allreduce_edge[i])
+        model.add_constraint(serialization_latency_allreduce_edge[i] == t1*t2)
+        model.add_constraint(Network_Latency_ALL_REDUCE_edge[i] == serialization_latency_allreduce_edge[i] + link_latency_allreduce_edge[i])
         
 
 
 
     # TP
-    Network_Latency_ALL_TO_ALL_edge = model.addMVar(C, name='Network_Latency_ALL_TO_ALL_edge', vtype=gp.GRB.CONTINUOUS, lb=0)
+    Network_Latency_ALL_TO_ALL_edge = model.add_matrix_variable(C, name='Network_Latency_ALL_TO_ALL_edge', vtype='continuous', lb=0)
     for i in range(C):
-        t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-        t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-        model.addConstr(t1 == H[:, i] @ ALL_TO_ALL_communication_size_edge)
-        model.addConstr(t2 == ALL_TO_ALL_ratio * num_tile_per_config[i])
-        model.addConstr(Network_Latency_ALL_TO_ALL_edge[i] == t1*t2)
+        t1 = model.add_variable(vtype='continuous')
+        t2 = model.add_variable(vtype='continuous')
+        model.add_constraint(t1 == H[:, i] @ ALL_TO_ALL_communication_size_edge)
+        model.add_constraint(t2 == ALL_TO_ALL_ratio * num_tile_per_config[i])
+        model.add_constraint(Network_Latency_ALL_TO_ALL_edge[i] == t1*t2)
 
 
 
 
     # TP
-    Network_Latency_ALL_GATHER_edge = model.addMVar(C, name='Network_Latency_ALL_GATHER_edge', vtype=gp.GRB.CONTINUOUS, lb=0)
+    Network_Latency_ALL_GATHER_edge = model.add_matrix_variable(C, name='Network_Latency_ALL_GATHER_edge', vtype='continuous', lb=0)
     for i in range(C):
-        t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-        t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-        model.addConstr(t1 == H[:, i] @ ALL_GATHER_communication_size_edge)
-        model.addConstr(t2 == ALL_GATHER_ratio * num_tile_per_config[i])
-        model.addConstr(Network_Latency_ALL_GATHER_edge[i] == t1*t2)
+        t1 = model.add_variable(vtype='continuous')
+        t2 = model.add_variable(vtype='continuous')
+        model.add_constraint(t1 == H[:, i] @ ALL_GATHER_communication_size_edge)
+        model.add_constraint(t2 == ALL_GATHER_ratio * num_tile_per_config[i])
+        model.add_constraint(Network_Latency_ALL_GATHER_edge[i] == t1*t2)
 
 
 
@@ -2610,24 +2597,24 @@ if dse.execution.WhichOneof('workload_variant') == 'llm':
 
 
     # DP
-    Network_Latency_ALL_REDUCE_PERIODIC_node = model.addMVar(C, name='Network_Latency_ALL_REDUCE_PERIODIC_node', vtype=gp.GRB.CONTINUOUS, lb=0)
+    Network_Latency_ALL_REDUCE_PERIODIC_node = model.add_matrix_variable(C, name='Network_Latency_ALL_REDUCE_PERIODIC_node', vtype='continuous', lb=0)
     if is_DP_hierarchical == True:
         for i in range(C):
-            t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            t3 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            model.addConstr(t1 == A[:, i] @ ALL_REDUCE_PERIODIC_communication_size_node)
-            model.addConstr(t2 == ALL_REDUCE_PERIODIC_ratio_fast)
-            model.addConstr(t3 == ALL_REDUCE_PERIODIC_ratio_slow)
-            model.addConstr(Network_Latency_ALL_REDUCE_PERIODIC_node[i] == t1*t2 + t1*t3)
+            t1 = model.add_variable(vtype='continuous')
+            t2 = model.add_variable(vtype='continuous')
+            t3 = model.add_variable(vtype='continuous')
+            model.add_constraint(t1 == A[:, i] @ ALL_REDUCE_PERIODIC_communication_size_node)
+            model.add_constraint(t2 == ALL_REDUCE_PERIODIC_ratio_fast)
+            model.add_constraint(t3 == ALL_REDUCE_PERIODIC_ratio_slow)
+            model.add_constraint(Network_Latency_ALL_REDUCE_PERIODIC_node[i] == t1*t2 + t1*t3)
             
     else:
         for i in range(C):
-            t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            model.addConstr(t1 == A[:, i] @ ALL_REDUCE_PERIODIC_communication_size_node)
-            model.addConstr(t2 == ALL_REDUCE_PERIODIC_ratio)
-            model.addConstr(Network_Latency_ALL_REDUCE_PERIODIC_node[i] == t1*t2) # reduce-scatter/all-gather
+            t1 = model.add_variable(vtype='continuous')
+            t2 = model.add_variable(vtype='continuous')
+            model.add_constraint(t1 == A[:, i] @ ALL_REDUCE_PERIODIC_communication_size_node)
+            model.add_constraint(t2 == ALL_REDUCE_PERIODIC_ratio)
+            model.add_constraint(Network_Latency_ALL_REDUCE_PERIODIC_node[i] == t1*t2) # reduce-scatter/all-gather
 
 
 
@@ -2645,13 +2632,13 @@ if dse.execution.WhichOneof('workload_variant') == 'llm':
 
 
     # SP
-    Network_Latency_ALL_REDUCE_node_sp = model.addMVar(C, name='Network_Latency_ALL_REDUCE_node_sp', vtype=gp.GRB.CONTINUOUS, lb=0)
+    Network_Latency_ALL_REDUCE_node_sp = model.add_matrix_variable(C, name='Network_Latency_ALL_REDUCE_node_sp', vtype='continuous', lb=0)
     for i in range(C):
-        t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-        t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-        model.addConstr(t1 == A[:, i] @ ALL_REDUCE_communication_size_node_sp)
-        model.addConstr(t2 == ALL_REDUCE_ratio_sp * num_tile_per_config[i])       
-        model.addConstr(Network_Latency_ALL_REDUCE_node_sp[i] == t1*t2)
+        t1 = model.add_variable(vtype='continuous')
+        t2 = model.add_variable(vtype='continuous')
+        model.add_constraint(t1 == A[:, i] @ ALL_REDUCE_communication_size_node_sp)
+        model.add_constraint(t2 == ALL_REDUCE_ratio_sp * num_tile_per_config[i])       
+        model.add_constraint(Network_Latency_ALL_REDUCE_node_sp[i] == t1*t2)
 
         
 
@@ -2660,38 +2647,38 @@ if dse.execution.WhichOneof('workload_variant') == 'llm':
 
 
     # SP
-    Network_Latency_ALL_GATHER_node_sp = model.addMVar(C, name='Network_Latency_ALL_GATHER_node_sp', vtype=gp.GRB.CONTINUOUS, lb=0)
+    Network_Latency_ALL_GATHER_node_sp = model.add_matrix_variable(C, name='Network_Latency_ALL_GATHER_node_sp', vtype='continuous', lb=0)
     for i in range(C):
-        t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-        t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-        model.addConstr(t1 == A[:, i] @ ALL_GATHER_communication_size_node_sp)
-        model.addConstr(t2 == ALL_GATHER_ratio_sp * num_tile_per_config[i])
-        model.addConstr(Network_Latency_ALL_GATHER_node_sp[i] == t1*t2)
+        t1 = model.add_variable(vtype='continuous')
+        t2 = model.add_variable(vtype='continuous')
+        model.add_constraint(t1 == A[:, i] @ ALL_GATHER_communication_size_node_sp)
+        model.add_constraint(t2 == ALL_GATHER_ratio_sp * num_tile_per_config[i])
+        model.add_constraint(Network_Latency_ALL_GATHER_node_sp[i] == t1*t2)
 
 
 
     # SP
-    Network_Latency_ALL_REDUCE_edge_sp = model.addMVar(C, name='Network_Latency_ALL_REDUCE_edge_sp', vtype=gp.GRB.CONTINUOUS, lb=0)
+    Network_Latency_ALL_REDUCE_edge_sp = model.add_matrix_variable(C, name='Network_Latency_ALL_REDUCE_edge_sp', vtype='continuous', lb=0)
     for i in range(C):
-        t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-        t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
+        t1 = model.add_variable(vtype='continuous')
+        t2 = model.add_variable(vtype='continuous')
         
-        model.addConstr(t1 == H[:, i] @ ALL_REDUCE_communication_size_edge_sp)
-        model.addConstr(t2 == ALL_REDUCE_ratio_sp * num_tile_per_config[i])
-        model.addConstr(Network_Latency_ALL_REDUCE_edge_sp[i] == t1*t2)
+        model.add_constraint(t1 == H[:, i] @ ALL_REDUCE_communication_size_edge_sp)
+        model.add_constraint(t2 == ALL_REDUCE_ratio_sp * num_tile_per_config[i])
+        model.add_constraint(Network_Latency_ALL_REDUCE_edge_sp[i] == t1*t2)
 
 
 
 
 
     # SP
-    Network_Latency_ALL_GATHER_edge_sp = model.addMVar(C, name='Network_Latency_ALL_GATHER_edge_sp', vtype=gp.GRB.CONTINUOUS, lb=0)
+    Network_Latency_ALL_GATHER_edge_sp = model.add_matrix_variable(C, name='Network_Latency_ALL_GATHER_edge_sp', vtype='continuous', lb=0)
     for i in range(C):
-        t1 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-        t2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-        model.addConstr(t1 == H[:, i] @ ALL_GATHER_communication_size_edge_sp)
-        model.addConstr(t2 == ALL_GATHER_ratio_sp * num_tile_per_config[i])
-        model.addConstr(Network_Latency_ALL_GATHER_edge_sp[i] == t1*t2)
+        t1 = model.add_variable(vtype='continuous')
+        t2 = model.add_variable(vtype='continuous')
+        model.add_constraint(t1 == H[:, i] @ ALL_GATHER_communication_size_edge_sp)
+        model.add_constraint(t2 == ALL_GATHER_ratio_sp * num_tile_per_config[i])
+        model.add_constraint(Network_Latency_ALL_GATHER_edge_sp[i] == t1*t2)
 
 
 
@@ -2703,43 +2690,43 @@ if dse.execution.WhichOneof('workload_variant') == 'llm':
 
 
     for i in range(C):
-        aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
-        bbb = model.addVar(vtype=gp.GRB.CONTINUOUS)
-        ccc = model.addVar(vtype=gp.GRB.CONTINUOUS)
-        model.addConstr(aaa == Network_Latency_ALL_REDUCE_node[i]
+        aaa = model.add_variable(vtype='continuous')
+        bbb = model.add_variable(vtype='continuous')
+        ccc = model.add_variable(vtype='continuous')
+        model.add_constraint(aaa == Network_Latency_ALL_REDUCE_node[i]
                              + Network_Latency_ALL_TO_ALL_node[i]
                              + Network_Latency_ALL_GATHER_node[i]
                              + Network_Latency_ALL_REDUCE_edge[i]
                              + Network_Latency_ALL_TO_ALL_edge[i]
                              + Network_Latency_ALL_GATHER_edge[i])
-        model.addConstr(bbb == Network_Latency_ALL_REDUCE_PERIODIC_node[i])
-        model.addConstr(ccc == Network_Latency_ALL_REDUCE_node_sp[i]
+        model.add_constraint(bbb == Network_Latency_ALL_REDUCE_PERIODIC_node[i])
+        model.add_constraint(ccc == Network_Latency_ALL_REDUCE_node_sp[i]
                              + Network_Latency_ALL_GATHER_node_sp[i]
                              + Network_Latency_ALL_REDUCE_edge_sp[i]
                              + Network_Latency_ALL_GATHER_edge_sp[i])
         
-        model.addConstr(Network_Latency[i] == gp.max_(aaa, bbb, ccc))
+        model.add_constraint(Network_Latency[i] == highspy.max_(aaa, bbb, ccc))
 
     
 
     # p2p communication
-    model.addConstr(p2p_latency == P2P_ratio * Intermediate * layers)
+    model.add_constraint(p2p_latency == P2P_ratio * Intermediate * layers)
     
 
 elif dse.execution.WhichOneof('workload_variant') == 'dlrm':
     # A2A
-    Network_Latency_ALL_TO_ALL_tmp = model.addMVar((C, len(topology)), name='Network_Latency_ALL_TO_ALL_tmp', vtype=gp.GRB.CONTINUOUS, lb=0)
-    Network_Latency_ALL_TO_ALL = model.addMVar(C, name='Network_Latency_ALL_TO_ALL', vtype=gp.GRB.CONTINUOUS, lb=0)
+    Network_Latency_ALL_TO_ALL_tmp = model.add_matrix_variable((C, len(topology)), name='Network_Latency_ALL_TO_ALL_tmp', vtype='continuous', lb=0)
+    Network_Latency_ALL_TO_ALL = model.add_matrix_variable(C, name='Network_Latency_ALL_TO_ALL', vtype='continuous', lb=0)
 
     for i in range(C):
         for j in range(len(topology)):
-            aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            model.addConstr(aaa == A[:, i] @ ALL_TO_ALL_communication_size_node) # per-chip bytes
+            aaa = model.add_variable(vtype='continuous')
+            model.add_constraint(aaa == A[:, i] @ ALL_TO_ALL_communication_size_node) # per-chip bytes
             
-            model.addConstr(Network_Latency_ALL_TO_ALL_tmp[i, j] * Link_BW[j] * a2a_bw_factor[j] >= aaa * a2a_msg_factor[j])
+            model.add_constraint(Network_Latency_ALL_TO_ALL_tmp[i, j] * Link_BW[j] * a2a_bw_factor[j] >= aaa * a2a_msg_factor[j])
     
     for i in range(C):
-        model.addConstr(Network_Latency_ALL_TO_ALL[i] == gp.max_(Network_Latency_ALL_TO_ALL_tmp[i, j] for j in range(len(topology))))
+        model.add_constraint(Network_Latency_ALL_TO_ALL[i] == highspy.max_(Network_Latency_ALL_TO_ALL_tmp[i, j] for j in range(len(topology))))
 
 
 
@@ -2747,17 +2734,17 @@ elif dse.execution.WhichOneof('workload_variant') == 'dlrm':
 
 
     # data parallelism all-reduce
-    Network_Latency_ALL_REDUCE_PERIODIC = model.addMVar(C, name='Network_Latency_ALL_REDUCE_PERIODIC', vtype=gp.GRB.CONTINUOUS, lb=0)
+    Network_Latency_ALL_REDUCE_PERIODIC = model.add_matrix_variable(C, name='Network_Latency_ALL_REDUCE_PERIODIC', vtype='continuous', lb=0)
     for i in range(C):
-        model.addConstr(Network_Latency_ALL_REDUCE_PERIODIC[i] >= A[:, i] @ ALL_REDUCE_PERIODIC_communication_size_node) # reduce-scatter/all-gather
+        model.add_constraint(Network_Latency_ALL_REDUCE_PERIODIC[i] >= A[:, i] @ ALL_REDUCE_PERIODIC_communication_size_node) # reduce-scatter/all-gather
 
         
 
     # total network latency
     for i in range(C):
-        model.addConstr(Network_Latency[i] == Network_Latency_ALL_TO_ALL[i] + Network_Latency_ALL_REDUCE_PERIODIC[i])
+        model.add_constraint(Network_Latency[i] == Network_Latency_ALL_TO_ALL[i] + Network_Latency_ALL_REDUCE_PERIODIC[i])
     
-    model.addConstr(p2p_latency == 0)
+    model.add_constraint(p2p_latency == 0)
     
     
     
@@ -2767,51 +2754,51 @@ elif dse.execution.WhichOneof('workload_variant') == 'dlrm':
     
     
 elif dse.execution.WhichOneof('workload_variant') == 'hpl':
-    Network_Latency_POINT_TO_POINT = model.addMVar(C, name='Network_Latency_POINT_TO_POINT', vtype=gp.GRB.CONTINUOUS, lb=0)
-    Network_Latency_BROADCAST = model.addMVar(C, name='Network_Latency_BROADCAST', vtype=gp.GRB.CONTINUOUS, lb=0)
+    Network_Latency_POINT_TO_POINT = model.add_matrix_variable(C, name='Network_Latency_POINT_TO_POINT', vtype='continuous', lb=0)
+    Network_Latency_BROADCAST = model.add_matrix_variable(C, name='Network_Latency_BROADCAST', vtype='continuous', lb=0)
     
     for i in range(C):
         # X dim
-        aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
-        model.addConstr(aaa == A[:, i] @ POINT_TO_POINT_communication_size)
+        aaa = model.add_variable(vtype='continuous')
+        model.add_constraint(aaa == A[:, i] @ POINT_TO_POINT_communication_size)
         
         # Y dim
-        bbb = model.addVar(vtype=gp.GRB.CONTINUOUS)
-        model.addConstr(bbb == A[:, i] @ BROADCAST_communication_size)
+        bbb = model.add_variable(vtype='continuous')
+        model.add_constraint(bbb == A[:, i] @ BROADCAST_communication_size)
         
-        model.addConstr(Network_Latency_POINT_TO_POINT[i] * Link_BW[0] >= aaa)
-        model.addConstr(Network_Latency_BROADCAST[i] * Link_BW[1] >= bbb)
+        model.add_constraint(Network_Latency_POINT_TO_POINT[i] * Link_BW[0] >= aaa)
+        model.add_constraint(Network_Latency_BROADCAST[i] * Link_BW[1] >= bbb)
         
     for i in range(C):
-        model.addConstr(Network_Latency[i] == gp.max_(Network_Latency_POINT_TO_POINT[i], Network_Latency_BROADCAST[i]))  
+        model.add_constraint(Network_Latency[i] == highspy.max_(Network_Latency_POINT_TO_POINT[i], Network_Latency_BROADCAST[i]))  
     
-    model.addConstr(p2p_latency == 0)
+    model.add_constraint(p2p_latency == 0)
     
     
     
     
 elif dse.execution.WhichOneof('workload_variant') == 'fft':
     # A2A
-    Network_Latency_ALL_TO_ALL_tmp = model.addMVar((C, len(topology)), name='Network_Latency_ALL_TO_ALL_tmp', vtype=gp.GRB.CONTINUOUS, lb=0)
-    Network_Latency_ALL_TO_ALL = model.addMVar(C, name='Network_Latency_ALL_TO_ALL', vtype=gp.GRB.CONTINUOUS, lb=0)
+    Network_Latency_ALL_TO_ALL_tmp = model.add_matrix_variable((C, len(topology)), name='Network_Latency_ALL_TO_ALL_tmp', vtype='continuous', lb=0)
+    Network_Latency_ALL_TO_ALL = model.add_matrix_variable(C, name='Network_Latency_ALL_TO_ALL', vtype='continuous', lb=0)
     
     for i in range(C):
         for j in range(len(topology)):
-            aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            model.addConstr(aaa == A[:, i] @ ALL_TO_ALL_communication_size_node) # per-chip bytes
+            aaa = model.add_variable(vtype='continuous')
+            model.add_constraint(aaa == A[:, i] @ ALL_TO_ALL_communication_size_node) # per-chip bytes
             
-            model.addConstr(Network_Latency_ALL_TO_ALL_tmp[i, j] * Link_BW[j] * a2a_bw_factor[j] >= aaa * a2a_msg_factor[j])
+            model.add_constraint(Network_Latency_ALL_TO_ALL_tmp[i, j] * Link_BW[j] * a2a_bw_factor[j] >= aaa * a2a_msg_factor[j])
     
     for i in range(C):
-        model.addConstr(Network_Latency_ALL_TO_ALL[i] == gp.max_(Network_Latency_ALL_TO_ALL_tmp[i, j] for j in range(len(topology))))
+        model.add_constraint(Network_Latency_ALL_TO_ALL[i] == highspy.max_(Network_Latency_ALL_TO_ALL_tmp[i, j] for j in range(len(topology))))
 
     # total network latency
     for i in range(C):
-        model.addConstr(Network_Latency[i] == Network_Latency_ALL_TO_ALL[i])
+        model.add_constraint(Network_Latency[i] == Network_Latency_ALL_TO_ALL[i])
         
     
     
-    model.addConstr(p2p_latency == 0)
+    model.add_constraint(p2p_latency == 0)
     
     
  
@@ -2820,41 +2807,41 @@ else:
 
 
 
-Compute_Memory_Latency = model.addMVar(C, name='Compute_Memory_Latency', vtype=gp.GRB.CONTINUOUS, lb=0)
-Per_Config_II = model.addMVar(C, name='Per_Config_II', vtype=gp.GRB.CONTINUOUS, lb=0)
+Compute_Memory_Latency = model.add_matrix_variable(C, name='Compute_Memory_Latency', vtype='continuous', lb=0)
+Per_Config_II = model.add_matrix_variable(C, name='Per_Config_II', vtype='continuous', lb=0)
 for i in range(C):
     if dse.execution.overlap == Overlap_Style.PERFECT_OVERLAP.value:
-        tmp = model.addVar(vtype=gp.GRB.CONTINUOUS)
-        model.addConstr(tmp == gp.max_(Compute_Latency[i], Memory_Latency[i], Network_Latency[i]))
-        model.addConstr(Per_Config_II[i] == tmp * num_input_per_config[i])
+        tmp = model.add_variable(vtype='continuous')
+        model.add_constraint(tmp == highspy.max_(Compute_Latency[i], Memory_Latency[i], Network_Latency[i]))
+        model.add_constraint(Per_Config_II[i] == tmp * num_input_per_config[i])
 
     elif dse.execution.overlap == Overlap_Style.OVERLAP_COMPUTE_MEMORY.value:
-        tmp = model.addVar(vtype=gp.GRB.CONTINUOUS)
-        model.addConstr(Compute_Memory_Latency[i] == gp.max_(Compute_Latency[i], Memory_Latency[i]))
-        model.addConstr(tmp == Compute_Memory_Latency[i] + Network_Latency[i])
-        model.addConstr(Per_Config_II[i] == tmp * num_input_per_config[i])
+        tmp = model.add_variable(vtype='continuous')
+        model.add_constraint(Compute_Memory_Latency[i] == highspy.max_(Compute_Latency[i], Memory_Latency[i]))
+        model.add_constraint(tmp == Compute_Memory_Latency[i] + Network_Latency[i])
+        model.add_constraint(Per_Config_II[i] == tmp * num_input_per_config[i])
 
     elif dse.execution.overlap == Overlap_Style.NO_OVERLAP.value:
         
         if dse.execution.optimization == "" or dse.execution.optimization == "CMN":
-            tmp = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            model.addConstr(tmp == Compute_Latency[i] + Memory_Latency[i] + Network_Latency[i])
-            model.addConstr(Per_Config_II[i] == tmp * num_input_per_config[i])
+            tmp = model.add_variable(vtype='continuous')
+            model.add_constraint(tmp == Compute_Latency[i] + Memory_Latency[i] + Network_Latency[i])
+            model.add_constraint(Per_Config_II[i] == tmp * num_input_per_config[i])
             
         elif dse.execution.optimization == "CM":
-            tmp = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            model.addConstr(tmp == Compute_Latency[i] + Memory_Latency[i])
-            model.addConstr(Per_Config_II[i] == tmp * num_input_per_config[i])
+            tmp = model.add_variable(vtype='continuous')
+            model.add_constraint(tmp == Compute_Latency[i] + Memory_Latency[i])
+            model.add_constraint(Per_Config_II[i] == tmp * num_input_per_config[i])
 
         elif dse.execution.optimization == "CN":
-            tmp = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            model.addConstr(tmp == Compute_Latency[i] + Network_Latency[i])
-            model.addConstr(Per_Config_II[i] == tmp * num_input_per_config[i])
+            tmp = model.add_variable(vtype='continuous')
+            model.add_constraint(tmp == Compute_Latency[i] + Network_Latency[i])
+            model.add_constraint(Per_Config_II[i] == tmp * num_input_per_config[i])
 
         elif dse.execution.optimization == "C":
-            tmp = model.addVar(vtype=gp.GRB.CONTINUOUS)
-            model.addConstr(tmp == Compute_Latency[i])
-            model.addConstr(Per_Config_II[i] == tmp * num_input_per_config[i])
+            tmp = model.add_variable(vtype='continuous')
+            model.add_constraint(tmp == Compute_Latency[i])
+            model.add_constraint(Per_Config_II[i] == tmp * num_input_per_config[i])
             
         else:
             raise Exception('Wrong!')
@@ -2866,223 +2853,223 @@ for i in range(C):
         raise Exception("Wrong!")
     
 
-hhhh = model.addVar(vtype=gp.GRB.CONTINUOUS, lb=0)
-ns_per_batch = model.addVar(name='ns_per_batch', vtype=gp.GRB.CONTINUOUS, lb=0)
+hhhh = model.add_variable(vtype='continuous', lb=0)
+ns_per_batch = model.add_variable(name='ns_per_batch', vtype='continuous', lb=0)
 
 if dse.execution.WhichOneof('workload_variant') == 'llm' or dse.execution.WhichOneof('workload_variant') == 'dlrm':
-    all_config_II = model.addVar(name='all_config_II', vtype=gp.GRB.CONTINUOUS, lb=0)
-    tmp2 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    tmp3 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    tmp4 = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    model.addConstr(all_config_II == np.ones((C)) @ Per_Config_II)
-    # model.addConstr(all_config_II == total_compute_latency + total_network_latency + total_memory_latency)
+    all_config_II = model.add_variable(name='all_config_II', vtype='continuous', lb=0)
+    tmp2 = model.add_variable(vtype='continuous')
+    tmp3 = model.add_variable(vtype='continuous')
+    tmp4 = model.add_variable(vtype='continuous')
+    model.add_constraint(all_config_II == np.ones((C)) @ Per_Config_II)
+    # model.add_constraint(all_config_II == total_compute_latency + total_network_latency + total_memory_latency)
     
-    aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    pipeline_factor = model.addVar(name='pipeline_factor', vtype=gp.GRB.CONTINUOUS)
-    ccc = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    ddd = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    zzz = model.addVar(vtype=gp.GRB.BINARY)
+    aaa = model.add_variable(vtype='continuous')
+    pipeline_factor = model.add_variable(name='pipeline_factor', vtype='continuous')
+    ccc = model.add_variable(vtype='continuous')
+    ddd = model.add_variable(vtype='continuous')
+    zzz = model.add_variable(vtype='binary')
     
-    model.addConstr((zzz == 0) >> (layer_per_stage >= 2))
-    model.addConstr((zzz == 1) >> (layer_per_stage == 1))
-    model.addConstr((zzz == 0) >> (ccc == layer_per_stage - 1))
-    model.addConstr((zzz == 1) >> (ccc == layer_per_stage))
+    model.add_constraint((zzz == 0) >> (layer_per_stage >= 2))
+    model.add_constraint((zzz == 1) >> (layer_per_stage == 1))
+    model.add_constraint((zzz == 0) >> (ccc == layer_per_stage - 1))
+    model.add_constraint((zzz == 1) >> (ccc == layer_per_stage))
     
-    model.addConstr(ddd * num_micro_batch_per_pipeline == PP - 1)
-    model.addConstr(ddd == aaa * ccc)
-    model.addConstr(pipeline_factor == aaa + 1)
-    model.addConstr(tmp2 == all_config_II * pipeline_factor)
-    model.addConstr(tmp3 == tmp2 * layer_per_stage)
-    model.addConstr(tmp4 * DP == tmp3 * global_batch_size)
-    model.addConstr(hhhh == tmp4)
+    model.add_constraint(ddd * num_micro_batch_per_pipeline == PP - 1)
+    model.add_constraint(ddd == aaa * ccc)
+    model.add_constraint(pipeline_factor == aaa + 1)
+    model.add_constraint(tmp2 == all_config_II * pipeline_factor)
+    model.add_constraint(tmp3 == tmp2 * layer_per_stage)
+    model.add_constraint(tmp4 * DP == tmp3 * global_batch_size)
+    model.add_constraint(hhhh == tmp4)
 
     # inference
     if first_bwd_kernel == -1 and dse.execution.WhichOneof('workload_variant') == 'llm':
-        final_latency_ns = model.addVar(name='final_latency_ns', vtype=gp.GRB.CONTINUOUS)
-        p2p_inference_size = model.addVar(name='p2p_inference_size', vtype=gp.GRB.CONTINUOUS)
-        vvv = model.addVar(name='vvv', vtype=gp.GRB.CONTINUOUS)
-        vvv1 = model.addVar(name='vvv1', vtype=gp.GRB.CONTINUOUS)
-        vvv2 = model.addVar(name='vvv2', vtype=gp.GRB.CONTINUOUS)
-        vvv3 = model.addVar(name='vvv3', vtype=gp.GRB.CONTINUOUS)
+        final_latency_ns = model.add_variable(name='final_latency_ns', vtype='continuous')
+        p2p_inference_size = model.add_variable(name='p2p_inference_size', vtype='continuous')
+        vvv = model.add_variable(name='vvv', vtype='continuous')
+        vvv1 = model.add_variable(name='vvv1', vtype='continuous')
+        vvv2 = model.add_variable(name='vvv2', vtype='continuous')
+        vvv3 = model.add_variable(name='vvv3', vtype='continuous')
 
-        model.addConstr(p2p_inference_size * TP >= hidden_dim * seq_len * word)
+        model.add_constraint(p2p_inference_size * TP >= hidden_dim * seq_len * word)
 
-        model.addConstr(vvv == all_config_II * layer_per_stage)
-        model.addConstr(vvv1 == vvv * PP)
-        model.addConstr(vvv2 * Link_BW_PP >= (PP-1) * p2p_inference_size)
-        model.addConstr(vvv3 == (PP-1) * dse.system.accelerator.link_latency)
+        model.add_constraint(vvv == all_config_II * layer_per_stage)
+        model.add_constraint(vvv1 == vvv * PP)
+        model.add_constraint(vvv2 * Link_BW_PP >= (PP-1) * p2p_inference_size)
+        model.add_constraint(vvv3 == (PP-1) * dse.system.accelerator.link_latency)
         
-        model.addConstr(final_latency_ns == vvv1 + vvv2 + vvv3)
+        model.add_constraint(final_latency_ns == vvv1 + vvv2 + vvv3)
 
 else:
-    model.addConstr(hhhh == np.ones((C)) @ Per_Config_II)
+    model.add_constraint(hhhh == np.ones((C)) @ Per_Config_II)
 
-model.addConstr(ns_per_batch == hhhh + p2p_latency)
+model.add_constraint(ns_per_batch == hhhh + p2p_latency)
 
 
 
 
 
 # cost 
-LINK_cost = model.addMVar(len(topology), name='LINK_cost', vtype=gp.GRB.CONTINUOUS, lb=0)
-SWITCH_cost = model.addMVar(len(topology), name='SWITCH_cost', vtype=gp.GRB.CONTINUOUS, lb=0)
+LINK_cost = model.add_matrix_variable(len(topology), name='LINK_cost', vtype='continuous', lb=0)
+SWITCH_cost = model.add_matrix_variable(len(topology), name='SWITCH_cost', vtype='continuous', lb=0)
 
 if dse.system.WhichOneof('topology_variant') == 'sw': # switch
-    model.addConstr(LINK_cost[0] == Shape[0] * Link_BW[0] * link_unit_price)
-    model.addConstr(SWITCH_cost[0] == Shape[0] * Link_BW[0] * switch_unit_price)
+    model.add_constraint(LINK_cost[0] == Shape[0] * Link_BW[0] * link_unit_price)
+    model.add_constraint(SWITCH_cost[0] == Shape[0] * Link_BW[0] * switch_unit_price)
     
 elif dse.system.WhichOneof('topology_variant') == 'fc': # fc
-    aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    model.addConstr(aaa == Shape[0] * (Shape[0] - 1))
+    aaa = model.add_variable(vtype='continuous')
+    model.add_constraint(aaa == Shape[0] * (Shape[0] - 1))
     
-    model.addConstr(LINK_cost[0] == aaa * Link_BW[0] * link_unit_price)
-    model.addConstr(SWITCH_cost[0] == 0)
+    model.add_constraint(LINK_cost[0] == aaa * Link_BW[0] * link_unit_price)
+    model.add_constraint(SWITCH_cost[0] == 0)
     
 elif dse.system.WhichOneof('topology_variant') == 'r': # ring
-    model.addConstr(LINK_cost[0] == Shape[0] * Link_BW[0] * link_unit_price)
-    model.addConstr(SWITCH_cost[0] == 2 * Link_BW[0] * switch_unit_price)
+    model.add_constraint(LINK_cost[0] == Shape[0] * Link_BW[0] * link_unit_price)
+    model.add_constraint(SWITCH_cost[0] == 2 * Link_BW[0] * switch_unit_price)
     
 elif dse.system.WhichOneof('topology_variant') == 'r_r': # 2d torus
-    model.addConstr(LINK_cost[0] == num_chips_per_copy * Link_BW[0] * link_unit_price)
-    model.addConstr(LINK_cost[1] == num_chips_per_copy * Link_BW[1] * link_unit_price)
+    model.add_constraint(LINK_cost[0] == num_chips_per_copy * Link_BW[0] * link_unit_price)
+    model.add_constraint(LINK_cost[1] == num_chips_per_copy * Link_BW[1] * link_unit_price)
     
-    model.addConstr(SWITCH_cost[0] == 2 * Shape[1] * Link_BW[0] * switch_unit_price)
-    model.addConstr(SWITCH_cost[1] == 2 * Shape[0] * Link_BW[1] * switch_unit_price)  
+    model.add_constraint(SWITCH_cost[0] == 2 * Shape[1] * Link_BW[0] * switch_unit_price)
+    model.add_constraint(SWITCH_cost[1] == 2 * Shape[0] * Link_BW[1] * switch_unit_price)  
     
 elif dse.system.WhichOneof('topology_variant') == 'fc_fc': # 2d dragonfly
-    aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    bbb = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    model.addConstr(aaa == Shape[0] * (Shape[0] - 1))
-    model.addConstr(bbb == Shape[1] * (Shape[1] - 1))
+    aaa = model.add_variable(vtype='continuous')
+    bbb = model.add_variable(vtype='continuous')
+    model.add_constraint(aaa == Shape[0] * (Shape[0] - 1))
+    model.add_constraint(bbb == Shape[1] * (Shape[1] - 1))
     
-    ccc = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    model.addConstr(ccc == aaa * Shape[1])
-    model.addConstr(LINK_cost[0] == ccc * Link_BW[0] * link_unit_price)
-    model.addConstr(LINK_cost[1] == bbb * Link_BW[1] * link_unit_price)
+    ccc = model.add_variable(vtype='continuous')
+    model.add_constraint(ccc == aaa * Shape[1])
+    model.add_constraint(LINK_cost[0] == ccc * Link_BW[0] * link_unit_price)
+    model.add_constraint(LINK_cost[1] == bbb * Link_BW[1] * link_unit_price)
     
-    ddd = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    model.addConstr(ddd == Shape[1] * Shape[1])
-    model.addConstr(SWITCH_cost[0] == 0)
-    model.addConstr(SWITCH_cost[1] == ddd * Link_BW[1] * switch_unit_price)
+    ddd = model.add_variable(vtype='continuous')
+    model.add_constraint(ddd == Shape[1] * Shape[1])
+    model.add_constraint(SWITCH_cost[0] == 0)
+    model.add_constraint(SWITCH_cost[1] == ddd * Link_BW[1] * switch_unit_price)
     
 elif dse.system.WhichOneof('topology_variant') == 'r_fc': # zionex
-    bbb = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    model.addConstr(bbb == Shape[1] * (Shape[1] - 1))
+    bbb = model.add_variable(vtype='continuous')
+    model.add_constraint(bbb == Shape[1] * (Shape[1] - 1))
     
-    model.addConstr(LINK_cost[0] == num_chips_per_copy * Link_BW[0] * link_unit_price)
-    model.addConstr(LINK_cost[1] == bbb * Link_BW[1] * link_unit_price)
+    model.add_constraint(LINK_cost[0] == num_chips_per_copy * Link_BW[0] * link_unit_price)
+    model.add_constraint(LINK_cost[1] == bbb * Link_BW[1] * link_unit_price)
     
-    ddd = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    model.addConstr(ddd == Shape[1] * Shape[1])
-    model.addConstr(SWITCH_cost[0] == 2 * Shape[1] * Link_BW[0] * switch_unit_price)
-    model.addConstr(SWITCH_cost[1] == ddd * Link_BW[1] * switch_unit_price)
+    ddd = model.add_variable(vtype='continuous')
+    model.add_constraint(ddd == Shape[1] * Shape[1])
+    model.add_constraint(SWITCH_cost[0] == 2 * Shape[1] * Link_BW[0] * switch_unit_price)
+    model.add_constraint(SWITCH_cost[1] == ddd * Link_BW[1] * switch_unit_price)
 
 elif dse.system.WhichOneof('topology_variant') == 'r_sw': # 2d dgx-1
-        model.addConstr(LINK_cost[0] == num_chip * Link_BW[0] * link_unit_price)
-        model.addConstr(LINK_cost[1] == Shape[1] * Link_BW[1] * link_unit_price)
+        model.add_constraint(LINK_cost[0] == num_chip * Link_BW[0] * link_unit_price)
+        model.add_constraint(LINK_cost[1] == Shape[1] * Link_BW[1] * link_unit_price)
         
-        model.addConstr(SWITCH_cost[0] == 2 * Shape[1] * Link_BW[0] * switch_unit_price)
-        model.addConstr(SWITCH_cost[1] == Shape[1] * Link_BW[1] * switch_unit_price)    
+        model.add_constraint(SWITCH_cost[0] == 2 * Shape[1] * Link_BW[0] * switch_unit_price)
+        model.add_constraint(SWITCH_cost[1] == Shape[1] * Link_BW[1] * switch_unit_price)    
         
 elif dse.system.WhichOneof('topology_variant') == 'sw_sw': # 2d dgx-2
-    model.addConstr(LINK_cost[0] == num_chip * Link_BW[0] * link_unit_price)
-    model.addConstr(LINK_cost[1] == Shape[1] * Link_BW[1] * link_unit_price)
+    model.add_constraint(LINK_cost[0] == num_chip * Link_BW[0] * link_unit_price)
+    model.add_constraint(LINK_cost[1] == Shape[1] * Link_BW[1] * link_unit_price)
     
-    model.addConstr(SWITCH_cost[0] == num_chip * Link_BW[0] * switch_unit_price)
-    model.addConstr(SWITCH_cost[1] == Shape[1] * Link_BW[1] * switch_unit_price)    
+    model.add_constraint(SWITCH_cost[0] == num_chip * Link_BW[0] * switch_unit_price)
+    model.add_constraint(SWITCH_cost[1] == Shape[1] * Link_BW[1] * switch_unit_price)    
     
 elif dse.system.WhichOneof('topology_variant') == 'r_r_r': # 3d torus
-    aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    bbb = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    ccc = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    model.addConstr(aaa == Shape[0] * Shape[1])
-    model.addConstr(bbb == Shape[0] * Shape[2])
-    model.addConstr(ccc == Shape[1] * Shape[2])
+    aaa = model.add_variable(vtype='continuous')
+    bbb = model.add_variable(vtype='continuous')
+    ccc = model.add_variable(vtype='continuous')
+    model.add_constraint(aaa == Shape[0] * Shape[1])
+    model.add_constraint(bbb == Shape[0] * Shape[2])
+    model.add_constraint(ccc == Shape[1] * Shape[2])
     
-    model.addConstr(LINK_cost[0] == num_chips_per_copy * Link_BW[0] * link_unit_price)
-    model.addConstr(LINK_cost[1] == num_chips_per_copy * Link_BW[1] * link_unit_price)
-    model.addConstr(LINK_cost[2] == num_chips_per_copy * Link_BW[2] * link_unit_price)
+    model.add_constraint(LINK_cost[0] == num_chips_per_copy * Link_BW[0] * link_unit_price)
+    model.add_constraint(LINK_cost[1] == num_chips_per_copy * Link_BW[1] * link_unit_price)
+    model.add_constraint(LINK_cost[2] == num_chips_per_copy * Link_BW[2] * link_unit_price)
     
-    model.addConstr(SWITCH_cost[0] == 2 * ccc * Link_BW[0] * switch_unit_price)
-    model.addConstr(SWITCH_cost[1] == 2 * bbb * Link_BW[1] * switch_unit_price)
-    model.addConstr(SWITCH_cost[2] == 2 * aaa * Link_BW[2] * switch_unit_price)
+    model.add_constraint(SWITCH_cost[0] == 2 * ccc * Link_BW[0] * switch_unit_price)
+    model.add_constraint(SWITCH_cost[1] == 2 * bbb * Link_BW[1] * switch_unit_price)
+    model.add_constraint(SWITCH_cost[2] == 2 * aaa * Link_BW[2] * switch_unit_price)
 
 elif dse.system.WhichOneof('topology_variant') == 'r_sw_sw': # 3d dgx-1
-    ccc = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    model.addConstr(ccc == Shape[1] * Shape[2])
+    ccc = model.add_variable(vtype='continuous')
+    model.add_constraint(ccc == Shape[1] * Shape[2])
     
-    model.addConstr(LINK_cost[0] == num_chips_per_copy * Link_BW[0] * link_unit_price)
-    model.addConstr(LINK_cost[1] == ccc * Link_BW[1] * link_unit_price)
-    model.addConstr(LINK_cost[2] == Shape[2] * Link_BW[2] * link_unit_price)
+    model.add_constraint(LINK_cost[0] == num_chips_per_copy * Link_BW[0] * link_unit_price)
+    model.add_constraint(LINK_cost[1] == ccc * Link_BW[1] * link_unit_price)
+    model.add_constraint(LINK_cost[2] == Shape[2] * Link_BW[2] * link_unit_price)
     
-    model.addConstr(SWITCH_cost[0] == 2 * ccc * Link_BW[0] * switch_unit_price)
-    model.addConstr(SWITCH_cost[1] == ccc * Link_BW[1] * switch_unit_price)
-    model.addConstr(SWITCH_cost[2] == Shape[2] * Link_BW[2] * switch_unit_price)
+    model.add_constraint(SWITCH_cost[0] == 2 * ccc * Link_BW[0] * switch_unit_price)
+    model.add_constraint(SWITCH_cost[1] == ccc * Link_BW[1] * switch_unit_price)
+    model.add_constraint(SWITCH_cost[2] == Shape[2] * Link_BW[2] * switch_unit_price)
     
 elif dse.system.WhichOneof('topology_variant') == 'sw_sw_sw': # 3d dgx-2
-    ccc = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    model.addConstr(ccc == Shape[1] * Shape[2])
+    ccc = model.add_variable(vtype='continuous')
+    model.add_constraint(ccc == Shape[1] * Shape[2])
     
-    model.addConstr(LINK_cost[0] == num_chips_per_copy * Link_BW[0] * link_unit_price)
-    model.addConstr(LINK_cost[1] == ccc * Link_BW[1] * link_unit_price)
-    model.addConstr(LINK_cost[2] == Shape[2] * Link_BW[2] * link_unit_price)
+    model.add_constraint(LINK_cost[0] == num_chips_per_copy * Link_BW[0] * link_unit_price)
+    model.add_constraint(LINK_cost[1] == ccc * Link_BW[1] * link_unit_price)
+    model.add_constraint(LINK_cost[2] == Shape[2] * Link_BW[2] * link_unit_price)
     
-    model.addConstr(SWITCH_cost[0] == num_chips_per_copy * Link_BW[0] * switch_unit_price)
-    model.addConstr(SWITCH_cost[1] == ccc * Link_BW[1] * switch_unit_price)
-    model.addConstr(SWITCH_cost[2] == Shape[2] * Link_BW[2] * switch_unit_price)
+    model.add_constraint(SWITCH_cost[0] == num_chips_per_copy * Link_BW[0] * switch_unit_price)
+    model.add_constraint(SWITCH_cost[1] == ccc * Link_BW[1] * switch_unit_price)
+    model.add_constraint(SWITCH_cost[2] == Shape[2] * Link_BW[2] * switch_unit_price)
 
 elif dse.system.WhichOneof('topology_variant') == 'r_r_r_r': # 4d torus
-    aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    bbb = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    ccc = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    model.addConstr(aaa == Shape[0] * Shape[1])
-    model.addConstr(bbb == Shape[0] * Shape[2])
-    model.addConstr(ccc == Shape[1] * Shape[2])
+    aaa = model.add_variable(vtype='continuous')
+    bbb = model.add_variable(vtype='continuous')
+    ccc = model.add_variable(vtype='continuous')
+    model.add_constraint(aaa == Shape[0] * Shape[1])
+    model.add_constraint(bbb == Shape[0] * Shape[2])
+    model.add_constraint(ccc == Shape[1] * Shape[2])
     
-    model.addConstr(LINK_cost[0] == num_chips_per_copy * Link_BW[0] * link_unit_price)
-    model.addConstr(LINK_cost[1] == num_chips_per_copy * Link_BW[1] * link_unit_price)
-    model.addConstr(LINK_cost[2] == num_chips_per_copy * Link_BW[2] * link_unit_price)
+    model.add_constraint(LINK_cost[0] == num_chips_per_copy * Link_BW[0] * link_unit_price)
+    model.add_constraint(LINK_cost[1] == num_chips_per_copy * Link_BW[1] * link_unit_price)
+    model.add_constraint(LINK_cost[2] == num_chips_per_copy * Link_BW[2] * link_unit_price)
     
-    model.addConstr(SWITCH_cost[0] == 2 * ccc * Link_BW[0] * switch_unit_price)
-    model.addConstr(SWITCH_cost[1] == 2 * bbb * Link_BW[1] * switch_unit_price)
-    model.addConstr(SWITCH_cost[2] == 2 * aaa * Link_BW[2] * switch_unit_price)
+    model.add_constraint(SWITCH_cost[0] == 2 * ccc * Link_BW[0] * switch_unit_price)
+    model.add_constraint(SWITCH_cost[1] == 2 * bbb * Link_BW[1] * switch_unit_price)
+    model.add_constraint(SWITCH_cost[2] == 2 * aaa * Link_BW[2] * switch_unit_price)
 
 else:
     raise Exception('Wrong!')      
 
 
 
-less_or_equal_one_chip = model.addVar(name='less_or_equal_one_chip', vtype=gp.GRB.BINARY)
-less_or_equal_four_chip = model.addVar(name='less_or_equal_four_chip', vtype=gp.GRB.BINARY)
-model.addConstr((less_or_equal_one_chip == 1) >> (num_chips_per_copy == 1))
-model.addConstr((less_or_equal_one_chip == 0) >> (num_chips_per_copy >= 2))
-model.addConstr((less_or_equal_four_chip == 1) >> (num_chips_per_copy <= 4))
-model.addConstr((less_or_equal_four_chip == 0) >> (num_chips_per_copy >= 5))
+less_or_equal_one_chip = model.add_variable(name='less_or_equal_one_chip', vtype='binary')
+less_or_equal_four_chip = model.add_variable(name='less_or_equal_four_chip', vtype='binary')
+model.add_constraint((less_or_equal_one_chip == 1) >> (num_chips_per_copy == 1))
+model.add_constraint((less_or_equal_one_chip == 0) >> (num_chips_per_copy >= 2))
+model.add_constraint((less_or_equal_four_chip == 1) >> (num_chips_per_copy <= 4))
+model.add_constraint((less_or_equal_four_chip == 0) >> (num_chips_per_copy >= 5))
 
 
 
-total_DRAM_cost = model.addVar(name='total_DRAM_cost', vtype=gp.GRB.CONTINUOUS, lb=0)
-total_accelerator_cost = model.addVar(name='total_accelerator_cost', vtype=gp.GRB.CONTINUOUS, lb=0)
-total_link_cost = model.addVar(name='total_link_cost', vtype=gp.GRB.CONTINUOUS, lb=0)
-total_switch_cost = model.addVar(name='total_switch_cost', vtype=gp.GRB.CONTINUOUS, lb=0)
-model.addConstr(total_DRAM_cost == num_chip * DRAM_BW * dram_unit_price)
-model.addConstr(total_accelerator_cost == accelerator_price * num_chip)
+total_DRAM_cost = model.add_variable(name='total_DRAM_cost', vtype='continuous', lb=0)
+total_accelerator_cost = model.add_variable(name='total_accelerator_cost', vtype='continuous', lb=0)
+total_link_cost = model.add_variable(name='total_link_cost', vtype='continuous', lb=0)
+total_switch_cost = model.add_variable(name='total_switch_cost', vtype='continuous', lb=0)
+model.add_constraint(total_DRAM_cost == num_chip * DRAM_BW * dram_unit_price)
+model.add_constraint(total_accelerator_cost == accelerator_price * num_chip)
 
 
-xxxx = model.addVar(vtype=gp.GRB.CONTINUOUS)
-yyyy = model.addVar(vtype=gp.GRB.CONTINUOUS)
-model.addConstr(xxxx == (np.ones((len(topology))) @ LINK_cost) * num_copy)
-model.addConstr(yyyy == (np.ones((len(topology))) @ SWITCH_cost) * num_copy)
+xxxx = model.add_variable(vtype='continuous')
+yyyy = model.add_variable(vtype='continuous')
+model.add_constraint(xxxx == (np.ones((len(topology))) @ LINK_cost) * num_copy)
+model.add_constraint(yyyy == (np.ones((len(topology))) @ SWITCH_cost) * num_copy)
 
-model.addConstr((less_or_equal_one_chip == 0) >> (total_link_cost == xxxx))
-model.addConstr((less_or_equal_one_chip == 1) >> (total_link_cost == 0))
-model.addConstr((less_or_equal_four_chip == 0) >> (total_switch_cost == yyyy))
-model.addConstr((less_or_equal_four_chip == 1) >> (total_switch_cost == 0))
+model.add_constraint((less_or_equal_one_chip == 0) >> (total_link_cost == xxxx))
+model.add_constraint((less_or_equal_one_chip == 1) >> (total_link_cost == 0))
+model.add_constraint((less_or_equal_four_chip == 0) >> (total_switch_cost == yyyy))
+model.add_constraint((less_or_equal_four_chip == 1) >> (total_switch_cost == 0))
 
 
 
-total_cost = model.addVar(name='total_cost', vtype=gp.GRB.CONTINUOUS, lb=0)
-model.addConstr(total_cost == total_DRAM_cost + total_accelerator_cost + total_link_cost + total_switch_cost)
+total_cost = model.add_variable(name='total_cost', vtype='continuous', lb=0)
+model.add_constraint(total_cost == total_DRAM_cost + total_accelerator_cost + total_link_cost + total_switch_cost)
 
 
 
@@ -3090,200 +3077,200 @@ model.addConstr(total_cost == total_DRAM_cost + total_accelerator_cost + total_l
 
 
 # power
-LINK_power = model.addMVar(len(topology), name='LINK_power', vtype=gp.GRB.CONTINUOUS, lb=0)
-SWITCH_power = model.addMVar(len(topology), name='SWITCH_power', vtype=gp.GRB.CONTINUOUS, lb=0)
+LINK_power = model.add_matrix_variable(len(topology), name='LINK_power', vtype='continuous', lb=0)
+SWITCH_power = model.add_matrix_variable(len(topology), name='SWITCH_power', vtype='continuous', lb=0)
 
 if dse.system.WhichOneof('topology_variant') == 'sw': # switch
-    model.addConstr(LINK_power[0] == Shape[0] * Link_BW[0] * link_unit_power_x)
-    model.addConstr(SWITCH_power[0] == Shape[0] * Link_BW[0] * switch_unit_power)
+    model.add_constraint(LINK_power[0] == Shape[0] * Link_BW[0] * link_unit_power_x)
+    model.add_constraint(SWITCH_power[0] == Shape[0] * Link_BW[0] * switch_unit_power)
     
 elif dse.system.WhichOneof('topology_variant') == 'fc': # fc
-    aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    model.addConstr(aaa == Shape[0] * (Shape[0] - 1))
+    aaa = model.add_variable(vtype='continuous')
+    model.add_constraint(aaa == Shape[0] * (Shape[0] - 1))
     
-    model.addConstr(LINK_power[0] == aaa * Link_BW[0] * link_unit_power_x)
-    model.addConstr(SWITCH_power[0] == 0)
+    model.add_constraint(LINK_power[0] == aaa * Link_BW[0] * link_unit_power_x)
+    model.add_constraint(SWITCH_power[0] == 0)
     
 elif dse.system.WhichOneof('topology_variant') == 'r': # ring
-    model.addConstr(LINK_power[0] == Shape[0] * Link_BW[0] * link_unit_power_x)
-    model.addConstr(SWITCH_power[0] == 2 * Link_BW[0] * switch_unit_power)
+    model.add_constraint(LINK_power[0] == Shape[0] * Link_BW[0] * link_unit_power_x)
+    model.add_constraint(SWITCH_power[0] == 2 * Link_BW[0] * switch_unit_power)
     
 elif dse.system.WhichOneof('topology_variant') == 'r_r': # 2d torus
-    model.addConstr(LINK_power[0] == num_chips_per_copy * Link_BW[0] * link_unit_power_x)
-    model.addConstr(LINK_power[1] == num_chips_per_copy * Link_BW[1] * link_unit_power_y)
+    model.add_constraint(LINK_power[0] == num_chips_per_copy * Link_BW[0] * link_unit_power_x)
+    model.add_constraint(LINK_power[1] == num_chips_per_copy * Link_BW[1] * link_unit_power_y)
     
-    model.addConstr(SWITCH_power[0] == 2 * Shape[1] * Link_BW[0] * switch_unit_power)
-    model.addConstr(SWITCH_power[1] == 2 * Shape[0] * Link_BW[1] * switch_unit_power)
+    model.add_constraint(SWITCH_power[0] == 2 * Shape[1] * Link_BW[0] * switch_unit_power)
+    model.add_constraint(SWITCH_power[1] == 2 * Shape[0] * Link_BW[1] * switch_unit_power)
     
 elif dse.system.WhichOneof('topology_variant') == 'fc_fc': # 2d dragonfly
-    aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    bbb = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    model.addConstr(aaa == Shape[0] * (Shape[0] - 1))
-    model.addConstr(bbb == Shape[1] * (Shape[1] - 1))
+    aaa = model.add_variable(vtype='continuous')
+    bbb = model.add_variable(vtype='continuous')
+    model.add_constraint(aaa == Shape[0] * (Shape[0] - 1))
+    model.add_constraint(bbb == Shape[1] * (Shape[1] - 1))
     
-    ccc = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    model.addConstr(ccc == aaa * Shape[1])
-    model.addConstr(LINK_power[0] == ccc * Link_BW[0] * link_unit_power_x)
-    model.addConstr(LINK_power[1] == bbb * Link_BW[1] * link_unit_power_y)
+    ccc = model.add_variable(vtype='continuous')
+    model.add_constraint(ccc == aaa * Shape[1])
+    model.add_constraint(LINK_power[0] == ccc * Link_BW[0] * link_unit_power_x)
+    model.add_constraint(LINK_power[1] == bbb * Link_BW[1] * link_unit_power_y)
     
-    ddd = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    model.addConstr(ddd == Shape[1] * Shape[1])
-    model.addConstr(SWITCH_power[0] == 0)
-    model.addConstr(SWITCH_power[1] == ddd * Link_BW[1] * switch_unit_power)
+    ddd = model.add_variable(vtype='continuous')
+    model.add_constraint(ddd == Shape[1] * Shape[1])
+    model.add_constraint(SWITCH_power[0] == 0)
+    model.add_constraint(SWITCH_power[1] == ddd * Link_BW[1] * switch_unit_power)
     
 elif dse.system.WhichOneof('topology_variant') == 'r_fc': # zionex
-    bbb = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    model.addConstr(bbb == Shape[1] * (Shape[1] - 1))
+    bbb = model.add_variable(vtype='continuous')
+    model.add_constraint(bbb == Shape[1] * (Shape[1] - 1))
     
-    model.addConstr(LINK_power[0] == num_chips_per_copy * Link_BW[0] * link_unit_power_x)
-    model.addConstr(LINK_power[1] == bbb * Link_BW[1] * link_unit_power_y)
+    model.add_constraint(LINK_power[0] == num_chips_per_copy * Link_BW[0] * link_unit_power_x)
+    model.add_constraint(LINK_power[1] == bbb * Link_BW[1] * link_unit_power_y)
     
-    ddd = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    model.addConstr(ddd == Shape[1] * Shape[1])
-    model.addConstr(SWITCH_power[0] == 2 * Shape[1] * Link_BW[0] * switch_unit_power)
-    model.addConstr(SWITCH_power[1] == ddd * Link_BW[1] * switch_unit_power)
+    ddd = model.add_variable(vtype='continuous')
+    model.add_constraint(ddd == Shape[1] * Shape[1])
+    model.add_constraint(SWITCH_power[0] == 2 * Shape[1] * Link_BW[0] * switch_unit_power)
+    model.add_constraint(SWITCH_power[1] == ddd * Link_BW[1] * switch_unit_power)
 
 elif dse.system.WhichOneof('topology_variant') == 'r_sw': # 2d dgx-1
-        model.addConstr(LINK_power[0] == num_chip * Link_BW[0] * link_unit_power_x)
-        model.addConstr(LINK_power[1] == Shape[1] * Link_BW[1] * link_unit_power_y)
+        model.add_constraint(LINK_power[0] == num_chip * Link_BW[0] * link_unit_power_x)
+        model.add_constraint(LINK_power[1] == Shape[1] * Link_BW[1] * link_unit_power_y)
         
-        model.addConstr(SWITCH_power[0] == 2 * Shape[1] * Link_BW[0] * switch_unit_power)
-        model.addConstr(SWITCH_power[1] == Shape[1] * Link_BW[1] * switch_unit_power)    
+        model.add_constraint(SWITCH_power[0] == 2 * Shape[1] * Link_BW[0] * switch_unit_power)
+        model.add_constraint(SWITCH_power[1] == Shape[1] * Link_BW[1] * switch_unit_power)    
         
 elif dse.system.WhichOneof('topology_variant') == 'sw_sw': # 2d dgx-2
-    model.addConstr(LINK_power[0] == num_chip * Link_BW[0] * link_unit_power_x)
-    model.addConstr(LINK_power[1] == Shape[1] * Link_BW[1] * link_unit_power_y)
+    model.add_constraint(LINK_power[0] == num_chip * Link_BW[0] * link_unit_power_x)
+    model.add_constraint(LINK_power[1] == Shape[1] * Link_BW[1] * link_unit_power_y)
     
-    model.addConstr(SWITCH_power[0] == num_chip * Link_BW[0] * switch_unit_power)
-    model.addConstr(SWITCH_power[1] == Shape[1] * Link_BW[1] * switch_unit_power) 
+    model.add_constraint(SWITCH_power[0] == num_chip * Link_BW[0] * switch_unit_power)
+    model.add_constraint(SWITCH_power[1] == Shape[1] * Link_BW[1] * switch_unit_power) 
 
 elif dse.system.WhichOneof('topology_variant') == 'r_r_r': # 3d torus
-    aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    bbb = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    ccc = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    model.addConstr(aaa == Shape[0] * Shape[1])
-    model.addConstr(bbb == Shape[0] * Shape[2])
-    model.addConstr(ccc == Shape[1] * Shape[2])
+    aaa = model.add_variable(vtype='continuous')
+    bbb = model.add_variable(vtype='continuous')
+    ccc = model.add_variable(vtype='continuous')
+    model.add_constraint(aaa == Shape[0] * Shape[1])
+    model.add_constraint(bbb == Shape[0] * Shape[2])
+    model.add_constraint(ccc == Shape[1] * Shape[2])
     
-    model.addConstr(LINK_power[0] == num_chips_per_copy * Link_BW[0] * link_unit_power_x)
-    model.addConstr(LINK_power[1] == num_chips_per_copy * Link_BW[1] * link_unit_power_y)
-    model.addConstr(LINK_power[2] == num_chips_per_copy * Link_BW[2] * link_unit_power_z)
+    model.add_constraint(LINK_power[0] == num_chips_per_copy * Link_BW[0] * link_unit_power_x)
+    model.add_constraint(LINK_power[1] == num_chips_per_copy * Link_BW[1] * link_unit_power_y)
+    model.add_constraint(LINK_power[2] == num_chips_per_copy * Link_BW[2] * link_unit_power_z)
     
-    model.addConstr(SWITCH_power[0] == 2 * ccc * Link_BW[0] * switch_unit_power)
-    model.addConstr(SWITCH_power[1] == 2 * bbb * Link_BW[1] * switch_unit_power)
-    model.addConstr(SWITCH_power[2] == 2 * aaa * Link_BW[2] * switch_unit_power)
+    model.add_constraint(SWITCH_power[0] == 2 * ccc * Link_BW[0] * switch_unit_power)
+    model.add_constraint(SWITCH_power[1] == 2 * bbb * Link_BW[1] * switch_unit_power)
+    model.add_constraint(SWITCH_power[2] == 2 * aaa * Link_BW[2] * switch_unit_power)
 
 elif dse.system.WhichOneof('topology_variant') == 'r_sw_sw': # 3d dgx-1
-    ccc = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    model.addConstr(ccc == Shape[1] * Shape[2])
+    ccc = model.add_variable(vtype='continuous')
+    model.add_constraint(ccc == Shape[1] * Shape[2])
     
-    model.addConstr(LINK_power[0] == num_chips_per_copy * Link_BW[0] * link_unit_power_x)
-    model.addConstr(LINK_power[1] == ccc * Link_BW[1] * link_unit_power_y)
-    model.addConstr(LINK_power[2] == Shape[2] * Link_BW[2] * link_unit_power_z)
+    model.add_constraint(LINK_power[0] == num_chips_per_copy * Link_BW[0] * link_unit_power_x)
+    model.add_constraint(LINK_power[1] == ccc * Link_BW[1] * link_unit_power_y)
+    model.add_constraint(LINK_power[2] == Shape[2] * Link_BW[2] * link_unit_power_z)
     
-    model.addConstr(SWITCH_power[0] == 2 * ccc * Link_BW[0] * switch_unit_power)
-    model.addConstr(SWITCH_power[1] == ccc * Link_BW[1] * switch_unit_power)
-    model.addConstr(SWITCH_power[2] == Shape[2] * Link_BW[2] * switch_unit_power)
+    model.add_constraint(SWITCH_power[0] == 2 * ccc * Link_BW[0] * switch_unit_power)
+    model.add_constraint(SWITCH_power[1] == ccc * Link_BW[1] * switch_unit_power)
+    model.add_constraint(SWITCH_power[2] == Shape[2] * Link_BW[2] * switch_unit_power)
     
 elif dse.system.WhichOneof('topology_variant') == 'sw_sw_sw': # 3d dgx-2
-    ccc = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    model.addConstr(ccc == Shape[1] * Shape[2])
+    ccc = model.add_variable(vtype='continuous')
+    model.add_constraint(ccc == Shape[1] * Shape[2])
     
-    model.addConstr(LINK_power[0] == num_chips_per_copy * Link_BW[0] * link_unit_power_x)
-    model.addConstr(LINK_power[1] == ccc * Link_BW[1] * link_unit_power_y)
-    model.addConstr(LINK_power[2] == Shape[2] * Link_BW[2] * link_unit_power_z)
+    model.add_constraint(LINK_power[0] == num_chips_per_copy * Link_BW[0] * link_unit_power_x)
+    model.add_constraint(LINK_power[1] == ccc * Link_BW[1] * link_unit_power_y)
+    model.add_constraint(LINK_power[2] == Shape[2] * Link_BW[2] * link_unit_power_z)
     
-    model.addConstr(SWITCH_power[0] == num_chips_per_copy * Link_BW[0] * switch_unit_power)
-    model.addConstr(SWITCH_power[1] == ccc * Link_BW[1] * switch_unit_power)
-    model.addConstr(SWITCH_power[2] == Shape[2] * Link_BW[2] * switch_unit_power)
+    model.add_constraint(SWITCH_power[0] == num_chips_per_copy * Link_BW[0] * switch_unit_power)
+    model.add_constraint(SWITCH_power[1] == ccc * Link_BW[1] * switch_unit_power)
+    model.add_constraint(SWITCH_power[2] == Shape[2] * Link_BW[2] * switch_unit_power)
        
 elif dse.system.WhichOneof('topology_variant') == 'r_r_r_r': # 4d torus
-    aaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    bbb = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    ccc = model.addVar(vtype=gp.GRB.CONTINUOUS)
-    model.addConstr(aaa == Shape[0] * Shape[1])
-    model.addConstr(bbb == Shape[0] * Shape[2])
-    model.addConstr(ccc == Shape[1] * Shape[2])
+    aaa = model.add_variable(vtype='continuous')
+    bbb = model.add_variable(vtype='continuous')
+    ccc = model.add_variable(vtype='continuous')
+    model.add_constraint(aaa == Shape[0] * Shape[1])
+    model.add_constraint(bbb == Shape[0] * Shape[2])
+    model.add_constraint(ccc == Shape[1] * Shape[2])
     
-    model.addConstr(LINK_power[0] == num_chips_per_copy * Link_BW[0] * link_unit_power_x)
-    model.addConstr(LINK_power[1] == num_chips_per_copy * Link_BW[1] * link_unit_power_y)
-    model.addConstr(LINK_power[2] == num_chips_per_copy * Link_BW[2] * link_unit_power_z)
+    model.add_constraint(LINK_power[0] == num_chips_per_copy * Link_BW[0] * link_unit_power_x)
+    model.add_constraint(LINK_power[1] == num_chips_per_copy * Link_BW[1] * link_unit_power_y)
+    model.add_constraint(LINK_power[2] == num_chips_per_copy * Link_BW[2] * link_unit_power_z)
     
-    model.addConstr(SWITCH_power[0] == 2 * ccc * Link_BW[0] * switch_unit_power)
-    model.addConstr(SWITCH_power[1] == 2 * bbb * Link_BW[1] * switch_unit_power)
-    model.addConstr(SWITCH_power[2] == 2 * aaa * Link_BW[2] * switch_unit_power)
+    model.add_constraint(SWITCH_power[0] == 2 * ccc * Link_BW[0] * switch_unit_power)
+    model.add_constraint(SWITCH_power[1] == 2 * bbb * Link_BW[1] * switch_unit_power)
+    model.add_constraint(SWITCH_power[2] == 2 * aaa * Link_BW[2] * switch_unit_power)
 
 else:
     raise Exception('Wrong!')
 
 
-total_DRAM_power = model.addVar(name='total_DRAM_power', vtype=gp.GRB.CONTINUOUS, lb=0)
-total_accelerator_power = model.addVar(name='total_accelerator_power', vtype=gp.GRB.CONTINUOUS, lb=0)
-total_link_power = model.addVar(name='total_link_power', vtype=gp.GRB.CONTINUOUS, lb=0)
-total_switch_power = model.addVar(name='total_switch_power', vtype=gp.GRB.CONTINUOUS, lb=0)
+total_DRAM_power = model.add_variable(name='total_DRAM_power', vtype='continuous', lb=0)
+total_accelerator_power = model.add_variable(name='total_accelerator_power', vtype='continuous', lb=0)
+total_link_power = model.add_variable(name='total_link_power', vtype='continuous', lb=0)
+total_switch_power = model.add_variable(name='total_switch_power', vtype='continuous', lb=0)
 
-model.addConstr(total_DRAM_power == num_chip * DRAM_BW * dram_unit_power)
-model.addConstr(total_accelerator_power == accelerator_power * num_chip)
-
-
-
-aaaa = model.addVar(vtype=gp.GRB.CONTINUOUS)
-bbbb = model.addVar(vtype=gp.GRB.CONTINUOUS)
-model.addConstr(aaaa == (np.ones((len(topology))) @ LINK_power) * num_copy)
-model.addConstr(bbbb == (np.ones((len(topology))) @ SWITCH_power) * num_copy)
-
-model.addConstr((less_or_equal_one_chip == 0) >> (total_link_power == aaaa))
-model.addConstr((less_or_equal_one_chip == 1) >> (total_link_power == 0))
-model.addConstr((less_or_equal_four_chip == 0) >> (total_switch_power == bbbb))
-model.addConstr((less_or_equal_four_chip == 1) >> (total_switch_power == 0))
+model.add_constraint(total_DRAM_power == num_chip * DRAM_BW * dram_unit_power)
+model.add_constraint(total_accelerator_power == accelerator_power * num_chip)
 
 
 
-total_power = model.addVar(name='total_power', vtype=gp.GRB.CONTINUOUS, lb=0)
-model.addConstr(total_power == total_DRAM_power + total_accelerator_power + total_link_power + total_switch_power)
+aaaa = model.add_variable(vtype='continuous')
+bbbb = model.add_variable(vtype='continuous')
+model.add_constraint(aaaa == (np.ones((len(topology))) @ LINK_power) * num_copy)
+model.add_constraint(bbbb == (np.ones((len(topology))) @ SWITCH_power) * num_copy)
+
+model.add_constraint((less_or_equal_one_chip == 0) >> (total_link_power == aaaa))
+model.add_constraint((less_or_equal_one_chip == 1) >> (total_link_power == 0))
+model.add_constraint((less_or_equal_four_chip == 0) >> (total_switch_power == bbbb))
+model.add_constraint((less_or_equal_four_chip == 1) >> (total_switch_power == 0))
+
+
+
+total_power = model.add_variable(name='total_power', vtype='continuous', lb=0)
+model.add_constraint(total_power == total_DRAM_power + total_accelerator_power + total_link_power + total_switch_power)
 
 
 
 
 # objective
-final_ii_ns = model.addVar(name='final_ii_ns', vtype=gp.GRB.CONTINUOUS, lb=0)
-model.addConstr(final_ii_ns * num_copy >= ns_per_batch)
+final_ii_ns = model.add_variable(name='final_ii_ns', vtype='continuous', lb=0)
+model.add_constraint(final_ii_ns * num_copy >= ns_per_batch)
 
-total_compute_latency = model.addVar(name='total_compute_latency', vtype=gp.GRB.CONTINUOUS, lb=0)
-model.addConstr(total_compute_latency == np.ones((C)) @ Compute_Latency)
+total_compute_latency = model.add_variable(name='total_compute_latency', vtype='continuous', lb=0)
+model.add_constraint(total_compute_latency == np.ones((C)) @ Compute_Latency)
 
-total_memory_latency = model.addVar(name='total_memory_latency', vtype=gp.GRB.CONTINUOUS, lb=0)
-model.addConstr(total_memory_latency == np.ones((C)) @ Memory_Latency)
+total_memory_latency = model.add_variable(name='total_memory_latency', vtype='continuous', lb=0)
+model.add_constraint(total_memory_latency == np.ones((C)) @ Memory_Latency)
 
-total_network_latency = model.addVar(name='total_network_latency', vtype=gp.GRB.CONTINUOUS, lb=0)
-model.addConstr(total_network_latency == np.ones((C)) @ Network_Latency)
+total_network_latency = model.add_variable(name='total_network_latency', vtype='continuous', lb=0)
+model.add_constraint(total_network_latency == np.ones((C)) @ Network_Latency)
 
 if p_and_r_flag:
-    total_pcu_pmu_used = model.addVar(name='total_pcu_pmu_used', vtype=gp.GRB.CONTINUOUS, lb=0)
-    model.addConstr(total_pcu_pmu_used == PMU_used_per_config @ np.ones((C)) + Par_total @ np.ones((num_node)))
+    total_pcu_pmu_used = model.add_variable(name='total_pcu_pmu_used', vtype='continuous', lb=0)
+    model.add_constraint(total_pcu_pmu_used == PMU_used_per_config @ np.ones((C)) + Par_total @ np.ones((num_node)))
 
-    model.setObjectiveN(final_ii_ns, index=0, priority=4)
-    model.setObjectiveN(total_pcu_pmu_used, index=1, priority=3)
-    model.setObjectiveN(total_compute_latency, index=2, priority=2)
-    model.setObjectiveN(total_memory_latency, index=3, priority=1)
-    model.setObjectiveN(total_network_latency, index=4, priority=0)
-    model.ModelSense = gp.GRB.MINIMIZE
+    model.set_objective_minimize(final_ii_ns)  # Use HiGHS’s objective setter
+    model.set_objectiveN(total_pcu_pmu_used, index=1, priority=3)
+    model.set_objectiveN(total_compute_latency, index=2, priority=2)
+    model.set_objectiveN(total_memory_latency, index=3, priority=1)
+    model.set_objectiveN(total_network_latency, index=4, priority=0)
+    model.ModelSense = highspy.MINIMIZE
 
 else:
     if first_bwd_kernel == -1 and dse.execution.WhichOneof('workload_variant') == 'llm': # inference
-        model.setObjectiveN(final_ii_ns, index=0, priority=4)
-        model.setObjectiveN(final_latency_ns, index=1, priority=3)
-        model.setObjectiveN(total_compute_latency, index=2, priority=2)
-        model.setObjectiveN(total_memory_latency, index=3, priority=1)
-        model.setObjectiveN(total_network_latency, index=4, priority=0)
-        model.ModelSense = gp.GRB.MINIMIZE
+        model.set_objective_minimize(final_ii_ns)  # Use HiGHS’s objective setter
+        model.set_objectiveN(final_latency_ns, index=1, priority=3)
+        model.set_objectiveN(total_compute_latency, index=2, priority=2)
+        model.set_objectiveN(total_memory_latency, index=3, priority=1)
+        model.set_objectiveN(total_network_latency, index=4, priority=0)
+        model.ModelSense = highspy.MINIMIZE
     else:
-        model.setObjective(final_ii_ns, index=0, priority=3)
-        model.setObjectiveN(total_compute_latency, index=1, priority=2)
-        model.setObjectiveN(total_memory_latency, index=2, priority=1)
-        model.setObjectiveN(total_network_latency, index=3, priority=0)
-        model.ModelSense = gp.GRB.MINIMIZE
-model.optimize()
+        model.set_objective_minimize(final_ii_ns)  # Use HiGHS’s objective setter
+        model.set_objectiveN(total_compute_latency, index=1, priority=2)
+        model.set_objectiveN(total_memory_latency, index=2, priority=1)
+        model.set_objectiveN(total_network_latency, index=3, priority=0)
+        model.ModelSense = highspy.MINIMIZE
+model.solve()
 
 
 end = time.time()
@@ -3326,99 +3313,99 @@ ALL_TO_ALL_communication_size_node = []
 ALL_REDUCE_communication_size_node = []
 num_tile_per_config = []
 
-for v in model.getVars():
-    print(v.varName, v.X)
+for v in model.get_variables():
+    print(v.name, v.x)
 
-    if v.varName.startswith('num_tile'):
-        num_tile = v.X
+    if v.name.startswith('num_tile'):
+        num_tile = v.x
 
-    if v.varName.startswith('A['):
-        A.append(v.X)
-    if v.varName.startswith('Z['):
-        Z.append(v.X)
-    if v.varName.startswith('PMU_used_intermediate['):
-        PMU_used_intermediate.append(v.X)
-    if v.varName.startswith('PMU_used_initiation['):
-        PMU_used_initiation.append(v.X)
-    if v.varName.startswith('Cycle['):
-        Cycle.append(v.X)
+    if v.name.startswith('A['):
+        A.append(v.x)
+    if v.name.startswith('Z['):
+        Z.append(v.x)
+    if v.name.startswith('PMU_used_intermediate['):
+        PMU_used_intermediate.append(v.x)
+    if v.name.startswith('PMU_used_initiation['):
+        PMU_used_initiation.append(v.x)
+    if v.name.startswith('Cycle['):
+        Cycle.append(v.x)
     
-    if v.varName.startswith('MMM['):
-        MMM.append(v.X)
-    if v.varName.startswith('KKK['):
-        KKK.append(v.X)
-    if v.varName.startswith('NNN['):
-        NNN.append(v.X)
+    if v.name.startswith('MMM['):
+        MMM.append(v.x)
+    if v.name.startswith('KKK['):
+        KKK.append(v.x)
+    if v.name.startswith('NNN['):
+        NNN.append(v.x)
         
-    if v.varName.startswith('Par_lane['):
-        Par_lane.append(v.X)
-    if v.varName.startswith('Par_stage['):
-        Par_stage.append(v.X)    
+    if v.name.startswith('Par_lane['):
+        Par_lane.append(v.x)
+    if v.name.startswith('Par_stage['):
+        Par_stage.append(v.x)    
         
-    if v.varName.startswith('Memory_Latency['):
-        Memory_Latency.append(v.X)
-    if v.varName.startswith('Compute_Latency['):
-        Compute_Latency.append(v.X)
-    if v.varName.startswith('Network_Latency['):
-        Network_Latency.append(v.X)
+    if v.name.startswith('Memory_Latency['):
+        Memory_Latency.append(v.x)
+    if v.name.startswith('Compute_Latency['):
+        Compute_Latency.append(v.x)
+    if v.name.startswith('Network_Latency['):
+        Network_Latency.append(v.x)
     
     
     
     
-    if v.varName.startswith('shard_M'):
-        shard_M.append(v.X)
-    if v.varName.startswith('shard_K'):
-        shard_K.append(v.X)
-    if v.varName.startswith('shard_N'):
-        shard_N.append(v.X)
-    if v.varName.startswith('shard_intermediate_buffer_size'):
-        shard_intermediate_buffer_size.append(v.X)
-    if v.varName.startswith('shard_initiation_buffer_size'):
-        shard_initiation_buffer_size.append(v.X)
-    if v.varName == 'final_ii_ns':
-        final_ii_ns = v.X
-    # if v.varName.startswith('total_DRAM_bytes'):
-        # total_DRAM_bytes = v.X
-    # if v.varName.startswith('total_Network_bytes'):
-        # total_Network_bytes = v.X
-    if v.varName.startswith('TP'):
-        TP = v.X
-    if v.varName.startswith('PP'):
-        PP = v.X
-    if v.varName.startswith('DP'):
-        DP = v.X
-    if v.varName.startswith('Config'):
-        Config.append(v.X)
-    if v.varName.startswith('total_cost'):
-        total_cost = v.X
-    if v.varName.startswith('total_power'):
-        total_power = v.X 
-    if v.varName.startswith('DRAM_BW'):
-        DRAM_BW = v.X 
-    if v.varName.startswith('Micro_Batch_Size'):
-        Micro_Batch_Size = v.X 
-    if v.varName.startswith('Link_BW['):
-        Link_BW.append(v.X) 
-    if v.varName.startswith('Per_Config_II'):
-        Per_Config_II.append(v.X)
-    if v.varName.startswith('num_micro_batch_per_pipeline'):
-        num_micro_batch_per_pipeline = v.X
+    if v.name.startswith('shard_M'):
+        shard_M.append(v.x)
+    if v.name.startswith('shard_K'):
+        shard_K.append(v.x)
+    if v.name.startswith('shard_N'):
+        shard_N.append(v.x)
+    if v.name.startswith('shard_intermediate_buffer_size'):
+        shard_intermediate_buffer_size.append(v.x)
+    if v.name.startswith('shard_initiation_buffer_size'):
+        shard_initiation_buffer_size.append(v.x)
+    if v.name == 'final_ii_ns':
+        final_ii_ns = v.x
+    # if v.name.startswith('total_DRAM_bytes'):
+        # total_DRAM_bytes = v.x
+    # if v.name.startswith('total_Network_bytes'):
+        # total_Network_bytes = v.x
+    if v.name.startswith('TP'):
+        TP = v.x
+    if v.name.startswith('PP'):
+        PP = v.x
+    if v.name.startswith('DP'):
+        DP = v.x
+    if v.name.startswith('Config'):
+        Config.append(v.x)
+    if v.name.startswith('total_cost'):
+        total_cost = v.x
+    if v.name.startswith('total_power'):
+        total_power = v.x 
+    if v.name.startswith('DRAM_BW'):
+        DRAM_BW = v.x 
+    if v.name.startswith('Micro_Batch_Size'):
+        Micro_Batch_Size = v.x 
+    if v.name.startswith('Link_BW['):
+        Link_BW.append(v.x) 
+    if v.name.startswith('Per_Config_II'):
+        Per_Config_II.append(v.x)
+    if v.name.startswith('num_micro_batch_per_pipeline'):
+        num_micro_batch_per_pipeline = v.x
 
-    if v.varName.startswith('layers'):
-        layers = v.X
+    if v.name.startswith('layers'):
+        layers = v.x
 
-    if v.varName.startswith('BROADCAST_communication_size'):
-        BROADCAST_communication_size.append(v.X)
-    if v.varName.startswith('POINT_TO_POINT_communication_size'):
-        POINT_TO_POINT_communication_size.append(v.X)
-    if v.varName.startswith('ALL_TO_ALL_communication_size_node'):
-        ALL_TO_ALL_communication_size_node.append(v.X)
-    if v.varName.startswith('ALL_REDUCE_communication_size_node'):
-        ALL_REDUCE_communication_size_node.append(v.X)
+    if v.name.startswith('BROADCAST_communication_size'):
+        BROADCAST_communication_size.append(v.x)
+    if v.name.startswith('POINT_TO_POINT_communication_size'):
+        POINT_TO_POINT_communication_size.append(v.x)
+    if v.name.startswith('ALL_TO_ALL_communication_size_node'):
+        ALL_TO_ALL_communication_size_node.append(v.x)
+    if v.name.startswith('ALL_REDUCE_communication_size_node'):
+        ALL_REDUCE_communication_size_node.append(v.x)
 
 
-    if v.varName.startswith('num_tile_per_config'):
-        num_tile_per_config.append(v.X)
+    if v.name.startswith('num_tile_per_config'):
+        num_tile_per_config.append(v.x)
 
 # log latencies to hdf5 file
 f = h5py.File(name+'/'+'log.hdf5', 'w')
@@ -3507,7 +3494,7 @@ for kernel in dse.dataflow_graph.kernels:
     
     elif kernel.WhichOneof('kernel_variant') == 'gemm_input1_input2':
         kernel.gemm_input1_input2.shard_outer_M = int(shard_M[i])
-        kernel.gemm_input1_input2.shard_K = int(shard_K[i])
+        kernel.gemm_input1_input2.shard_K = int(shard_N[i])
         kernel.gemm_input1_input2.shard_N = int(shard_N[i])
         kernel.config = int(Config[i])
         
@@ -4223,4 +4210,3 @@ if not dse.execution.turn_off_p_and_r:
                 print('\n\n\n\n\n\n\n\n')
 
 
-                
